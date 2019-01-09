@@ -5,7 +5,7 @@ import Home from "../views/Home.vue";
 Vue.use(Router);
 
 // Default Layout 
-let Layout = () => import("../layouts/DefaultLayout.vue");
+let Layout = () => import("../layouts/VuetifyLayout.vue");
 // About
 let About = () => import(/* webpackChunkName: "about" */ "../views/About.vue");
 
@@ -53,7 +53,7 @@ let religionRoute = {
 
 import employeeStatusFileRoute from "./employeeStatusFileRoute"
 import jobLevelRoute from "./jobLevelRoute"
-import jobLevel from "../store/modules/jobLevel";
+import gradeRoute from "./gradeRoute"
 
 export default new Router({
   mode: "history",
@@ -88,6 +88,7 @@ export default new Router({
     citizenshipRoute,
     religionRoute,
     employeeStatusFileRoute,
-    jobLevelRoute
+    jobLevelRoute,
+    gradeRoute
   ]
 });

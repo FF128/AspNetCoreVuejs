@@ -53,6 +53,9 @@ namespace WebAPI
             services.AddScoped<ICitizenshipRepository, CitizenshipRepository>();
             services.AddScoped<IReligionRepository, ReligionRepository>();
             services.AddScoped<IEmployeeStatusFileRepository, EmployeeStatusFileRepository>();
+            services.AddScoped<IJobLevelRepository, JobLevelRepository>();
+            services.AddScoped<IGradeRepository, GradeRepository>();
+            services.AddScoped<IStepRepository, StepRepository>();
 
             // Services 
             services.AddScoped<ICompanyInfoService, CompanyInfoService>();

@@ -2,57 +2,14 @@
     <div class="section">
         <h1 class="title is-4">{{title}}</h1>
         <div class="columns">
-            <div class="column is-2">
+            <div class="column is-4">
                 <b-field label="Code" custom-class="is-small">
-                    <b-input size="is-small" v-model="jobLevel.code"></b-input>
+                    <b-input size="is-small" v-model="grade.code"></b-input>
                 </b-field>
             </div>
-            <div class="column is-5">
+            <div class="column">
                 <b-field label="Description" custom-class="is-small">
-                    <b-input size="is-small" v-model="jobLevel.description"></b-input>
-                </b-field>
-            </div>
-            <div class="column">
-                <label class="label is-small">Grade</label>
-                <b-field>
-                    <b-input  size="is-small" v-model="jobLevel.gradeCode">
-                    </b-input>
-                    <p class="control">
-                        <button class="button is-primary is-small">
-                            <b-icon
-                                icon="magnify"
-                                size="is-small">
-                            </b-icon>
-                        </button>
-                    </p>
-                </b-field>
-            </div>
-            <div class="column">
-                <label class="label is-small">Step</label>
-                <b-field>
-                    <b-input  size="is-small" v-model="jobLevel.stepCode">
-                    </b-input>
-                    <p class="control">
-                        <button class="button is-primary is-small">
-                            <b-icon
-                                icon="magnify"
-                                size="is-small">
-                            </b-icon>
-                        </button>
-                    </p>
-                </b-field>
-            </div>
-            
-        </div>
-        <div class="columns">
-            <div class="column is-2">
-                <b-field label="Minimum Salary" custom-class="is-small">
-                    <b-input size="is-small" v-model="jobLevel.minimumSalary"></b-input>
-                </b-field>
-            </div>
-            <div class="column is-2">
-                <b-field label="Maximum Salary" custom-class="is-small">
-                    <b-input size="is-small" v-model="jobLevel.maximumSalary"></b-input>
+                    <b-input size="is-small" v-model="grade.description"></b-input>
                 </b-field>
             </div>
         </div>
@@ -69,7 +26,7 @@
         </div>
 
         <b-table
-            :data="isEmpty ? [] : jobLevelData"
+            :data="isEmpty ? [] : gradeData"
             :bordered="isBordered"
             :striped="isStriped"
             :narrowed="isNarrowed"
@@ -128,10 +85,10 @@
                 </header>
                 <section class="modal-card-body">
                     <!-- Content ... -->
-                    <h1 class="title is-5">Do you want to delete this information (Code: {{selectedJobLevel.code}})?</h1>
+                    <h1 class="title is-5">Do you want to delete this information (Code: {{selectedGrade.code}})?</h1>
                 </section>
                 <footer class="modal-card-foot" style="justify-content: flex-end;">
-                    <button class="button is-danger" @click="deleteConfirmed(selectedJobLevel)" :class="isDeleting | buttonLoading">Yes</button>
+                    <button class="button is-danger" @click="deleteConfirmed(selectedGrade)" :class="isDeleting | buttonLoading">Yes</button>
                     <button class="button" @click="closeDeleteModal">No</button>
                 </footer>
             </div>
@@ -147,13 +104,13 @@ import AppToast from "@/project-modules/appToast"
 
 let appToast = new AppToast();
 
-let apiEnpoint = "api/employee-status-file"
+let apiEnpoint = "api/grade"
 
 export default {
     data() {
         return {
-            title: "Job Level",
-            jobLevel: {},
+            title: "Grade",
+            grade: {},
             isSaving: false,
             isUpdating: false,
             isDeleting: false,
@@ -167,22 +124,22 @@ export default {
             isFocusable: false,
             hasMobileCards: true,
             deleteModal: false,
-            selectedJobLevel: {}
+            selectedGrade: {}
         }
     },
     methods: {
-        ...mapActions('jobLevel', [
-            'getAllJobLevels'
+        ...mapActions('grade', [
+            'getAllGrades'
         ]),
         save() {
             this.isSaving = true;
-            this.$axios.post(apiEnpoint, this.jobLevel)
+            this.$axios.post(apiEnpoint, this.grade)
                 .then(response => {
                     this.isSaving = false;
 
                     appToast.success(`Successfully Added`);
                     // Update List
-                    this.getAllJobLevels();
+                    this.getAllGrades();
                 })
                 .catch(err => {
                     this.isSaving = false;
@@ -191,17 +148,17 @@ export default {
         },
         edit(item){
             this.onEdit = true;
-            this.jobLevel = item;
+            this.grade = item;
         },
         update() {
             this.isUpdating = true
-            this.$axios.put(apiEnpoint, this.jobLevel)
+            this.$axios.put(apiEnpoint, this.grade)
                 .then(response => {
                     this.isUpdating = false;
                     this.onEdit = false;
                     appToast.success("Successfully Updated");
 
-                    this.getAllJobLevels();
+                    this.getAllGrades();
                 })
                 .catch(err => {
                     this.isUpdating = false;
@@ -210,13 +167,13 @@ export default {
         },
         deleteInfo(item) {
             this.deleteModal = true;
-            this.selectedJobLevel = item;
+            this.selectedGrade = item;
         },
         deleteConfirmed(item) {
             this.isDeleting = true;
             this.$axios.delete(`${apiEnpoint}/${item.id}`)
                 .then(response => {
-                    this.getAllEmployeeStatusFiles();
+                    this.getAllGrades();
 
                     appToast.success(`Code: ${item.code} has been deleted`);
 
@@ -234,19 +191,19 @@ export default {
         },
         cancel() {
             this.onEdit = false;
-            this.jobLevel = {}
+            this.grade = {}
 
-            this.getAllJobLevels();
+            this.getAllGrades();
         }
     },
     computed: {
-        ...mapState('jobLevel', {
-            jobLevelData: state => state.jobLevels,
+        ...mapState('grade', {
+            gradeData: state => state.grades,
             isLoading: state => state.loading
         })
     },
     created() {
-        this.getAllJobLevels();
+        this.getAllGrades();
     }
 }
 </script>
