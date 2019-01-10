@@ -1,108 +1,101 @@
 <template>
-    <div class="section">
-        <h1 class="title is-4">{{title}}</h1>
-        <div class="columns">
-            <div class="column is-4">
-                <b-field label="Code" custom-class="is-small">
-                    <b-input size="is-small" v-model="religion.code"></b-input>
-                </b-field>
-            </div>
-            <div class="column">
-                <b-field label="Description" custom-class="is-small">
-                    <b-input size="is-small" v-model="religion.description"></b-input>
-                </b-field>
-            </div>
-        </div>
-        <div class="field is-grouped">
-            <div class="control" v-if="!onEdit">
-                <button class="button is-success" @click="save" :class="isSaving | buttonLoading">Save</button>
-            </div>
-            <div class="control" v-if="onEdit">
-                <button class="button is-success" @click.prevent="update" :class="isUpdating | buttonLoading">Update</button>
-            </div>
-            <div class="control" v-if="onEdit">
-                <button class="button is-default" @click.prevent="cancel">Cancel</button>
-            </div>
-        </div>
+    <div>
+        <v-form>
+            <v-container>
+                <h1>{{title}}</h1>
+                <v-layout row wrap>
+                    <v-flex xs12 sm6 md4>
+                        <v-text-field
+                            label="Code"
+                            v-model="religion.code">
 
-        <b-table
-            :data="isEmpty ? [] : religionData"
-            :bordered="isBordered"
-            :striped="isStriped"
-            :narrowed="isNarrowed"
-            :hoverable="isHoverable"
-            :loading="isLoading"
-            :focusable="isFocusable"
-            :mobile-cards="hasMobileCards">
+                        </v-text-field>
+                    </v-flex>
+                    
+                    <v-flex xs12 sm6 md8>
+                        <v-text-field
+                            label="Description"
+                            v-model="religion.description">
 
-            <template slot-scope="props">
-                <b-table-column field="code" label="Code">
-                    {{ props.row.code }}
-                </b-table-column>
-
-                <b-table-column field="description" label="Description">
-                    {{ props.row.description }}
-                </b-table-column>
-                <b-table-column label="">
-                    <button class="button is-default" @click.prevent="edit(props.row)">
-                        <b-icon
-                            icon="pencil"
-                            size="is-small">
-                        </b-icon>
-                    </button>
-                    &nbsp;
-                    <button class="button is-danger" @click.prevent="deleteInfo(props.row)">
-                        <b-icon
-                            icon="delete"
-                            size="is-small">
-
-                        </b-icon>
-                    </button>
-                </b-table-column>
-            </template>
-
-            <template slot="empty">
-                <section class="section">
-                    <div class="content has-text-grey has-text-centered">
-                        <p>
-                            <b-icon
-                                icon="emoticon-sad"
-                                size="is-large">
-                            </b-icon>
-                        </p>
-                        <p>Nothing here.</p>
+                        </v-text-field>
+                    </v-flex>
+                    <v-btn
+                        color="success"
+                        @click.prevent="save"
+                        v-if="!onEdit">
+                        Save
+                    </v-btn>
+                    <div v-if="onEdit">
+                        <v-btn
+                            color="success"
+                            @click.prevent="update">
+                            Update
+                        </v-btn>
+                        <v-btn
+                            @click.prevent="cancel">
+                            Cancel
+                        </v-btn>
                     </div>
-                </section>
-            </template>
-        </b-table>
+                </v-layout>
+            </v-container>
+        </v-form>
+        <v-container>
+            <v-data-table
+                :headers="headers"
+                :items="religionData"
+                class="elevation-1">
+
+                <template slot="items" slot-scope="props">
+                    <td>{{ props.item.code }}</td>
+                    <td class="text-xs-left">{{ props.item.description }}</td>
+                    <td>
+                        <v-btn icon
+                            @click.prevent="edit(props.item)">
+                            <v-icon>edit</v-icon>
+                        </v-btn>
+                        <v-btn icon
+                            @click.prevent="deleteInfo(props.item)">
+                            <v-icon color="red">delete</v-icon>
+                        </v-btn>
+                    </td>
+                </template>
+            </v-data-table>
+        </v-container>
         
-        <div class="modal" :class="deleteModal | modalStatusFilter"> <!-- Delete Confirmation -->
-            <div class="modal-background"></div>
-            <div class="modal-card">
-                <header class="modal-card-head">
-                    <p class="modal-card-title">Confirmation</p>
-                    <button class="delete" aria-label="close" @click="closeDeleteModal"></button>
-                </header>
-                <section class="modal-card-body">
-                    <!-- Content ... -->
-                    <h1 class="title is-5">Do you want to delete this information (Code: {{selectedRel.code}})?</h1>
-                </section>
-                <footer class="modal-card-foot" style="justify-content: flex-end;">
-                    <button class="button is-danger" @click="deleteConfirmed(selectedRel)" :class="isDeleting | buttonLoading">Yes</button>
-                    <button class="button" @click="closeDeleteModal">No</button>
-                </footer>
-            </div>
-        </div>
+        <v-dialog
+            v-model="deleteDialog"
+            max-width="400">
+            <v-card>
+                <v-card-title class="headline">Confirmation</v-card-title>
+
+                <v-card-text>
+                    Do you want to delete this Code: {{ selectedRel.code }}?
+                </v-card-text>
+
+                <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-btn
+                        color="red"
+                        flat="flat"
+                        @click.prevent="deleteConfirmed">
+                        Yes
+                    </v-btn>
+
+                    <v-btn
+                        flat="flat"
+                        @click.prevent="closeDeleteDialog">
+                        No
+                    </v-btn>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
     </div>
-    
-    
 </template>
 <script>
 import { mapActions, mapState } from "vuex"
 import AppToast from "@/project-modules/appToast"
 
 let appToast = new AppToast();
-let apiEnpoint = "api/religion"
 export default {
     data() {
         return {
@@ -120,8 +113,19 @@ export default {
             isHoverable: false,
             isFocusable: false,
             hasMobileCards: true,
-            deleteModal: false,
-            selectedRel: {}
+            deleteDialog: false,
+            selectedRel: {},
+            headers: [
+                {
+                    text: 'Code',
+                    align: 'left',
+                    sortable: false,
+                    value: 'code'
+                },
+                { text: 'Description', value: 'description', align: 'left' },
+                { text: '', value: 'actions' }
+            ],
+            apiEndpoint: "api/religion"
         }
     },
     methods: {
@@ -130,13 +134,14 @@ export default {
         ]),
         save() {
             this.isSaving = true;
-            this.$axios.post(apiEndpoint, this.religion)
+            this.$axios.post(this.apiEndpoint, this.religion)
                 .then(response => {
                     this.isSaving = false;
 
                     appToast.success(`Successfully Added`);
                     // Update List
                     this.getAllReligions();
+                    this.religion = {}
                 })
                 .catch(err => {
                     this.isSaving = false;
@@ -149,7 +154,7 @@ export default {
         },
         update() {
             this.isUpdating = true
-            this.$axios.put(apiEndpoint, this.religion)
+            this.$axios.put(this.apiEndpoint, this.religion)
                 .then(response => {
                     this.isUpdating = false;
                     this.onEdit = false;
@@ -163,19 +168,17 @@ export default {
                 })
         },
         deleteInfo(item) {
-            this.deleteModal = true;
+            this.deleteDialog = true;
             this.selectedRel = item;
         },
-        deleteConfirmed(item) {
+        deleteConfirmed() {
             this.isDeleting = true;
-            this.$axios.delete(`${apiEnpoint}/${item.id}`)
+            this.$axios.delete(`${this.apiEndpoint}/${this.selectedRel.id}`)
                 .then(response => {
                     this.getAllReligions();
-
-                    appToast.success(`Code: ${item.code} has been deleted`);
-
+                    
                     this.isDeleting = false;
-                    this.deleteModal = false;
+                    this.deleteDialog = false;
                 })
                 .catch(err => {
                     appToast.danger("Error deleting")
@@ -183,8 +186,8 @@ export default {
                     this.isDeleting = false;
                 })
         },
-        closeDeleteModal() {
-            this.deleteModal = false;
+        closeDeleteDialog() {
+            this.deleteDialog = false;
         },
         cancel() {
             this.onEdit = false;

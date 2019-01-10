@@ -11,5 +11,9 @@ namespace WebAPI.ServiceInterfaces
         User Authenticate(string username, string password);
         IEnumerable<User> GetAll();
         Task Register(User user, string password);
+        User GetById(int id);
+        User Create(User user, string password);
+        void Update(User user, string password = null);
+        void Delete(int id);
     }
 }

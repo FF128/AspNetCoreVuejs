@@ -1,145 +1,183 @@
 <template>
-    <div class="section">
-        <h1 class="title is-4">{{title}}</h1>
-        <form id="company-info-form" @submit.prevent="processForm">
-            <div class="columns">
-                <div class="column is-4">
-                    <b-field label="Code" custom-class="is-small">
-                        <b-input size="is-small" v-model="ci.code"></b-input>
-                    </b-field>
-                </div>
-            </div>
-            <div class="columns">
-                <div class="column is-4">
-                    <b-field label="Description" custom-class="is-small">
-                        <b-input size="is-small" v-model="ci.description"></b-input>
-                    </b-field>
-                </div>
-            </div>
-            <div class="columns">
-                <div class="column">
-                    <b-field label="Address" custom-class="is-small">
-                        <b-input size="is-small" v-model="ci.address"></b-input>
-                    </b-field>
-                </div>
+    <v-form>
+        <v-container>
+            <h1>{{title}}</h1>
+            <v-layout wrap row>
+                <v-flex 
+                    xs12 sm6 md3>
+                    <v-text-field
+                        v-model="ci.code"
+                        :counter="10"
+                        label="Code"
+                        required
+                    ></v-text-field>
+                </v-flex>
+                <v-flex 
+                    xs12 sm6 md4>
+                    <v-text-field
+                        v-model="ci.description"
+                        :counter="50"
+                        label="Description"
+                        required
+                    ></v-text-field>
+                </v-flex>
+                <v-flex 
+                    xs12 sm6 md5>
+                    <v-text-field
+                        v-model="ci.address"
+                        label="Address"
+                        required
+                    ></v-text-field>
+                </v-flex>
+
+                <v-flex 
+                    xs12 sm6 md3>
+                    <v-text-field
+                        v-model="ci.zipCode"
+                        :counter="10"
+                        label="Zip Code"
+                        required
+                    ></v-text-field>
+                </v-flex>
+                <v-flex 
+                    xs12 sm6 md4>
+                    <v-text-field
+                        v-model="ci.city"
+                        :counter="50"
+                        label="City"
+                        required
+                    ></v-text-field>
+                </v-flex>
+                <v-flex 
+                    xs12 sm6 md5>
+                    <v-text-field
+                        v-model="ci.province"
+                        label="Province"
+                        required
+                    ></v-text-field>
+                </v-flex>
+
+                <v-flex 
+                    xs12 sm6 md4>
+                    <v-text-field
+                        v-model="ci.telNum"
+                        :counter="10"
+                        label="Tel No."
+                        required
+                    ></v-text-field>
+                </v-flex>
+                <v-flex 
+                    xs12 sm6 md4>
+                    <v-text-field
+                        v-model="ci.email"
+                        :counter="50"
+                        :rules="emailRules"
+                        label="Email"
+                        required
+                    ></v-text-field>
+                </v-flex>
+                <v-flex 
+                    xs12 sm6 md4>
+                    <v-text-field
+                        v-model="ci.tin"
+                        label="TIN No."
+                        required
+                    ></v-text-field>
+                </v-flex>
+
+                <v-flex 
+                    xs12 sm6 md3>
+                    <v-text-field
+                        v-model="ci.sss"
+                        label="SSS No."
+                        required
+                    ></v-text-field>
+                </v-flex>
+                <v-flex 
+                    xs12 sm6 md3>
+                    <v-text-field
+                        v-model="ci.philhealth"
+                        label="Philhealth No."
+                        required
+                    ></v-text-field>
+                </v-flex>
+                <v-flex 
+                    xs12 sm6 md3>
+                    <v-text-field
+                        v-model="ci.pagibig"
+                        label="Pag-ibig No."
+                        required
+                    ></v-text-field>
+                </v-flex>
+                <v-flex 
+                    xs12 sm6 md3>
+                    <v-text-field
+                        v-model="ci.birBranchCode"
+                        label="BIR Branch Code"
+                        required
+                    ></v-text-field>
+                </v-flex>
+
+                <v-flex md12>
+                    <img :src="logoForReports.imageUrl" height="100" width="100%" v-if="logoForReports.imageUrl"/>
+                    <!-- <v-text-field label="Logo for Reports" @click='pickFile' v-model='logoForReports.imageName' prepend-icon='attach_file'></v-text-field>
+                    <input
+						type="file"
+						style="display: none"
+						ref="image"
+						accept="image/*"
+						@change="onLogoForReportsPicked()"
+					> -->
+                    <h4>Logo for Reports</h4>
+                    <input type="file" id="logoForReports" ref="logoForReports" class="custom-file-input" 
+                        @change="logoForReportsChanged" accept="image/*" >
+                </v-flex>
+
                 
-                <div class="column">
-                    <b-field label="Province" custom-class="is-small">
-                        <b-input size="is-small" v-model="ci.province"></b-input>
-                    </b-field>
-                </div>
-            </div>
-            
-            <div class="columns">
-                <div class="column is-3">
-                    <b-field label="City" custom-class="is-small">
-                        <b-input size="is-small" v-model="ci.city"></b-input>
-                    </b-field>
-                </div>
-                <div class="column is-3">
-                    <b-field label="Zip Code" custom-class="is-small">
-                        <b-input size="is-small" v-model="ci.zipCode"></b-input>
-                    </b-field>
-                </div>
-                <div class="column">
-                    <b-field label="Tel No." custom-class="is-small">
-                        <b-input size="is-small" v-model="ci.telNum"></b-input>
-                    </b-field>
-                </div>
-                <div class="column">
-                    <b-field label="Email" custom-class="is-small">
-                        <b-input size="is-small" v-model="ci.email"></b-input>
-                    </b-field>
-                </div>
-            </div>
-            <div class="columns">
-                <div class="column">
-                    <b-field label="TIN No." custom-class="is-small">
-                        <b-input size="is-small" v-model="ci.tin"></b-input>
-                    </b-field>
-                </div>
-                <div class="column">
-                    <b-field label="SSS No." custom-class="is-small">
-                        <b-input size="is-small" v-model="ci.sss"></b-input>
-                    </b-field>
-                </div>
-                <div class="column">
-                    <b-field label="Philhealth No." custom-class="is-small">
-                        <b-input size="is-small" v-model="ci.philhealth"></b-input>
-                    </b-field>
-                </div>
-                <div class="column">
-                    <b-field label="Pag-ibig No." custom-class="is-small">
-                        <b-input size="is-small" v-model="ci.pagibig"></b-input>
-                    </b-field>
-                </div>
-                <div class="column is-2">
-                    <b-field label="BIR Branch Code" custom-class="is-small">
-                        <b-input size="is-small" v-model="ci.birBranchCode"></b-input>
-                    </b-field>
-                </div>
-                
-            </div>
-            <div class="column is-4">
-                <b-field class="file">
-                    <b-upload v-model="ci.logoForReports">
-                        <a class="button is-primary">
-                            <b-icon icon="upload"></b-icon>
-                            <span>Logo for Reports</span>
-                        </a>
-                    </b-upload>
-                    <span class="file-name" v-if="ci.logoForReports">
-                        {{ ci.logoForReports.name }}
-                    </span>
-                </b-field>
-            </div>
-            <div class="column is-4">
-                <b-field class="file">
-                    <b-upload v-model="ci.logoForSite">
-                        <a class="button is-primary">
-                            <b-icon icon="upload"></b-icon>
-                            <span>Logo for Site</span>
-                        </a>
-                    </b-upload>
-                    <span class="file-name" v-if="ci.logoForSite">
-                        {{ ci.logoForSite.name }}
-                    </span>
-                </b-field>
-            </div>
-            <div class="column is-4">
-                <b-field class="file">
-                    <b-upload v-model="ci.contentForSite">
-                        <a class="button is-primary">
-                            <b-icon icon="upload"></b-icon>
-                            <span>Content for Site</span>
-                        </a>
-                    </b-upload>
-                    <span class="file-name" v-if="ci.contentForSite">
-                        {{ ci.contentForSite.name }}
-                    </span>
-                </b-field>
-            </div>
-            <div class="field is-grouped">
-                <div class="control">
-                    <button class="button is-success" type="submit" :class="isSaving | buttonLoading">Save</button>
-                </div>
-            </div>
-        </form>
-    </div>
+                <v-flex md12>
+                    <img :src="logoForSite.imageUrl" height="100" width="100%" v-if="logoForSite.imageUrl"/>
+                    <!-- <v-text-field label="Logo for Site" @click='pickFileForSite' v-model='logoForSite.imageName' prepend-icon='attach_file'></v-text-field>
+                    <input
+						type="file"
+						style="display: none"
+						ref="image2"
+						accept="image/*"
+						@change="onLogoForSitePicked()"
+					> -->
+                    <h4>Logo for Site</h4>
+                    <input type="file" id="logoForSite" ref="logoForSite" class="custom-file-input" 
+                        @change="logoForSiteChanged" accept="image/*" >
+                </v-flex>
+
+                <v-flex md12>
+                    <img :src="contentForSite.imageUrl" height="100" width="100%" v-if="contentForSite.imageUrl"/>
+                    <!-- <v-text-field label="Content for Site" @click='pickFile' v-model='contentForSite.imageName' prepend-icon='attach_file'></v-text-field>
+                    <input
+						type="file"
+						style="display: none"
+						ref="image3"
+						accept="image/*"
+						@change="onLogoForReportsPicked($event)"
+					> -->
+                    <h4>Content for Site</h4>
+                    <input type="file" id="contentForSite" ref="contentForSite" class="custom-file-input" 
+                        @change="contentForSiteChanged" accept="image/*"/>
+                </v-flex>
+                <v-btn
+                    color="success"
+                    @click.prevent="processForm">
+                    Save
+                </v-btn>
+            </v-layout>
+        </v-container>
+    </v-form>
 </template>
 <script>
-let imageContent = {
-    imageName: '',
-    imageUrl: '',
-    imageFile: '',
-}
 export default {
     data() {
         return {
             title: "Company Information",
-            ci: {
-                logoForReports: null
-            },
+            ci: {},
             isSaving: false,
             emailRules: [
                 v => !!v || 'E-mail is required',
@@ -150,9 +188,17 @@ export default {
                 imageUrl: '',
                 imageFile: ''
             },
-            logoForSite: imageContent,
-            contentForSite: imageContent,
-            file: null
+            logoForSite: {
+                imageName: '',
+                imageUrl: '',
+                imageFile: ''
+            },
+            contentForSite: {
+                imageName: '',
+                imageUrl: '',
+                imageFile: ''
+            },
+            files: null
         }
     },
     methods: {
@@ -163,27 +209,42 @@ export default {
                 })
                 .catch(err => console.log(err));
         },
-        onFilePicked (e) {
-			const files = e.target.files
-			if(files[0] !== undefined) {
-				this.logoForReports.imageName = files[0].name
-				if(this.logoForReports.imageName.lastIndexOf('.') <= 0) {
-					return
-				}
-				const fr = new FileReader ()
-				fr.readAsDataURL(files[0])
-				fr.addEventListener('load', () => {
-					this.logoForReports.imageUrl = fr.result
-					this.logoForReports.imageFile = files[0] // this is an image file that can be sent to server...
-				})
-			} else {
-				this.logoForReports.imageName = ''
-				this.logoForReports.imageFile = ''
-				this.logoForReports.imageUrl = ''
-			}
+        logoForSiteChanged() {
+            let files = this.$refs.logoForSite.files
+            
+            this.logoForSite.imageName = files[0].name
+            const fr = new FileReader ()
+            fr.readAsDataURL(files[0])
+            fr.addEventListener('load', () => {
+                
+                this.logoForSite.imageUrl = fr.result
+                this.logoForSite.imageFile = files[0] // this is an image file that can be sent to server...
+            })
+            this.ci.logoForSite = files[0];
         },
-        pickFile () {
-            this.$refs.image.click ()
+        logoForReportsChanged () {
+            let files = this.$refs.logoForReports.files
+            this.logoForReports.imageName = files[0].name
+            const fr = new FileReader ()
+            fr.readAsDataURL(files[0])
+            fr.addEventListener('load', () => {
+                
+                this.logoForReports.imageUrl = fr.result
+                this.logoForReports.imageFile = files[0] // this is an image file that can be sent to server...
+            })
+            this.ci.logoForReports = files[0]
+        },
+        contentForSiteChanged () {
+            let files = this.$refs.contentForSite.files
+            this.contentForSite.imageName = files[0].name
+            const fr = new FileReader ()
+            fr.readAsDataURL(files[0])
+            fr.addEventListener('load', () => {
+                
+                this.contentForSite.imageUrl = fr.result
+                this.contentForSite.imageFile = files[0] // this is an image file that can be sent to server...
+            })
+            this.ci.contentForSite = files[0]
         },
         processForm() {
             var bodyFormData = new FormData();
@@ -219,6 +280,52 @@ export default {
                     console.log(response);
                 });
         }
+        // onLogoForReportsPicked (e) {
+		// 	const files = e.target.files
+		// 	if(files[0] !== undefined) {
+        //         console.log('reports')
+		// 		this.logoForReports.imageName = files[0].name
+		// 		if(this.logoForReports.imageName.lastIndexOf('.') <= 0) {
+		// 			return
+		// 		}
+		// 		const fr = new FileReader ()
+		// 		fr.readAsDataURL(files[0])
+		// 		fr.addEventListener('load', () => {
+		// 			this.logoForReports.imageUrl = fr.result
+		// 			this.logoForReports.imageFile = files[0] // this is an image file that can be sent to server...
+		// 		})
+		// 	} else {
+		// 		this.logoForReports.imageName = ''
+		// 		this.logoForReports.imageFile = ''
+		// 		this.logoForReports.imageUrl = ''
+		// 	}
+        // },
+        // onLogoForSitePicked (e) {
+		// 	const files = e.target.files
+		// 	if(files[0] !== undefined) {
+        //         console.log('site')
+		// 		this.imageName = files[0].name
+		// 		if(this.imageName.lastIndexOf('.') <= 0) {
+		// 			return
+		// 		}
+		// 		const fr = new FileReader ()
+		// 		fr.readAsDataURL(files[0])
+		// 		fr.addEventListener('load', () => {
+		// 			this.imageUrl = fr.result
+		// 			this.imageFile = files[0] // this is an image file that can be sent to server...
+		// 		})
+		// 	} else {
+		// 		this.imageName = ''
+		// 		this.imageFile = ''
+		// 		this.imageUrl = ''
+		// 	}
+        // },
+        // pickFile () {
+        //     this.$refs.image.click()
+        // },
+        // pickFileForSite() {
+        //     this.$refs.image.click()
+        // }
 
     }
 }

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
@@ -10,18 +9,30 @@ using WebAPI.RepositoryInterfaces;
 
 namespace WebAPI.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/designation-file")]
     [ApiController]
-    public class CompanyInfoController : ControllerBase
+    public class DesignationFileController : ControllerBase
     {
-        private readonly ICompanyInformationRepository repo;
-        public CompanyInfoController(ICompanyInformationRepository repo)
+        private readonly IDesignationFileRepository repo;
+        public DesignationFileController(IDesignationFileRepository repo)
         {
             this.repo = repo;
         }
+        [HttpGet]
+        public async Task<IActionResult> GetAll()
+        {
+            try
+            {
+                return Ok(await repo.GetAll());
+            }
+            catch (Exception ex)
+            {
+                return Ok(ex.InnerException);
+            }
+        }
 
         [HttpPost]
-        public async Task<IActionResult> Insert([FromForm]CompanyInformation info)
+        public async Task<IActionResult> Insert(DesignationFile designationFile)
         {
             try
             {
@@ -30,47 +41,54 @@ namespace WebAPI.Controllers
                     return BadRequest();
                 }
 
-                await repo.Insert(info);
+                await repo.Insert(designationFile);
 
                 return Ok();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return BadRequest(ex.Message);
             }
-            
+
         }
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
-
         {
             try
             {
                 var info = await repo.GetById(id);
                 return Ok(info);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return BadRequest(ex.Message);
             }
-            
+
         }
         [HttpPut]
-        public async Task<IActionResult> Update(CompanyInformation info)
+        public async Task<IActionResult> Update(DesignationFile designationFile)
         {
             if (!ModelState.IsValid)
             {
                 return Ok();
             }
-            await repo.Update(info);
+            await repo.Update(designationFile);
 
             return Ok();
         }
-        [HttpDelete]
+        [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            await repo.Delete(id);
-            return Ok();
+            try
+            {
+                await repo.Delete(id);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+
         }
     }
 }

@@ -56,8 +56,10 @@ namespace WebAPI
             services.AddScoped<IJobLevelRepository, JobLevelRepository>();
             services.AddScoped<IGradeRepository, GradeRepository>();
             services.AddScoped<IStepRepository, StepRepository>();
+            services.AddScoped<IDesignationFileRepository, DesignationFileRepository>();
 
             // Services 
+            services.AddScoped<IUserService, UserService>();
             services.AddScoped<ICompanyInfoService, CompanyInfoService>();
 
             // Auth Middleware
@@ -102,7 +104,7 @@ namespace WebAPI
             }
 
             app.UseCors(options => options.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin());
-
+            app.UseAuthentication();
             app.UseHttpsRedirection();
             app.UseMvc();
 

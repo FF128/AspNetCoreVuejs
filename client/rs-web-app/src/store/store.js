@@ -6,6 +6,8 @@ import religion from "./modules/religion"
 import employeeStatusFile from './modules/employeeStatusFile'
 import jobLevel from "./modules/jobLevel"
 import grade from "./modules/grade"
+import step from "./modules/step"
+import designationFile from "./modules/designationFile"
 
 Vue.use(Vuex);
 
@@ -18,6 +20,8 @@ export default new Vuex.Store({
     religion,
     employeeStatusFile,
     jobLevel,
-    grade
+    grade,
+    step,
+    designationFile
   }
 });

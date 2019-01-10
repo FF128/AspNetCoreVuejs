@@ -1,4 +1,4 @@
-let Layout = () => import("../layouts/DefaultLayout.vue");
+let Layout = () => import("../layouts/VuetifyLayout.vue");
 
 let JobLevel = () => 
     import("../views/setup/standard/employment-information/employee-level/job-level/JobLevel.vue");

@@ -1,154 +1,225 @@
 <template>
-    <div class="section">
-        <h1 class="title is-4">{{title}}</h1>
-        <div class="columns">
-            <div class="column is-2">
-                <b-field label="Code" custom-class="is-small">
-                    <b-input size="is-small" v-model="jobLevel.code"></b-input>
-                </b-field>
-            </div>
-            <div class="column is-5">
-                <b-field label="Description" custom-class="is-small">
-                    <b-input size="is-small" v-model="jobLevel.description"></b-input>
-                </b-field>
-            </div>
-            <div class="column">
-                <label class="label is-small">Grade</label>
-                <b-field>
-                    <b-input  size="is-small" v-model="jobLevel.gradeCode">
-                    </b-input>
-                    <p class="control">
-                        <button class="button is-primary is-small">
-                            <b-icon
-                                icon="magnify"
-                                size="is-small">
-                            </b-icon>
-                        </button>
-                    </p>
-                </b-field>
-            </div>
-            <div class="column">
-                <label class="label is-small">Step</label>
-                <b-field>
-                    <b-input  size="is-small" v-model="jobLevel.stepCode">
-                    </b-input>
-                    <p class="control">
-                        <button class="button is-primary is-small">
-                            <b-icon
-                                icon="magnify"
-                                size="is-small">
-                            </b-icon>
-                        </button>
-                    </p>
-                </b-field>
-            </div>
-            
-        </div>
-        <div class="columns">
-            <div class="column is-2">
-                <b-field label="Minimum Salary" custom-class="is-small">
-                    <b-input size="is-small" v-model="jobLevel.minimumSalary"></b-input>
-                </b-field>
-            </div>
-            <div class="column is-2">
-                <b-field label="Maximum Salary" custom-class="is-small">
-                    <b-input size="is-small" v-model="jobLevel.maximumSalary"></b-input>
-                </b-field>
-            </div>
-        </div>
-        <div class="field is-grouped">
-            <div class="control" v-if="!onEdit">
-                <button class="button is-success" @click="save" :class="isSaving | buttonLoading">Save</button>
-            </div>
-            <div class="control" v-if="onEdit">
-                <button class="button is-success" @click.prevent="update" :class="isUpdating | buttonLoading">Update</button>
-            </div>
-            <div class="control" v-if="onEdit">
-                <button class="button is-default" @click.prevent="cancel">Cancel</button>
-            </div>
-        </div>
+    <div>
+        <v-form>
+            <v-container>
+                <h1>{{title}}</h1>
+                <v-layout row wrap>
+                    <v-flex xs12 sm4 md3>
+                        <v-text-field
+                            label="Code"
+                            v-model="jobLevel.code">
 
-        <b-table
-            :data="isEmpty ? [] : jobLevelData"
-            :bordered="isBordered"
-            :striped="isStriped"
-            :narrowed="isNarrowed"
-            :hoverable="isHoverable"
-            :loading="isLoading"
-            :focusable="isFocusable"
-            :mobile-cards="hasMobileCards">
+                        </v-text-field>
+                    </v-flex>
+                    
+                    <v-flex xs12 sm4 md3>
+                        <v-text-field
+                            label="Description"
+                            v-model="jobLevel.description">
 
-            <template slot-scope="props">
-                <b-table-column field="code" label="Code">
-                    {{ props.row.code }}
-                </b-table-column>
+                        </v-text-field>
+                    </v-flex>
 
-                <b-table-column field="description" label="Description">
-                    {{ props.row.description }}
-                </b-table-column>
-                <b-table-column label="">
-                    <button class="button is-default" @click.prevent="edit(props.row)">
-                        <b-icon
-                            icon="pencil"
-                            size="is-small">
-                        </b-icon>
-                    </button>
-                    &nbsp;
-                    <button class="button is-danger" @click.prevent="deleteInfo(props.row)">
-                        <b-icon
-                            icon="delete"
-                            size="is-small">
+                    <v-flex xs12 sm4 md3>
+                        <v-text-field
+                            label="Grade"
+                            v-model="jobLevel.gradeCode"
+                            :append-icon="'mdi-account-search'"
+                            @click:append="searchGradeCode"
+                            readonly>
 
-                        </b-icon>
-                    </button>
-                </b-table-column>
-            </template>
+                        </v-text-field>
+                    </v-flex>
+                    <v-flex xs12 sm4 md3>
+                        <v-text-field
+                            label="Step"
+                            v-model="jobLevel.stepCode"
+                            :append-icon="'mdi-account-search'"
+                            @click:append="searchStepCode"
+                            readonly>
 
-            <template slot="empty">
-                <section class="section">
-                    <div class="content has-text-grey has-text-centered">
-                        <p>
-                            <b-icon
-                                icon="emoticon-sad"
-                                size="is-large">
-                            </b-icon>
-                        </p>
-                        <p>Nothing here.</p>
-                    </div>
-                </section>
-            </template>
-        </b-table>
-        
-        <div class="modal" :class="deleteModal | modalStatusFilter"> <!-- Delete Confirmation -->
-            <div class="modal-background"></div>
-            <div class="modal-card">
-                <header class="modal-card-head">
-                    <p class="modal-card-title">Confirmation</p>
-                    <button class="delete" aria-label="close" @click="closeDeleteModal"></button>
-                </header>
-                <section class="modal-card-body">
-                    <!-- Content ... -->
-                    <h1 class="title is-5">Do you want to delete this information (Code: {{selectedJobLevel.code}})?</h1>
-                </section>
-                <footer class="modal-card-foot" style="justify-content: flex-end;">
-                    <button class="button is-danger" @click="deleteConfirmed(selectedJobLevel)" :class="isDeleting | buttonLoading">Yes</button>
-                    <button class="button" @click="closeDeleteModal">No</button>
-                </footer>
-            </div>
-        </div>
+                        </v-text-field>
+                    </v-flex>
+
+                    <v-flex xs12 sm4 md3>
+                        <v-text-field
+                            label="Minimum Salary"
+                            v-model="jobLevel.minimumSalary">
+
+                        </v-text-field>
+                    </v-flex>
+                    <v-flex xs12 sm4 md3>
+                        <v-text-field
+                            label="Maximum Salary"
+                            v-model="jobLevel.maximumSalary">
+
+                        </v-text-field>
+                    </v-flex>
+                        <!-- Actions -->
+                    <v-flex md12>
+                        <v-btn
+                            color="success"
+                            @click.prevent="save"
+                            v-if="!onEdit">
+                            Save
+                        </v-btn>
+                        <div v-if="onEdit">
+                            <v-btn
+                                color="success"
+                                @click.prevent="update">
+                                Update
+                            </v-btn>
+                            <v-btn
+                                @click.prevent="cancel">
+                                Cancel
+                            </v-btn>
+                        </div>
+                    </v-flex>
+                    
+                </v-layout>
+            </v-container>
+        </v-form>
+        <!-- Job Level Table -->
+        <v-container>
+            <v-data-table
+                :headers="headers"
+                :items="jobLevelData"
+                class="elevation-1">
+
+                <template slot="items" slot-scope="props">
+                    <td>{{ props.item.code }}</td>
+                    <td class="text-xs-left">{{ props.item.description }}</td>
+                    <td class="text-xs-left">{{ props.item.gradeCode }}</td>
+                    <td class="text-xs-left">{{ props.item.stepCode }}</td>
+                    <td class="text-xs-left">{{ props.item.minimumSalary }}</td>
+                    <td class="text-xs-left">{{ props.item.maximumSalary }}</td>
+                    <td>
+                        <v-btn icon
+                            @click.prevent="edit(props.item)">
+                            <v-icon>edit</v-icon>
+                        </v-btn>
+                        <v-btn icon
+                            @click.prevent="deleteInfo(props.item)">
+                            <v-icon color="red">delete</v-icon>
+                        </v-btn>
+                    </td>
+                </template>
+            </v-data-table>
+        </v-container>
+
+        <!-- Grade Dialog -->
+        <v-dialog
+            v-model="gradeDialog"
+            max-width="600">
+            <v-card>
+                <v-card-title class="headline">List of Grades</v-card-title>
+
+                <v-card-text>
+                    <v-layout>
+                         <v-data-table
+                            :headers="gradeHeaders"
+                            :items="gradeData"
+                            class="elevation-1">
+
+                            <template slot="items" slot-scope="props">
+                                <td>{{ props.item.code }}</td>
+                                <td class="text-xs-left">{{ props.item.description }}</td>
+                                <td>
+                                    <v-btn icon
+                                        @click.prevent="selectGrade(props.item)">
+                                        <v-icon>mdi-magnify-plus</v-icon>
+                                    </v-btn>
+                                </td>
+                            </template>
+                        </v-data-table>
+                    </v-layout>
+                </v-card-text>
+
+                <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-btn
+                        flat="flat"
+                        @click.prevent="gradeDialog = false">
+                        Close
+                    </v-btn>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
+
+        <!-- Step Dialog -->
+        <v-dialog
+            v-model="stepDialog"
+            max-width="600">
+            <v-card>
+                <v-card-title class="headline">List of Steps</v-card-title>
+
+                <v-card-text>
+                    <v-layout>
+                        <v-data-table
+                            :headers="gradeHeaders"
+                            :items="stepData"
+                            class="elevation-1">
+
+                            <template slot="items" slot-scope="props">
+                                <td>{{ props.item.code }}</td>
+                                <td class="text-xs-left">{{ props.item.description }}</td>
+                                <td>
+                                    <v-btn icon
+                                        @click.prevent="selectStep(props.item)">
+                                        <v-icon>mdi-magnify-plus</v-icon>
+                                    </v-btn>
+                                </td>
+                            </template>
+                        </v-data-table>
+                    </v-layout>
+                </v-card-text>
+
+                <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-btn
+                        flat="flat"
+                        @click.prevent="stepDialog = false">
+                        Close
+                    </v-btn>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
+
+        <!-- Delete Confirmation Dialog -->
+        <v-dialog
+            v-model="deleteDialog"
+            max-width="400">
+            <v-card>
+                <v-card-title class="headline">Confirmation</v-card-title>
+
+                <v-card-text>
+                    Do you want to delete this Code: {{ selectedJobLevel.code }}?
+                </v-card-text>
+
+                <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-btn
+                        color="red"
+                        flat="flat"
+                        @click.prevent="deleteConfirmed">
+                        Yes
+                    </v-btn>
+
+                    <v-btn
+                        flat="flat"
+                        @click.prevent="closeDeleteDialog">
+                        No
+                    </v-btn>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
     </div>
-    
-    
 </template>
 <script>
 import { mapActions, mapState } from "vuex"
 import AppToast from "@/project-modules/appToast"
-//import AppToast from "../../../..//project-modules/appToast";
 
 let appToast = new AppToast();
-
-let apiEnpoint = "api/employee-status-file"
-
 export default {
     data() {
         return {
@@ -158,35 +229,59 @@ export default {
             isUpdating: false,
             isDeleting: false,
             onEdit: false,
-            data: [],
-            isEmpty: false,
-            isBordered: false,
-            isStriped: false,
-            isNarrowed: false,
-            isHoverable: false,
-            isFocusable: false,
-            hasMobileCards: true,
-            deleteModal: false,
-            selectedJobLevel: {}
+            deleteDialog: false,
+            stepDialog: false,
+            gradeDialog: false,
+            selectedJobLevel: {},
+            headers: [
+                {
+                    text: 'Code',
+                    align: 'left',
+                    sortable: false,
+                    value: 'code'
+                },
+                { text: 'Description', value: 'description', align: 'left' },
+                { text: 'Grade', value: 'gradeDescription', align: 'left'},
+                { text: 'Step', value: 'stepDescription', align: 'left'},
+                { text: 'Minimum Salary', value: 'minimumSalary', align: 'left'},
+                { text: 'Maximum Salary', value: 'maximumSalary', align: 'left'},
+                { text: '', value: 'actions' }
+            ],
+            gradeHeaders: [
+                {
+                    text: 'Code',
+                    align: 'left',
+                    sortable: false,
+                    value: 'code'
+                },
+                { text: 'Description', value: 'description', align: 'left' },
+                { text: '', value: 'actions' }
+            ],
+            apiEndpoint: "api/job-level"
         }
     },
     methods: {
         ...mapActions('jobLevel', [
             'getAllJobLevels'
         ]),
+        ...mapActions('step', [
+            'getAllSteps'
+        ]),
+        ...mapActions('grade', [
+            'getAllGrades'
+        ]),
         save() {
             this.isSaving = true;
-            this.$axios.post(apiEnpoint, this.jobLevel)
+            this.$axios.post(this.apiEndpoint, this.jobLevel)
                 .then(response => {
                     this.isSaving = false;
 
-                    appToast.success(`Successfully Added`);
                     // Update List
                     this.getAllJobLevels();
+                    this.jobLevel = {}
                 })
                 .catch(err => {
                     this.isSaving = false;
-                    appToast.danger("Something went wrong!");
                 });
         },
         edit(item){
@@ -195,54 +290,73 @@ export default {
         },
         update() {
             this.isUpdating = true
-            this.$axios.put(apiEnpoint, this.jobLevel)
+            this.$axios.put(this.apiEndpoint, this.jobLevel)
                 .then(response => {
                     this.isUpdating = false;
-                    this.onEdit = false;
-                    appToast.success("Successfully Updated");
-
-                    this.getAllJobLevels();
+                    
+                    this.cancel();
                 })
                 .catch(err => {
                     this.isUpdating = false;
-                    appToast.danger("Error");
                 })
         },
         deleteInfo(item) {
-            this.deleteModal = true;
+            this.cancel();
+            this.deleteDialog = true;
             this.selectedJobLevel = item;
         },
-        deleteConfirmed(item) {
+        deleteConfirmed() {
             this.isDeleting = true;
-            this.$axios.delete(`${apiEnpoint}/${item.id}`)
+            this.$axios.delete(`${this.apiEndpoint}/${this.selectedJobLevel.id}`)
                 .then(response => {
-                    this.getAllEmployeeStatusFiles();
-
-                    appToast.success(`Code: ${item.code} has been deleted`);
-
+                    this.getAllJobLevels();
+                    
                     this.isDeleting = false;
-                    this.deleteModal = false;
+                    this.deleteDialog = false;
                 })
                 .catch(err => {
-                    appToast.danger("Error deleting")
-
                     this.isDeleting = false;
                 })
         },
-        closeDeleteModal() {
-            this.deleteModal = false;
+        closeDeleteDialog() {
+            this.deleteDialog = false;
         },
         cancel() {
             this.onEdit = false;
             this.jobLevel = {}
 
             this.getAllJobLevels();
+        },
+        searchStepCode() {
+            this.stepDialog = true;
+
+            this.getAllSteps();
+        },
+        searchGradeCode() {
+            this.gradeDialog = true;
+
+            this.getAllGrades();
+        },
+        selectStep(item) {
+            this.jobLevel.stepCode = item.code;
+
+            this.stepDialog = false;
+        },
+        selectGrade(item) {
+            this.jobLevel.gradeCode = item.code;
+
+            this.gradeDialog = false;
         }
     },
     computed: {
         ...mapState('jobLevel', {
-            jobLevelData: state => state.jobLevels,
-            isLoading: state => state.loading
+            jobLevelData: state => state.jobLevels
+        }),
+        ...mapState('step', {
+            stepData: state => state.steps
+        }),
+        ...mapState('grade', {
+            gradeData: state => state.grades
         })
     },
     created() {

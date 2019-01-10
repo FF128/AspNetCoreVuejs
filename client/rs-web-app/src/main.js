@@ -10,7 +10,7 @@ import "./registerServiceWorker";
 // import 'buefy/dist/buefy.css'
 import "./filters/filter";
 
-//Vue.use(Buefy)
+// Vue.use(Buefy)
 
 Vue.config.productionTip = false;
 
