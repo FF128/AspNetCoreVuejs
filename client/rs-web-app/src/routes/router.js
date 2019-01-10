@@ -6,8 +6,8 @@ Vue.use(Router);
 let Layout = () => import("../layouts/VuetifyLayout.vue");
 // About
 let Home  = () => import("../views/Home.vue");
-let About = () => import(/* webpackChunkName: "about" */ "../views/About.vue");
-
+// Login Component
+let Login = () => import("../views/user/Login.vue")
 // Company Info
 let CompanyInfo = () => import("../views/setup/standard/general-setup/company-info/CompanyInfo.vue")
 let companyInfoRoute = {
@@ -55,7 +55,7 @@ import jobLevelRoute from "./jobLevelRoute"
 import gradeRoute from "./gradeRoute"
 import stepRoute from "./stepRoute"
 import designationFileRoute from "./designationFileRoute"
-export default new Router({
+const router = new Router({
   mode: "history",
   base: process.env.BASE_URL,
   routes: [
@@ -71,18 +71,8 @@ export default new Router({
       ]
     },
     {
-      path: "/",
-      name: "about",
-      // route level code-splitting
-      // this generates a separate chunk (about.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
-      component: Layout,
-      children: [
-        {
-          component: About,
-          path: "about"
-        }
-      ]
+      path: "/login",
+      component: Login
     },
     companyInfoRoute,
     citizenshipRoute,
@@ -94,3 +84,18 @@ export default new Router({
     designationFileRoute
   ]
 });
+
+router.beforeEach((to, from, next) => {
+  // redirect to login page if not logged in and trying to access a restricted page
+  const publicPages = ['/login', '/register'];
+  const authRequired = !publicPages.includes(to.path);
+  const loggedIn = localStorage.getItem('_t');
+
+  if (authRequired && !loggedIn) {
+    return next('/login');
+  }
+
+  next();
+})
+
+export default router;

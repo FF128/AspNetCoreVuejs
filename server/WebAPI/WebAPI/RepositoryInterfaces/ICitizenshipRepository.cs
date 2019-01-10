@@ -13,5 +13,6 @@ namespace WebAPI.RepositoryInterfaces
         Task Insert(Citizenship cit);
         Task Update(Citizenship cit);
         Task Delete(int id);
+        
     }
 }

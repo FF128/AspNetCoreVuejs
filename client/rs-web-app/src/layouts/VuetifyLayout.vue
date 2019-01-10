@@ -116,7 +116,7 @@
           
         </v-toolbar-side-icon>
 
-        <v-toolbar-title class="white--text">Recruitment System</v-toolbar-title>
+        <v-toolbar-title class="white--text"></v-toolbar-title>
 
         <v-spacer></v-spacer>
 

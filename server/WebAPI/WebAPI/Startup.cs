@@ -45,6 +45,9 @@ namespace WebAPI
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            services.AddAutoMapper();
+
+            services.AddCors();
 
             services.AddScoped<IConnectionFactory, ConnectionFactory>();
             // Repositories
@@ -58,14 +61,10 @@ namespace WebAPI
             services.AddScoped<IStepRepository, StepRepository>();
             services.AddScoped<IDesignationFileRepository, DesignationFileRepository>();
 
-            // Services 
-            services.AddScoped<IUserService, UserService>();
-            services.AddScoped<ICompanyInfoService, CompanyInfoService>();
-
-            // Auth Middleware
             var appSettingsSection = Configuration.GetSection("AppSettings");
             services.Configure<AppSettings>(appSettingsSection);
 
+            // configure jwt authentication
             var appSettings = appSettingsSection.Get<AppSettings>();
             var key = Encoding.ASCII.GetBytes(appSettings.Secret);
             services.AddAuthentication(x =>
@@ -75,6 +74,21 @@ namespace WebAPI
             })
             .AddJwtBearer(x =>
             {
+                x.Events = new JwtBearerEvents
+                {
+                    OnTokenValidated = context =>
+                    {
+                        var userService = context.HttpContext.RequestServices.GetRequiredService<IUserService>();
+                        var userId = int.Parse(context.Principal.Identity.Name);
+                        var user = userService.GetById(userId);
+                        if (user == null)
+                        {
+                            // return unauthorized if user no longer exists
+                            context.Fail("Unauthorized");
+                        }
+                        return Task.CompletedTask;
+                    }
+                };
                 x.RequireHttpsMetadata = false;
                 x.SaveToken = true;
                 x.TokenValidationParameters = new TokenValidationParameters
@@ -85,10 +99,11 @@ namespace WebAPI
                     ValidateAudience = false
                 };
             });
+            // Services 
+            services.AddScoped<IUserService, UserService>();
+            services.AddScoped<ICompanyInfoService, CompanyInfoService>();
 
-            services.AddAutoMapper();
-
-            services.AddCors();
+            
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
