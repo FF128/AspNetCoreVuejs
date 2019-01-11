@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Net;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
@@ -57,9 +58,10 @@ namespace WebAPI.Controllers
                 Subject = new ClaimsIdentity(new Claim[]
                 {
                     new Claim(ClaimTypes.Name, user.Id.ToString()),
-                    new Claim(ClaimTypes.Role, "Admin")
+                    new Claim(ClaimTypes.Role, "Admin"),
+                    new Claim("CompanyCode", user.CompanyCode)
                 }),
-                Expires = DateTime.UtcNow.AddDays(7),
+                Expires = DateTime.UtcNow.AddMinutes(30),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };
             var token = tokenHandler.CreateToken(tokenDescriptor);
@@ -67,9 +69,8 @@ namespace WebAPI.Controllers
 
             // return basic user info (without password) and token to store client side
             return Ok(new
-            {
-                Id = user.Id,
-                Username = user.Username,
+            {   
+                CompanyCode = user.CompanyCode,
                 FirstName = user.FirstName,
                 LastName = user.LastName,
                 Token = tokenString

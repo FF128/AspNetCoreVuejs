@@ -173,6 +173,7 @@
     </v-form>
 </template>
 <script>
+import { mapActions, mapState } from "vuex"
 export default {
     data() {
         return {
@@ -198,10 +199,14 @@ export default {
                 imageUrl: '',
                 imageFile: ''
             },
-            files: null
+            files: null,
+            apiEndpoint: "api/companyInfo"
         }
     },
     methods: {
+        ...mapActions('user', [
+            'decodeToken'
+        ]),
         save() {
             this.$axios.post("api/companyInfo", this.ci)
                 .then(response => {
@@ -267,7 +272,7 @@ export default {
 
             this.$axios({
                     method: 'post',
-                    url: 'api/companyInfo',
+                    url: this.apiEndpoint,
                     data: bodyFormData,
                     config: { headers: {'Content-Type': 'multipart/form-data' }}
                 })
@@ -279,6 +284,15 @@ export default {
                     //handle error
                     console.log(response);
                 });
+        },
+        getCompanyInfoByCode() {
+            this.$axios.get(`${this.apiEndpoint}/company-code/${this.companyCode}`)
+                .then(response => {
+                    this.ci = response.data;
+                })
+                .catch(err => {
+                    
+                })
         }
         // onLogoForReportsPicked (e) {
 		// 	const files = e.target.files
@@ -327,6 +341,15 @@ export default {
         //     this.$refs.image.click()
         // }
 
+    },
+    computed: {
+        ...mapState('user', {
+            companyCode: state => state.companyCode
+        })
+    },
+    created() {
+        this.decodeToken();
+        this.getCompanyInfoByCode();
     }
 }
 </script>

@@ -91,7 +91,12 @@ namespace WebAPI.Services
 
         public User GetById(int id)
         {
-            throw new System.NotImplementedException();
+            using(var conn = connectionFactory.Connection)
+            {
+                return conn.QueryFirstOrDefault<User>("sp_User_GetById",
+                    new { UserId = id },
+                    commandType: CommandType.StoredProcedure);
+            }
         }
 
         public Task Register(User user, string password)

@@ -120,7 +120,7 @@
 
         <v-spacer></v-spacer>
 
-        <v-btn icon>
+        <!-- <v-btn icon>
           <v-icon>search</v-icon>
         </v-btn>
 
@@ -130,10 +130,10 @@
 
         <v-btn icon>
           <v-icon>refresh</v-icon>
-        </v-btn>
+        </v-btn> -->
 
-        <v-btn icon>
-          <v-icon>more_vert</v-icon>
+        <v-btn flat @click.prevent="logout">
+          Logout
         </v-btn>
       </v-toolbar>
       <!-- Content -->
@@ -180,7 +180,8 @@ export default {
     },
     methods: {
         logout () {
-            
+            localStorage.removeItem("_u");
+            this.$router.push("/login")
         }
     }
 }

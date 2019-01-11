@@ -132,6 +132,9 @@ export default {
         ...mapActions('citizenship', [
             'getAllCitizenship'
         ]),
+        ...mapActions('user', [
+            'decodeToken'
+        ]),
         save() {
             this.isSaving = true;
             this.$axios.post(this.apiEndpoint, this.cit)
@@ -189,14 +192,27 @@ export default {
 
             this.getAllCitizenship();
         }
+        // getCompanyCode() {
+        //     var user = getUserDetails();
+        //     var decodedToken = this.$jwt.decode(user.token);
+            
+        //     this.companyCode = decodedToken.CompanyCode;
+        // }
     },
     computed: {
         ...mapState('citizenship', {
             citData: state => state.cit,
             isLoading: state => state.loading
+        }),
+        ...mapState('user', {
+            companyCode: state => state.companyCode
         })
     },
     created() {
+        // decode token and company code
+        //this.getCompanyCode();
+        this.decodeToken();
+        // get all citizenship
         this.getAllCitizenship();
     }
 }

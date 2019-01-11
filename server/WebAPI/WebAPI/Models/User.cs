@@ -15,5 +15,6 @@ namespace WebAPI.Models
         public byte[] PasswordHash { get; set; }
         public byte[] PasswordSalt { get; set; }
         //public string Token { get; set; }
+        public string CompanyCode { get; set; }
     }
 }

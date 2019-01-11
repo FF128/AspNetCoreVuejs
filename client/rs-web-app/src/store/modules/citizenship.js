@@ -19,7 +19,10 @@ const mutations = {
                 state.loading = false;
             })
             .catch(err => {
-                Toast.open("Error!");
+                // console.log(err.response.status)
+                // if(err.response.status === 401){
+                //     alert("Unauthorized")
+                // }
                 state.loading = false;
             });
     }

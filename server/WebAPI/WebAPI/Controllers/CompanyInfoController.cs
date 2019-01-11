@@ -55,6 +55,17 @@ namespace WebAPI.Controllers
             }
             
         }
+        [HttpGet("company-code/{code}")]
+        public async Task<IActionResult> GetByCompanyCode(string code)
+        {
+            try
+            {
+                return Ok(await repo.GetByCompanyCode(code));
+            }catch(Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
         [HttpPut]
         public async Task<IActionResult> Update(CompanyInformation info)
         {

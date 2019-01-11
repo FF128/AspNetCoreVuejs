@@ -10,15 +10,15 @@
                     <v-toolbar dark color="primary">
                         <v-toolbar-title>Login</v-toolbar-title>
                         <v-spacer></v-spacer>
-                        <v-tooltip bottom>
+                        <!-- <v-tooltip bottom>
                         <v-btn
                             icon
                             large
                             slot="activator"
-                        >
-                            <v-icon>vpn_key</v-icon>
-                        </v-btn>
-                        </v-tooltip>
+                        > -->
+                        <v-icon>vpn_key</v-icon>
+                        <!-- </v-btn>
+                        </v-tooltip> -->
                     </v-toolbar>
                     <v-card-text>
                         <v-form>
@@ -35,6 +35,23 @@
                 </v-layout>
             </v-container>
             </v-content>
+            <v-snackbar
+                v-model="snackbar.status"
+                :bottom="true"
+                :multi-line="snackbar.mode === 'multi-line'"
+                :right="true"
+                :timeout="snackbar.timeout"
+                :vertical="snackbar.mode === 'vertical'"
+                color="error"
+                >
+                {{ snackbar.text }}
+                    <v-btn
+                        color="white"
+                        flat
+                        @click="snackbar.status = false">
+                        Close
+                    </v-btn>
+                </v-snackbar>
         </v-app>
     </div>
 </template>
@@ -43,18 +60,27 @@ export default {
     data() {
         return {
             user: {},
-            apiEndpoint: "api/users"
+            apiEndpoint: "api/users",
+            snackbar: {
+                text: '',
+                status: false,
+                y: 'right',
+                x: null,
+                mode: '',
+                timeout: 6000,
+            }
         }
     },
     methods: {
         login () {
             this.$axios.post(`${this.apiEndpoint}/authenticate`, this.user)
                 .then(response => {
-                    localStorage.setItem('_t', response.data.token);
+                    localStorage.setItem('_u', JSON.stringify(response.data));
                     this.$router.push("/")
                 })
                 .catch(err => {
-                    console.log(err);
+                    this.snackbar.status = true;
+                    this.snackbar.text = err.response.data.message;
                 })
         }
     }

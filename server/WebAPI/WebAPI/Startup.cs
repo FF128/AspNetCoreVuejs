@@ -60,6 +60,7 @@ namespace WebAPI
             services.AddScoped<IGradeRepository, GradeRepository>();
             services.AddScoped<IStepRepository, StepRepository>();
             services.AddScoped<IDesignationFileRepository, DesignationFileRepository>();
+            services.AddScoped<IAuditTrailRepository, AuditTrailRepository>();
 
             var appSettingsSection = Configuration.GetSection("AppSettings");
             services.Configure<AppSettings>(appSettingsSection);
@@ -102,8 +103,7 @@ namespace WebAPI
             // Services 
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<ICompanyInfoService, CompanyInfoService>();
-
-            
+            services.AddScoped<IAuditTrailService, AuditTrailService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

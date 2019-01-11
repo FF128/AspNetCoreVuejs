@@ -48,6 +48,18 @@ namespace WebAPI.Repositories
             }
         }
 
+        public async Task<CompanyInfoDto> GetByCompanyCode(string code)
+        {
+            using(var conn = connectionFactory.Connection)
+            {
+                var companyInfo =
+                    await conn.QueryFirstOrDefaultAsync<CompanyInformation>("sp_CompanyInfo_GetByCompanyCode",
+                        new { CompanyCode = code },
+                        commandType: CommandType.StoredProcedure);
+                return mapper.Map<CompanyInfoDto>(companyInfo);
+            }
+        }
+
         public async Task<CompanyInfoDto> GetById(int id)
         {
             using(var conn = connectionFactory.Connection)
