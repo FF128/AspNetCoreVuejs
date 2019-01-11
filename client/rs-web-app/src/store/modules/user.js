@@ -15,7 +15,7 @@ const getters = {
 const mutations = {
     decodeToken(state) {
         var user = getUserDetails();
-        console.log(user);
+        
         var decodedToken = Vue.$jwt.decode(user.token);
 
         state.companyCode = decodedToken.CompanyCode;

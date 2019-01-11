@@ -8,6 +8,6 @@ namespace WebAPI.Models
     public class Affiliations : BaseModelCodeDescription
     {
         public int Id { get; set; }
-
+        public string CompanyCode { get; set; }
     }
 }

@@ -119,6 +119,7 @@
                 </v-flex>
 
                 <v-flex md12>
+                    <img v-bind:src="'data:image/jpeg;base64,'+ci.logoForReports" class="img-responsive" v-if="ci.logoForReports"/>
                     <img :src="logoForReports.imageUrl" height="100" width="100%" v-if="logoForReports.imageUrl"/>
                     <!-- <v-text-field label="Logo for Reports" @click='pickFile' v-model='logoForReports.imageName' prepend-icon='attach_file'></v-text-field>
                     <input
@@ -134,7 +135,8 @@
                 </v-flex>
 
                 
-                <v-flex md12>
+                <v-flex xs12 sm12 md12>
+                    <img v-bind:src="'data:image/jpeg;base64,'+ci.logoForSite" class="img-responsive" v-if="ci.logoForSite"/>
                     <img :src="logoForSite.imageUrl" height="100" width="100%" v-if="logoForSite.imageUrl"/>
                     <!-- <v-text-field label="Logo for Site" @click='pickFileForSite' v-model='logoForSite.imageName' prepend-icon='attach_file'></v-text-field>
                     <input
@@ -149,7 +151,8 @@
                         @change="logoForSiteChanged" accept="image/*" >
                 </v-flex>
 
-                <v-flex md12>
+                <v-flex xs12 sm12 md12>
+                    <img v-bind:src="'data:image/jpeg;base64,'+ci.contentForSite" class="img-responsive" v-if="ci.contentForSite"/>
                     <img :src="contentForSite.imageUrl" height="100" width="100%" v-if="contentForSite.imageUrl"/>
                     <!-- <v-text-field label="Content for Site" @click='pickFile' v-model='contentForSite.imageName' prepend-icon='attach_file'></v-text-field>
                     <input
@@ -163,11 +166,14 @@
                     <input type="file" id="contentForSite" ref="contentForSite" class="custom-file-input" 
                         @change="contentForSiteChanged" accept="image/*"/>
                 </v-flex>
-                <v-btn
-                    color="success"
-                    @click.prevent="processForm">
-                    Save
-                </v-btn>
+                <v-flex xs12 sm12 md12>
+                    <v-btn
+                        color="success"
+                        @click.prevent="processForm">
+                        Save
+                    </v-btn>
+                </v-flex>
+                
             </v-layout>
         </v-container>
     </v-form>
@@ -354,3 +360,10 @@ export default {
 }
 </script>
 
+<style>
+  .img-responsive {
+    max-width: 100%;
+    height: auto;
+    display: block;
+  }
+</style>

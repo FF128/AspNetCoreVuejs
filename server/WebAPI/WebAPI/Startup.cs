@@ -61,6 +61,7 @@ namespace WebAPI
             services.AddScoped<IStepRepository, StepRepository>();
             services.AddScoped<IDesignationFileRepository, DesignationFileRepository>();
             services.AddScoped<IAuditTrailRepository, AuditTrailRepository>();
+            services.AddScoped<IAffiliationsRepository, AffiliationsRepository>();
 
             var appSettingsSection = Configuration.GetSection("AppSettings");
             services.Configure<AppSettings>(appSettingsSection);
