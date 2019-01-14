@@ -61,6 +61,16 @@ namespace RS_WebApiMvc
             container.RegisterType<IRegionRepository, RegionRepository>();
             container.RegisterType<ILevelsOfEmployeeRepository, LevelsOfEmployeeRepository>();
             container.RegisterType<ICourseDegreeRepository, CourseDegreeRepository>();
+            container.RegisterType<ISchoolRepository, SchoolRepository>();
+            container.RegisterType<IDutiesAndResponsibilitiesRepository, DutiesAndResponsibilitiesRepository>();
+            container.RegisterType<IFieldOfInterestRepository, FieldOfInterestRepository>();
+            container.RegisterType<IGovExamsRepository, GovExamsRepository>();
+            container.RegisterType<IJobReqRepository, JobReqRepository>();
+            container.RegisterType<ILanguageRepository, LanguageRepository>();
+            container.RegisterType<ILicenseRepository, LicenseRepository>();
+            container.RegisterType<IResidenceTypeRepository, ResidenceTypeRepository>();
+            container.RegisterType<ISkillsRepository, SkillsRepository>();
+            container.RegisterType<IDocSubmittedRepository, DocSubmittedRepository>();
         }
     }
 }

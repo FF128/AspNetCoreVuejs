@@ -1,3 +1,4 @@
 {
-    "apiBaseUrl": "https://localhost:44346"
+    "apiBaseUrl": "https://localhost:44346",
+    "apiBaseUrl2" : "http://localhost:50036"
 }

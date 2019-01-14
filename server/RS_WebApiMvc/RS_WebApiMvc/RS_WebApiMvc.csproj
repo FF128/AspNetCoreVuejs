@@ -61,11 +61,14 @@
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
-    <Reference Include="System.Net.Http.Formatting, Version=5.2.6.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.AspNet.WebApi.Client.5.2.6\lib\net45\System.Net.Http.Formatting.dll</HintPath>
+    <Reference Include="System.Net.Http.Formatting, Version=5.2.7.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.Client.5.2.7\lib\net45\System.Net.Http.Formatting.dll</HintPath>
     </Reference>
     <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.ValueTuple.4.5.0\lib\net461\System.ValueTuple.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Cors, Version=5.2.7.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Cors.5.2.7\lib\net45\System.Web.Cors.dll</HintPath>
     </Reference>
     <Reference Include="System.Web.Entity" />
     <Reference Include="System.Web.ApplicationServices" />
@@ -75,8 +78,11 @@
     <Reference Include="System.Web.Helpers, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.6\lib\net45\System.Web.Helpers.dll</HintPath>
     </Reference>
-    <Reference Include="System.Web.Http, Version=5.2.6.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.AspNet.WebApi.Core.5.2.6\lib\net45\System.Web.Http.dll</HintPath>
+    <Reference Include="System.Web.Http, Version=5.2.7.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.Core.5.2.7\lib\net45\System.Web.Http.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Http.Cors, Version=5.2.7.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.Cors.5.2.7\lib\net45\System.Web.Http.Cors.dll</HintPath>
     </Reference>
     <Reference Include="System.Web.Http.WebHost, Version=5.2.6.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.AspNet.WebApi.WebHost.5.2.6\lib\net45\System.Web.Http.WebHost.dll</HintPath>
@@ -215,7 +221,14 @@
     <Compile Include="Controllers\CourseDegreeController.cs" />
     <Compile Include="Controllers\DepartmentController.cs" />
     <Compile Include="Controllers\DivisionController.cs" />
+    <Compile Include="Controllers\DocsController.cs" />
+    <Compile Include="Controllers\DRController.cs" />
+    <Compile Include="Controllers\FieldOfInterestController.cs" />
+    <Compile Include="Controllers\GovExamsController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\JobReqController.cs" />
+    <Compile Include="Controllers\LanguageController.cs" />
+    <Compile Include="Controllers\LicenseController.cs" />
     <Compile Include="Controllers\LocationController.cs" />
     <Compile Include="Controllers\LOEController.cs" />
     <Compile Include="Controllers\MajorController.cs" />
@@ -223,7 +236,10 @@
     <Compile Include="Controllers\ProjectCodeController.cs" />
     <Compile Include="Controllers\RankController.cs" />
     <Compile Include="Controllers\RegionController.cs" />
+    <Compile Include="Controllers\ResidenceTypeController.cs" />
+    <Compile Include="Controllers\SchoolController.cs" />
     <Compile Include="Controllers\SectionController.cs" />
+    <Compile Include="Controllers\SkillsController.cs" />
     <Compile Include="Controllers\UnitController.cs" />
     <Compile Include="Controllers\ValuesController.cs" />
     <Compile Include="Data\ConnectionFactory.cs" />
@@ -238,15 +254,22 @@
     <Compile Include="Models\BaseModelCodeDescription.cs" />
     <Compile Include="Models\Branch.cs" />
     <Compile Include="Models\Citizenship.cs" />
+    <Compile Include="Models\DocSubmitted.cs" />
+    <Compile Include="Models\JobReq.cs" />
     <Compile Include="Models\CompanyInformation.cs" />
     <Compile Include="Models\CourseDegree.cs" />
     <Compile Include="Models\Department.cs" />
     <Compile Include="Models\DesignationFile.cs" />
     <Compile Include="Models\Division.cs" />
+    <Compile Include="Models\DutiesAndResponsibilities.cs" />
     <Compile Include="Models\EmployeeStatusFile.cs" />
+    <Compile Include="Models\FieldOfInterest.cs" />
+    <Compile Include="Models\GovExams.cs" />
     <Compile Include="Models\Grade.cs" />
     <Compile Include="Models\JobLevel.cs" />
+    <Compile Include="Models\Language.cs" />
     <Compile Include="Models\LevelsOfEmployee.cs" />
+    <Compile Include="Models\License.cs" />
     <Compile Include="Models\Location.cs" />
     <Compile Include="Models\Major.cs" />
     <Compile Include="Models\PayHouse.cs" />
@@ -255,8 +278,11 @@
     <Compile Include="Models\Rank.cs" />
     <Compile Include="Models\Region.cs" />
     <Compile Include="Models\Religion.cs" />
+    <Compile Include="Models\ResidenceType.cs" />
     <Compile Include="Models\SampleModel.cs" />
+    <Compile Include="Models\School.cs" />
     <Compile Include="Models\Section.cs" />
+    <Compile Include="Models\Skills.cs" />
     <Compile Include="Models\Step.cs" />
     <Compile Include="Models\Unit.cs" />
     <Compile Include="Models\User.cs" />
@@ -267,14 +293,26 @@
     <Compile Include="Repositories\CourseDegreeRepository.cs" />
     <Compile Include="Repositories\DepartmentRepository.cs" />
     <Compile Include="Repositories\DivisionRepository.cs" />
+    <Compile Include="Repositories\DocSubmittedRepository.cs" />
+    <Compile Include="Repositories\DutiesAndResponsibilitiesRepository.cs" />
+    <Compile Include="Repositories\FieldOfInterestRepository.cs" />
+    <Compile Include="Repositories\GovExamsRepository.cs" />
+    <Compile Include="RepositoryInterfaces\IDocSubmittedRepository.cs" />
+    <Compile Include="RepositoryInterfaces\ISkillsRepository.cs" />
+    <Compile Include="Repositories\JobReqRepository.cs" />
+    <Compile Include="Repositories\LanguageRepository.cs" />
     <Compile Include="Repositories\LevelsOfEmployeeRepository.cs" />
+    <Compile Include="Repositories\LicenseRepository.cs" />
     <Compile Include="Repositories\LocationRepository.cs" />
     <Compile Include="Repositories\MajorRepository.cs" />
     <Compile Include="Repositories\PayHouseRepository.cs" />
     <Compile Include="Repositories\ProjectCodeRepository.cs" />
     <Compile Include="Repositories\RankRepository.cs" />
     <Compile Include="Repositories\RegionRepository.cs" />
+    <Compile Include="Repositories\ResidenceTypeRepository.cs" />
+    <Compile Include="Repositories\SchoolRepository.cs" />
     <Compile Include="Repositories\SectionRepository.cs" />
+    <Compile Include="Repositories\SkillsRepository.cs" />
     <Compile Include="Repositories\UnitRepository.cs" />
     <Compile Include="RepositoryInterfaces\IAreaRepository.cs" />
     <Compile Include="RepositoryInterfaces\IBranchRepository.cs" />
@@ -282,13 +320,21 @@
     <Compile Include="RepositoryInterfaces\ICourseDegreeRepository.cs" />
     <Compile Include="RepositoryInterfaces\IDepartmentRepository.cs" />
     <Compile Include="RepositoryInterfaces\IDivisionRepository.cs" />
+    <Compile Include="RepositoryInterfaces\IDutiesAndResponsibilitiesRepository.cs" />
+    <Compile Include="RepositoryInterfaces\IFieldOfInterestRepository.cs" />
+    <Compile Include="RepositoryInterfaces\IGovExamsRepository.cs" />
+    <Compile Include="RepositoryInterfaces\IJobReqRepository.cs" />
+    <Compile Include="RepositoryInterfaces\ILanguageRepository.cs" />
     <Compile Include="RepositoryInterfaces\ILevelsOfEmployeeRepository.cs" />
+    <Compile Include="RepositoryInterfaces\ILicenseRepository.cs" />
     <Compile Include="RepositoryInterfaces\ILocationRepository.cs" />
     <Compile Include="RepositoryInterfaces\IMajorRepository.cs" />
     <Compile Include="RepositoryInterfaces\IPayHouseRepository.cs" />
     <Compile Include="RepositoryInterfaces\IProjectCodeRepository.cs" />
     <Compile Include="RepositoryInterfaces\IRankRepository.cs" />
     <Compile Include="RepositoryInterfaces\IRegionRepository.cs" />
+    <Compile Include="RepositoryInterfaces\IResidenceTypeRepository.cs" />
+    <Compile Include="RepositoryInterfaces\ISchoolRepository.cs" />
     <Compile Include="RepositoryInterfaces\ISectionRepository.cs" />
     <Compile Include="RepositoryInterfaces\IUnitRepository.cs" />
   </ItemGroup>

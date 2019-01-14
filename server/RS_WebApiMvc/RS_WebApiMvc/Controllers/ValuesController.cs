@@ -8,6 +8,7 @@ using System.Web.Http;
 
 namespace RS_WebApiMvc.Controllers
 {
+    [RoutePrefix("api/val")]
     public class ValuesController : ApiController
     {
         private readonly IAreaRepository repo;
