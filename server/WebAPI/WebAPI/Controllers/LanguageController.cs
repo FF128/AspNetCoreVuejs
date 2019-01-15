@@ -11,6 +11,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace WebAPI.Controllers
 {
+    [Route("api/lang")]
+    [ApiController]
     public class LanguageController : ControllerBase
     {
         private readonly ILanguageRepository repo;

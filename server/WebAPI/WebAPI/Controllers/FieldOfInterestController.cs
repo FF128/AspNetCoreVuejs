@@ -11,6 +11,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace WebAPI.Controllers
 {
+    [Route("api/foi")]
+    [ApiController]
     public class FieldOfInterestController : ControllerBase
     {
         private readonly IFieldOfInterestRepository repo;

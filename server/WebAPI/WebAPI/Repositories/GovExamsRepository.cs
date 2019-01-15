@@ -22,7 +22,7 @@ namespace WebAPI.Repositories
         {
             using (var conn = connectionFactory.Connection)
             {
-                await conn.ExecuteAsync("sp_GovExamsSetUp_Delete",
+                await conn.ExecuteAsync("sp_GovExamSetUp_Delete",
                     new { Id = id },
                     commandType: CommandType.StoredProcedure);
             }
@@ -33,7 +33,7 @@ namespace WebAPI.Repositories
             using (var conn = connectionFactory.Connection)
             {
                 return
-                    await conn.QueryAsync<GovExams>("sp_GovExamsSetUp_View");
+                    await conn.QueryAsync<GovExams>("sp_GovExamSetUp_View");
             }
         }
 
@@ -42,7 +42,7 @@ namespace WebAPI.Repositories
             using (var conn = connectionFactory.Connection)
             {
                 return
-                    await conn.QueryFirstOrDefaultAsync<GovExams>("sp_GovExamsSetUp_ViewById",
+                    await conn.QueryFirstOrDefaultAsync<GovExams>("sp_GovExamSetUp_ViewById",
                         new { Id = id },
                         commandType: CommandType.StoredProcedure);
             }
@@ -52,7 +52,7 @@ namespace WebAPI.Repositories
         {
             using (var conn = connectionFactory.Connection)
             {
-                await conn.ExecuteAsync("sp_GovExamsSetUp_Insert",
+                await conn.ExecuteAsync("sp_GovExamSetUp_Insert",
                     ge, commandType: CommandType.StoredProcedure);
             }
         }
@@ -61,7 +61,7 @@ namespace WebAPI.Repositories
         {
             using (var conn = connectionFactory.Connection)
             {
-                await conn.ExecuteAsync("sp_GovExamsSetUp_Update",
+                await conn.ExecuteAsync("sp_GovExamSetUp_Update",
                     ge, commandType: CommandType.StoredProcedure);
             }
         }

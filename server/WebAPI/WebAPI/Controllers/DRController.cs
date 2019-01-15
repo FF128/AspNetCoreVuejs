@@ -11,6 +11,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace WebAPI.Controllers
 {
+    [Route("api/dr")]
+    [ApiController]
     public class DRController : ControllerBase
     {
         private readonly IDutiesAndResponsibilitiesRepository repo;

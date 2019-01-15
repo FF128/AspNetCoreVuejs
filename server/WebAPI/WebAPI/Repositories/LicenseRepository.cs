@@ -22,7 +22,7 @@ namespace WebAPI.Repositories
         {
             using (var conn = connectionFactory.Connection)
             {
-                await conn.ExecuteAsync("sp_LicenseSetUp_Delete",
+                await conn.ExecuteAsync("sp_LicensesSetUp_Delete",
                     new { Id = id },
                     commandType: CommandType.StoredProcedure);
             }
@@ -33,7 +33,7 @@ namespace WebAPI.Repositories
             using (var conn = connectionFactory.Connection)
             {
                 return
-                    await conn.QueryAsync<License>("sp_LicenseSetUp_View");
+                    await conn.QueryAsync<License>("sp_LicensesSetUp_View");
             }
         }
 
@@ -42,7 +42,7 @@ namespace WebAPI.Repositories
             using (var conn = connectionFactory.Connection)
             {
                 return
-                    await conn.QueryFirstOrDefaultAsync<License>("sp_LicenseSetUp_ViewById",
+                    await conn.QueryFirstOrDefaultAsync<License>("sp_LicensesSetUp_ViewById",
                         new { Id = id },
                         commandType: CommandType.StoredProcedure);
             }
@@ -52,7 +52,7 @@ namespace WebAPI.Repositories
         {
             using (var conn = connectionFactory.Connection)
             {
-                await conn.ExecuteAsync("sp_LicenseSetUp_Insert",
+                await conn.ExecuteAsync("sp_LicensesSetUp_Insert",
                     lic, commandType: CommandType.StoredProcedure);
             }
         }
@@ -61,7 +61,7 @@ namespace WebAPI.Repositories
         {
             using (var conn = connectionFactory.Connection)
             {
-                await conn.ExecuteAsync("sp_LicenseSetUp_Update",
+                await conn.ExecuteAsync("sp_LicensesSetUp_Update",
                     lic, commandType: CommandType.StoredProcedure);
             }
         }

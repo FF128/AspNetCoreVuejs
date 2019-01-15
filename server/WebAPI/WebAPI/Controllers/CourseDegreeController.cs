@@ -11,7 +11,7 @@ using System.Web.Http;
 
 namespace WebAPI.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/course")]
     [ApiController]
     public class CourseDegreeController : ControllerBase
     {

@@ -11,6 +11,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace WebAPI.Controllers
 {
+    [Route("api/major")]
+    [ApiController]
     public class MajorController : ControllerBase
     {
         private readonly IMajorRepository repo;

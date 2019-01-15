@@ -11,6 +11,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace WebAPI.Controllers
 {
+    [Route("api/docs")]
+    [ApiController]
     public class DocsController : ControllerBase
     {
         private readonly IDocSubmittedRepository repo;

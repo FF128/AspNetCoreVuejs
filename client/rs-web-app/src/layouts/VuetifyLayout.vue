@@ -119,7 +119,11 @@
         <v-toolbar-title class="white--text"></v-toolbar-title>
 
         <v-spacer></v-spacer>
-
+        <v-toolbar-items>
+            <v-btn flat @click.prevent="logout">
+                Logout
+            </v-btn>
+        </v-toolbar-items>
         <!-- <v-btn icon>
           <v-icon>search</v-icon>
         </v-btn>
@@ -131,10 +135,6 @@
         <v-btn icon>
           <v-icon>refresh</v-icon>
         </v-btn> -->
-
-        <v-btn flat @click.prevent="logout">
-          Logout
-        </v-btn>
       </v-toolbar>
       <!-- Content -->
       <v-content>

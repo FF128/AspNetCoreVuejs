@@ -21,6 +21,18 @@ import projectCode from "./modules/projectCode"
 import payHouse from "./modules/payHouse"
 import region from "./modules/region"
 import loe from "./modules/loe"
+import courseDegree from "./modules/courseDegree"
+import major from "./modules/major"
+import school from "./modules/school"
+import duties from "./modules/duties"
+import fieldInterest from "./modules/fieldInterest"
+import government from "./modules/government"
+import jobReq from "./modules/jobReq"
+import language from "./modules/language"
+import license from "./modules/license"
+import residenceType from "./modules/residenceType"
+import skills from "./modules/skills"
+import docSubmitted from "./modules/docSubmitted"
 
 Vue.use(Vuex);
 
@@ -48,6 +60,18 @@ export default new Vuex.Store({
     projectCode,
     payHouse,
     region,
-    loe
+    loe,
+    courseDegree,
+    major,
+    school,
+    duties,
+    fieldInterest,
+    government,
+    jobReq,
+    language,
+    license,
+    residenceType,
+    skills,
+    docSubmitted
   }
 });

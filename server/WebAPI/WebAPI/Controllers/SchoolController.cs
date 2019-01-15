@@ -11,6 +11,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace WebAPI.Controllers
 {
+    [Route("api/school")]
+    [ApiController]
     public class SchoolController : ControllerBase
     {
         private readonly ISchoolRepository repo;

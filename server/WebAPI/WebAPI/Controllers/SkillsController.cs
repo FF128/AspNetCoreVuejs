@@ -11,6 +11,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace WebAPI.Controllers
 {
+    [Route("api/skills")]
+    [ApiController]
     public class SkillsController : ControllerBase
     {
         private readonly ISkillsRepository repo;
@@ -68,13 +70,21 @@ namespace WebAPI.Controllers
         [HttpPut]
         public async Task<IActionResult> Update(Skills sk)
         {
-            if (!ModelState.IsValid)
+            try
             {
+                if (!ModelState.IsValid)
+                {
+                    return Ok();
+                }
+                await repo.Update(sk);
+
                 return Ok();
             }
-            await repo.Update(sk);
-
-            return Ok();
+            catch(Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            
         }
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)

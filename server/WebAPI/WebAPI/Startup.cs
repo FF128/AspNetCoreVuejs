@@ -87,6 +87,7 @@ namespace WebAPI
             services.AddScoped<IResidenceTypeRepository, ResidenceTypeRepository>();
             services.AddScoped<ISkillsRepository, SkillsRepository>();
             services.AddScoped<IDocSubmittedRepository, DocSubmittedRepository>();
+            services.AddScoped<IMajorRepository, MajorRepository>();
 
             var appSettingsSection = Configuration.GetSection("AppSettings");
             services.Configure<AppSettings>(appSettingsSection);

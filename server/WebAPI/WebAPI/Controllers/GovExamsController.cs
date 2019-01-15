@@ -11,6 +11,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace WebAPI.Controllers
 {
+    [Route("api/gov-exams")]
+    [ApiController]
     public class GovExamsController : ControllerBase
     {
         private readonly IGovExamsRepository repo;

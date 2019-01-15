@@ -11,6 +11,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace WebAPI.Controllers
 {
+    [Route("api/residence-type")]
+    [ApiController]
     public class ResidenceTypeController : ControllerBase
     {
         private readonly IResidenceTypeRepository repo;

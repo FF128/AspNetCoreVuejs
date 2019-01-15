@@ -11,6 +11,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace WebAPI.Controllers
 {
+    [Route("api/job-req")]
+    [ApiController]
     public class JobReqController : ControllerBase
     {
         private readonly IJobReqRepository repo;

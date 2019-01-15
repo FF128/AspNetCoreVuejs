@@ -5,8 +5,10 @@ using System.Web;
 
 namespace WebAPI.Models
 {
-    public class GovExams : BaseModelCodeDescription
+    public class GovExams : BaseModel
     {
         public int Id { get; set; }
+        public string ExamCode { get; set; }
+        public string ExamDesc { get; set; }
     }
 }

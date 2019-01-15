@@ -5,8 +5,10 @@ using System.Web;
 
 namespace WebAPI.Models
 {
-    public class Language : BaseModelCodeDescription
+    public class Language : BaseModel
     {
         public int Id { get; set; }
+        public string LanguageCode { get; set; }
+        public string LanguageDesc { get; set; }
     }
 }

@@ -11,6 +11,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace WebAPI.Controllers
 {
+    [Route("api/license")]
+    [ApiController]
     public class LicenseController : ControllerBase
     {
         private readonly ILicenseRepository repo;

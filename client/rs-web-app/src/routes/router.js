@@ -67,6 +67,18 @@ import projectCodeRoute from "./projectCodeRoute"
 import payHouseRoute from "./payHouseRoute"
 import regionRoute from "./regionRoute"
 import loeRoute from "./loeRoute"
+import courseRoute from "./courseRoute"
+import majorRoute from "./majorRoute"
+import schoolRoute from "./schoolRoute"
+import dutiesRoute from "./drRoute"
+import foiRoute from "./foiRoute"
+import govExamsRoute from "./govExamsRoute"
+import jobReqRoute from "./jobReqRoute"
+import langRoute from "./languageRoute"
+import licenseRoute from "./licenseRoute"
+import residenceTypeRoute from "./residenceTypeRoute"
+import skillsRoute from "./skillsRoute"
+import docsRoute from "./docsRoute"
 
 const router = new Router({
   mode: "history",
@@ -106,7 +118,19 @@ const router = new Router({
     projectCodeRoute,
     payHouseRoute,
     regionRoute,
-    loeRoute
+    loeRoute,
+    courseRoute,
+    majorRoute,
+    schoolRoute,
+    dutiesRoute,
+    foiRoute,
+    govExamsRoute,
+    jobReqRoute,
+    langRoute,
+    licenseRoute,
+    residenceTypeRoute,
+    skillsRoute,
+    docsRoute
   ]
 });
 
