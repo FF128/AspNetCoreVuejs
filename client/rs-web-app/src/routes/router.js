@@ -55,6 +55,19 @@ import jobLevelRoute from "./jobLevelRoute"
 import gradeRoute from "./gradeRoute"
 import stepRoute from "./stepRoute"
 import designationFileRoute from "./designationFileRoute"
+import areaRoute from "./areaRoute"
+import branchRoute from "./branchRoute"
+import depRoute from "./depRoute"
+import divRoute from "./divRoute"
+import locationRoute from "./locationRoute"
+import unitRoute from "./unitRoute"
+import sectionRoute from "./sectionRoute"
+import rankRoute from "./rankRoute"
+import projectCodeRoute from "./projectCodeRoute"
+import payHouseRoute from "./payHouseRoute"
+import regionRoute from "./regionRoute"
+import loeRoute from "./loeRoute"
+
 const router = new Router({
   mode: "history",
   base: process.env.BASE_URL,
@@ -81,21 +94,33 @@ const router = new Router({
     jobLevelRoute,
     gradeRoute,
     stepRoute,
-    designationFileRoute
+    designationFileRoute,
+    areaRoute,
+    branchRoute,
+    depRoute,
+    divRoute,
+    locationRoute,
+    unitRoute,
+    sectionRoute,
+    rankRoute,
+    projectCodeRoute,
+    payHouseRoute,
+    regionRoute,
+    loeRoute
   ]
 });
 
-// router.beforeEach((to, from, next) => {
-//   // redirect to login page if not logged in and trying to access a restricted page
-//   const publicPages = ['/login', '/register'];
-//   const authRequired = !publicPages.includes(to.path);
-//   const loggedIn = localStorage.getItem('_u');
+router.beforeEach((to, from, next) => {
+  // redirect to login page if not logged in and trying to access a restricted page
+  const publicPages = ['/login', '/register'];
+  const authRequired = !publicPages.includes(to.path);
+  const loggedIn = localStorage.getItem('_u');
 
-//   if (authRequired && !loggedIn) {
-//     return next('/login');
-//   }
+  if (authRequired && !loggedIn) {
+    return next('/login');
+  }
 
-//   next();
-// })
+  next();
+})
 
 export default router;

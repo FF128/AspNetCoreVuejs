@@ -1,20 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using WebAPI.Models;
 using WebAPI.RepositoryInterfaces;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net;
+using System.Net.Http;
+using System.Threading.Tasks;
+using System.Web.Http;
 
 namespace WebAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class AffiliationsController : ControllerBase
+    public class CourseDegreeController : ControllerBase
     {
-        private readonly IAffiliationsRepository repo;
-        public AffiliationsController(IAffiliationsRepository repo)
+        private readonly ICourseDegreeRepository repo;
+        public CourseDegreeController(ICourseDegreeRepository repo)
         {
             this.repo = repo;
         }
@@ -27,12 +29,12 @@ namespace WebAPI.Controllers
             }
             catch (Exception ex)
             {
-                return Ok(ex.Message);
+                return Ok(ex.InnerException);
             }
         }
 
         [HttpPost]
-        public async Task<IActionResult> Insert(Affiliations affiliations)
+        public async Task<IActionResult> Insert(CourseDegree cd)
         {
             try
             {
@@ -41,7 +43,7 @@ namespace WebAPI.Controllers
                     return BadRequest();
                 }
 
-                await repo.Insert(affiliations);
+                await repo.Insert(cd);
 
                 return Ok();
             }
@@ -51,7 +53,8 @@ namespace WebAPI.Controllers
             }
 
         }
-        [HttpGet("{id}")]
+        [HttpGet]
+        [Route("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
             try
@@ -66,13 +69,13 @@ namespace WebAPI.Controllers
 
         }
         [HttpPut]
-        public async Task<IActionResult> Update(Affiliations affiliations)
+        public async Task<IActionResult> Update(CourseDegree cd)
         {
             if (!ModelState.IsValid)
             {
                 return Ok();
             }
-            await repo.Update(affiliations);
+            await repo.Update(cd);
 
             return Ok();
         }

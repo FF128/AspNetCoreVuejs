@@ -64,6 +64,30 @@ namespace WebAPI
             services.AddScoped<IAffiliationsRepository, AffiliationsRepository>();
             services.AddScoped<IPersonnelRequestTypeRepository, PersonnelRequestTypeRepository>();
 
+            services.AddScoped<IAreaRepository, AreaRepository>();
+            services.AddScoped<IBranchRepository, BranchRepository>();
+            services.AddScoped<IDepartmentRepository, DepartmentRepository>();
+            services.AddScoped<IDivisionRepository, DivisionRepository>();
+            services.AddScoped<ILocationRepository, LocationRepository>();
+            services.AddScoped<IUnitRepository, UnitRepository>();
+            services.AddScoped<ISectionRepository, SectionRepository>();
+            services.AddScoped<IRankRepository, RankRepository>();
+            services.AddScoped<IProjectCodeRepository, ProjectCodeRepository>();
+            services.AddScoped<IPayHouseRepository, PayHouseRepository>();
+            services.AddScoped<IRegionRepository, RegionRepository>();
+            services.AddScoped<ILevelsOfEmployeeRepository, LevelsOfEmployeeRepository>();
+            services.AddScoped<ICourseDegreeRepository, CourseDegreeRepository>();
+            services.AddScoped<ISchoolRepository, SchoolRepository>();
+            services.AddScoped<IDutiesAndResponsibilitiesRepository, DutiesAndResponsibilitiesRepository>();
+            services.AddScoped<IFieldOfInterestRepository, FieldOfInterestRepository>();
+            services.AddScoped<IGovExamsRepository, GovExamsRepository>();
+            services.AddScoped<IJobReqRepository, JobReqRepository>();
+            services.AddScoped<ILanguageRepository, LanguageRepository>();
+            services.AddScoped<ILicenseRepository, LicenseRepository>();
+            services.AddScoped<IResidenceTypeRepository, ResidenceTypeRepository>();
+            services.AddScoped<ISkillsRepository, SkillsRepository>();
+            services.AddScoped<IDocSubmittedRepository, DocSubmittedRepository>();
+
             var appSettingsSection = Configuration.GetSection("AppSettings");
             services.Configure<AppSettings>(appSettingsSection);
 

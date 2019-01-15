@@ -8,7 +8,7 @@ import { authHeader } from "../_helpers/auth-header"
 
 // Full config:  https://github.com/axios/axios#request-config
 
-axios.defaults.baseURL = appConfig.apiBaseUrl2
+axios.defaults.baseURL = appConfig.apiBaseUrl
 axios.defaults.headers.common['Authorization'] = authHeader();
 // axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
 let config = {

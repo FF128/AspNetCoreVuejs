@@ -1,20 +1,23 @@
-﻿using System;
+﻿using WebAPI.Models;
+using WebAPI.RepositoryInterfaces;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
+using System.Web.Http;
 using Microsoft.AspNetCore.Mvc;
-using WebAPI.Models;
-using WebAPI.RepositoryInterfaces;
+using _128Utility;
 
 namespace WebAPI.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/unit")]
     [ApiController]
-    public class AffiliationsController : ControllerBase
+    public class UnitController : ControllerBase
     {
-        private readonly IAffiliationsRepository repo;
-        public AffiliationsController(IAffiliationsRepository repo)
+        private readonly IUnitRepository repo;
+        public UnitController(IUnitRepository repo)
         {
             this.repo = repo;
         }
@@ -23,16 +26,17 @@ namespace WebAPI.Controllers
         {
             try
             {
+
                 return Ok(await repo.GetAll());
             }
             catch (Exception ex)
             {
-                return Ok(ex.Message);
+                return Ok(ex.InnerException);
             }
         }
 
         [HttpPost]
-        public async Task<IActionResult> Insert(Affiliations affiliations)
+        public async Task<IActionResult> Insert(Unit unit)
         {
             try
             {
@@ -40,8 +44,9 @@ namespace WebAPI.Controllers
                 {
                     return BadRequest();
                 }
-
-                await repo.Insert(affiliations);
+                
+               
+                await repo.Insert(unit);
 
                 return Ok();
             }
@@ -66,13 +71,13 @@ namespace WebAPI.Controllers
 
         }
         [HttpPut]
-        public async Task<IActionResult> Update(Affiliations affiliations)
+        public async Task<IActionResult> Update(Unit unit)
         {
             if (!ModelState.IsValid)
             {
                 return Ok();
             }
-            await repo.Update(affiliations);
+            await repo.Update(unit);
 
             return Ok();
         }

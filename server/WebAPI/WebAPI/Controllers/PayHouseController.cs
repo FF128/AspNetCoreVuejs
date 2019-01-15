@@ -1,20 +1,22 @@
-﻿using System;
+﻿using WebAPI.Models;
+using WebAPI.RepositoryInterfaces;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
+using System.Web.Http;
 using Microsoft.AspNetCore.Mvc;
-using WebAPI.Models;
-using WebAPI.RepositoryInterfaces;
 
 namespace WebAPI.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/pay-house")]
     [ApiController]
-    public class AffiliationsController : ControllerBase
+    public class PayHouseController : ControllerBase
     {
-        private readonly IAffiliationsRepository repo;
-        public AffiliationsController(IAffiliationsRepository repo)
+        private readonly IPayHouseRepository repo;
+        public PayHouseController(IPayHouseRepository repo)
         {
             this.repo = repo;
         }
@@ -27,12 +29,12 @@ namespace WebAPI.Controllers
             }
             catch (Exception ex)
             {
-                return Ok(ex.Message);
+                return Ok(ex.InnerException);
             }
         }
 
         [HttpPost]
-        public async Task<IActionResult> Insert(Affiliations affiliations)
+        public async Task<IActionResult> Insert(PayHouse ph)
         {
             try
             {
@@ -41,7 +43,7 @@ namespace WebAPI.Controllers
                     return BadRequest();
                 }
 
-                await repo.Insert(affiliations);
+                await repo.Insert(ph);
 
                 return Ok();
             }
@@ -66,13 +68,13 @@ namespace WebAPI.Controllers
 
         }
         [HttpPut]
-        public async Task<IActionResult> Update(Affiliations affiliations)
+        public async Task<IActionResult> Update(PayHouse ph)
         {
             if (!ModelState.IsValid)
             {
                 return Ok();
             }
-            await repo.Update(affiliations);
+            await repo.Update(ph);
 
             return Ok();
         }
