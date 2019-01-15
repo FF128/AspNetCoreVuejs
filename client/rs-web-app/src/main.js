@@ -10,9 +10,14 @@ import store from "./store/store";
 // import 'buefy/dist/buefy.css'
 import "./filters/filter";
 import VueJWT from 'vuejs-jwt'
+import Toasted from 'vue-toasted';
+
+Vue.use(Toasted)
+
+Vue.use(VueJWT);
 
 // Vue.use(Buefy)
-Vue.use(VueJWT);
+
 Vue.config.productionTip = false;
 
 new Vue({
