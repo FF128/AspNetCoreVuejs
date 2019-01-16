@@ -1,13 +1,15 @@
 <template>
     <div>
-        <v-form>
+        <v-form v-model="valid">
             <v-container>
                 <h1>{{title}}</h1>
                 <v-layout row wrap>
                     <v-flex xs12 sm4 md4>
                         <v-text-field
                             label="Code"
-                            v-model="div.divisionCode">
+                            v-model="div.divisionCode"
+                            :readonly="onEdit"
+                            :rules="codeRules">
 
                         </v-text-field>
                     </v-flex>
@@ -44,10 +46,10 @@
                         <v-btn
                             color="success"
                             @click.prevent="save"
-                            v-if="!onEdit">
+                            v-if="!onEdit && valid">
                             Save
                         </v-btn>
-                        <div v-if="onEdit">
+                        <div v-if="onEdit && valid">
                             <v-btn
                                 color="success"
                                 @click.prevent="update">
@@ -161,12 +163,17 @@
 </template>
 <script>
 import { mapActions, mapState } from "vuex"
+import Toast from "@/project-modules/toast"
+import codeRules from "@/rules/codeRules"
 
+let toast = new Toast();
 export default {
     data() {
         return {
             title: "Division",
             div: {},
+            codeRules,
+            valid: false,
             isSaving: false,
             isUpdating: false,
             isDeleting: false,
@@ -214,10 +221,16 @@ export default {
             this.$axios.post(this.apiEndpoint, this.div)
                 .then(response => {
                     this.isSaving = false;
+                    let { message, hasError } = response.data;
 
+                    // Toast custom message
+                    if(hasError) {
+                        toast.error(message)
+                    }else{
+                        toast.success(message)
+                    }
                     // Update List
-                    this.getAllDivisions();
-                    this.div = {}
+                    this.cancel();
                 })
                 .catch(err => {
                     this.isSaving = false;
@@ -232,9 +245,16 @@ export default {
             this.$axios.put(this.apiEndpoint, this.div)
                 .then(response => {
                     this.isUpdating = false;
-                    this.onEdit = false;
+                     let { message, hasError } = response.data;
 
-                    this.getAllDivisions();
+                    // Toast custom message
+                    if(hasError) {
+                        toast.error(message)
+                    }else{
+                        toast.success(message)
+                    }
+
+                    this.cancel();
                 })
                 .catch(err => {
                     this.isUpdating = false;
@@ -248,8 +268,15 @@ export default {
             this.isDeleting = true;
             this.$axios.delete(`${this.apiEndpoint}/${this.selectedDiv.id}`)
                 .then(response => {
-                    this.getAllDivisions();
-                    
+                     let { message, hasError } = response.data;
+
+                    // Toast custom message
+                    if(hasError) {
+                        toast.error(message)
+                    }else{
+                        toast.success(message)
+                    }
+                    this.cancel();
                     this.isDeleting = false;
                     this.deleteDialog = false;
                 })

@@ -11,6 +11,7 @@ namespace WebAPI.RepositoryInterfaces
     {
         Task<IEnumerable<ProjectCodeModel>> GetAll();
         Task<ProjectCodeModel> GetById(int id);
+        Task<ProjectCodeModel> GetByCode(string code);
         Task Insert(ProjectCodeModel pc);
         Task Update(ProjectCodeModel pc);
         Task Delete(int id);

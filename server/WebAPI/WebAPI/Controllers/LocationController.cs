@@ -8,6 +8,8 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
 using Microsoft.AspNetCore.Mvc;
+using WebAPI.ServiceInterfaces;
+using WebAPI.Helpers;
 
 namespace WebAPI.Controllers
 {
@@ -16,9 +18,12 @@ namespace WebAPI.Controllers
     public class LocationController : ControllerBase
     {
         private readonly ILocationRepository repo;
-        public LocationController(ILocationRepository repo)
+        private readonly ILocationService service;
+        public LocationController(ILocationRepository repo,
+            ILocationService service)
         {
             this.repo = repo;
+            this.service = service;
         }
         [HttpGet]
         public async Task<IActionResult> GetAll()
@@ -43,9 +48,9 @@ namespace WebAPI.Controllers
                     return BadRequest();
                 }
 
-                await repo.Insert(loc);
+                var result = await service.Insert(loc);
 
-                return Ok();
+                return Ok(result);
             }
             catch (Exception ex)
             {
@@ -70,25 +75,33 @@ namespace WebAPI.Controllers
         [HttpPut]
         public async Task<IActionResult> Update(Location loc)
         {
-            if (!ModelState.IsValid)
+            try
             {
-                return Ok();
-            }
-            await repo.Update(loc);
+                if (!ModelState.IsValid)
+                {
+                    return Ok();
+                }
+                var result = await service.Update(loc);
 
-            return Ok();
+                return Ok(result);
+            }
+            catch(Exception ex)
+            {
+                return BadRequest(CustomMessageHandler.Error(ex.Message));
+            }
+            
         }
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
             try
             {
-                await repo.Delete(id);
-                return Ok();
+                var result = await service.Delete(id);
+                return Ok(result);
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                return BadRequest(CustomMessageHandler.Error(ex.Message));
             }
 
         }

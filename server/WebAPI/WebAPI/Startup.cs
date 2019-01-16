@@ -142,6 +142,13 @@ namespace WebAPI
             services.AddScoped<IDesignationFileService, DesignationFileService>();
             services.AddScoped<IAreaService, AreaService>();
             services.AddScoped<IBranchService, BranchService>();
+            services.AddScoped<IDepartmentService, DepartmentService>();
+            services.AddScoped<IDivisionService, DivisionService>();
+            services.AddScoped<ILocationService, LocationService>();
+            services.AddScoped<IUnitService, UnitService>();
+            services.AddScoped<ISectionService, SectionService>();
+            services.AddScoped<IRankService, RankService>();
+            services.AddScoped<IProjectCodeService, ProjectCodeService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

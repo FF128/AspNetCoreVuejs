@@ -11,6 +11,7 @@ namespace WebAPI.RepositoryInterfaces
     {
         Task<IEnumerable<Department>> GetAll();
         Task<Department> GetById(int id);
+        Task<Department> GetByCode(string code);
         Task Insert(Department dep);
         Task Update(Department dep);
         Task Delete(int id);

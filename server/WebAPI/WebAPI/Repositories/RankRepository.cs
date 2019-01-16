@@ -37,6 +37,17 @@ namespace WebAPI.Repositories
             }
         }
 
+        public async Task<Rank> GetByCode(string code)
+        {
+            using (var conn = connectionFactory.Connection)
+            {
+                return
+                    await conn.QueryFirstOrDefaultAsync<Rank>("sp_RankSetUp_ViewByCode",
+                        new { Code = code },
+                        commandType: CommandType.StoredProcedure);
+            }
+        }
+
         public async Task<Rank> GetById(int id)
         {
             using (var conn = connectionFactory.Connection)

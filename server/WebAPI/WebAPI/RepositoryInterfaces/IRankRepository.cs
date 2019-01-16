@@ -11,6 +11,7 @@ namespace WebAPI.RepositoryInterfaces
     {
         Task<IEnumerable<Rank>> GetAll();
         Task<Rank> GetById(int id);
+        Task<Rank> GetByCode(string code);
         Task Insert(Rank rank);
         Task Update(Rank rank);
         Task Delete(int id);
