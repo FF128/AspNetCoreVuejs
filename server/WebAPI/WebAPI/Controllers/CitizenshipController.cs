@@ -7,18 +7,22 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using WebAPI.Models;
 using WebAPI.RepositoryInterfaces;
+using WebAPI.ServiceInterfaces;
 
 namespace WebAPI.Controllers
 {
-    [Authorize(Roles = "Admin")]
+    //[Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class CitizenshipController : ControllerBase
     {
         private readonly ICitizenshipRepository repo;
-        public CitizenshipController(ICitizenshipRepository repo)
+        private readonly ICitizenshipService service;
+        public CitizenshipController(ICitizenshipRepository repo,
+            ICitizenshipService service)
         {
             this.repo = repo;
+            this.service = service;
         }
         [HttpGet]
         public async Task<IActionResult> GetAll()
@@ -42,9 +46,9 @@ namespace WebAPI.Controllers
                     return BadRequest();
                 }
 
-                await repo.Insert(cit);
+                var result = await service.Insert(cit);
 
-                return Ok();
+                return Ok(result);
             }
             catch (Exception ex)
             {
@@ -64,26 +68,33 @@ namespace WebAPI.Controllers
             {
                 return BadRequest(ex.Message);
             }
-
         }
         [HttpPut]
         public async Task<IActionResult> Update(Citizenship cit)
         {
-            if (!ModelState.IsValid)
+            try
             {
-                return Ok();
-            }
-            await repo.Update(cit);
+                if (!ModelState.IsValid)
+                {
+                    return Ok();
+                }
+                var result = await service.Update(cit);
 
-            return Ok();
+                return Ok(result);
+            }catch(Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+           
         }
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
             try
             {
-                await repo.Delete(id);
-                return Ok();
+                var result = await service.Delete(id);
+
+                return Ok(result);
             }
             catch(Exception ex)
             {

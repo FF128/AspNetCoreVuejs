@@ -36,6 +36,17 @@ namespace WebAPI.Repositories
             }
         }
 
+        public async Task<Step> GetByCode(string code)
+        {
+            using (var conn = connectionFactory.Connection)
+            {
+                return
+                    await conn.QueryFirstOrDefaultAsync<Step>("sp_Step_ViewByCode",
+                        new { Code = code },
+                        commandType: CommandType.StoredProcedure);
+            }
+        }
+
         public async Task<Step> GetById(int id)
         {
             using (var conn = connectionFactory.Connection)

@@ -8,6 +8,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
 using Microsoft.AspNetCore.Mvc;
+using WebAPI.ServiceInterfaces;
 
 namespace WebAPI.Controllers
 {
@@ -16,9 +17,12 @@ namespace WebAPI.Controllers
     public class BranchController : ControllerBase
     {
         private readonly IBranchRepository repo;
-        public BranchController(IBranchRepository repo)
+        private readonly IBranchService service;
+        public BranchController(IBranchRepository repo,
+            IBranchService service)
         {
             this.repo = repo;
+            this.service = service;
         }
         [HttpGet]
         public async Task<IActionResult> GetAll()
@@ -43,9 +47,9 @@ namespace WebAPI.Controllers
                     return BadRequest();
                 }
 
-                await repo.Insert(branch);
+                var result = await service.Insert(branch);
 
-                return Ok();
+                return Ok(result);
             }
             catch (Exception ex)
             {
@@ -70,21 +74,30 @@ namespace WebAPI.Controllers
         [HttpPut]
         public async Task<IActionResult> Update(Branch branch)
         {
-            if (!ModelState.IsValid)
+            try
             {
-                return Ok();
-            }
-            await repo.Update(branch);
+                if (!ModelState.IsValid)
+                {
+                    return Ok();
+                }
+                var result = await service.Update(branch);
 
-            return Ok();
+                return Ok(result);
+
+            }
+            catch(Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            
         }
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
             try
             {
-                await repo.Delete(id);
-                return Ok();
+                var result = await service.Delete(id);
+                return Ok(result);
             }
             catch (Exception ex)
             {

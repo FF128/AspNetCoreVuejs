@@ -21,7 +21,7 @@ namespace WebAPI.Repositories
         {
             using (var conn = connectionFactory.Connection)
             {
-                await conn.ExecuteAsync("sp_Citizenship_Delete",
+                await conn.ExecuteAsync("sp_CitizenshipSetUp_Delete",
                     new { Id = id },
                     commandType: CommandType.StoredProcedure);
             }
@@ -32,7 +32,18 @@ namespace WebAPI.Repositories
             using (var conn = connectionFactory.Connection)
             {
                 return
-                    await conn.QueryAsync<Citizenship>("sp_Citizenship_View");
+                    await conn.QueryAsync<Citizenship>("sp_CitizenshipSetUp_View");
+            }
+        }
+
+        public async Task<Citizenship> GetByCode(string code)
+        {
+            using (var conn = connectionFactory.Connection)
+            {
+                return
+                    await conn.QueryFirstOrDefaultAsync<Citizenship>("sp_CitizenshipSetUp_ViewByCode",
+                        new { Code = code },
+                        commandType: CommandType.StoredProcedure);
             }
         }
 
@@ -41,7 +52,7 @@ namespace WebAPI.Repositories
             using (var conn = connectionFactory.Connection)
             {
                 return
-                    await conn.QueryFirstOrDefaultAsync<Citizenship>("sp_Citizenship_ViewById",
+                    await conn.QueryFirstOrDefaultAsync<Citizenship>("sp_CitizenshipSetUp_ViewById",
                         new { Id = id },
                         commandType: CommandType.StoredProcedure);
             }
@@ -51,7 +62,7 @@ namespace WebAPI.Repositories
         {
             using (var conn = connectionFactory.Connection)
             {
-                await conn.ExecuteAsync("sp_Citizenship_Insert",
+                await conn.ExecuteAsync("sp_CitizenshipSetUp_Insert",
                     cit, commandType: CommandType.StoredProcedure);
             }
         }
@@ -60,7 +71,7 @@ namespace WebAPI.Repositories
         {
             using (var conn = connectionFactory.Connection)
             {
-                await conn.ExecuteAsync("sp_Citizenship_Update",
+                await conn.ExecuteAsync("sp_CitizenshipSetUp_Update",
                     cit, commandType: CommandType.StoredProcedure);
             }
         }

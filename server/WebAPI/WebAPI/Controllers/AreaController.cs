@@ -8,6 +8,7 @@ using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
+using WebAPI.ServiceInterfaces;
 
 namespace WebAPI.Controllers
 {
@@ -16,9 +17,12 @@ namespace WebAPI.Controllers
     public class AreaController : ControllerBase
     {
         private readonly IAreaRepository repo;
-        public AreaController(IAreaRepository repo)
+        private readonly IAreaService service;
+        public AreaController(IAreaRepository repo,
+            IAreaService service)
         {
             this.repo = repo;
+            this.service = service;
         }
         [HttpGet]
         public async Task<IActionResult> GetAll()
@@ -43,9 +47,9 @@ namespace WebAPI.Controllers
                     return BadRequest();
                 }
 
-                await repo.Insert(area);
+                var result = await service.Insert(area);
 
-                return Ok();
+                return Ok(result);
             }
             catch (Exception ex)
             {
@@ -76,9 +80,9 @@ namespace WebAPI.Controllers
                 {
                     return Ok();
                 }
-                await repo.Update(area);
+                var result = await service.Update(area);
 
-                return Ok();
+                return Ok(result);
 
             }
             catch(Exception ex)
@@ -92,8 +96,8 @@ namespace WebAPI.Controllers
         {
             try
             {
-                await repo.Delete(id);
-                return Ok();
+                var result = await service.Delete(id);
+                return Ok(result);
             }
             catch (Exception ex)
             {

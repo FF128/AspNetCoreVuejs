@@ -13,5 +13,6 @@ namespace WebAPI.RepositoryInterfaces
         Task Insert(Religion rel);
         Task Update(Religion rel);
         Task Delete(int id);
+        Task<Religion> GetByCode(string code);
     }
 }

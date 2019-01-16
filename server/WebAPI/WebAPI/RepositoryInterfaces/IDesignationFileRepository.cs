@@ -10,6 +10,7 @@ namespace WebAPI.RepositoryInterfaces
     {
         Task<IEnumerable<DesignationFile>> GetAll();
         Task<DesignationFile> GetById(int id);
+        Task<DesignationFile> GetByCode(string code);
         Task Insert(DesignationFile designationFile);
         Task Update(DesignationFile designationFile);
         Task Delete(int id);

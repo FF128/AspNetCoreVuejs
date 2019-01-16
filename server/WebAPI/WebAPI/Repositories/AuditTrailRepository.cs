@@ -1,5 +1,7 @@
-﻿using System;
+﻿using Dapper;
+using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using WebAPI.Data;
@@ -15,10 +17,10 @@ namespace WebAPI.Repositories
         {
             this.connectionFactory = connectionFactory;
         }
-        public Task Delete(int id)
-        {
-            throw new NotImplementedException();
-        }
+        //public Task Delete(int id)
+        //{
+        //    throw new NotImplementedException();
+        //}
 
         public Task<IEnumerable<AuditTrail>> GetAll()
         {
@@ -30,14 +32,18 @@ namespace WebAPI.Repositories
             throw new NotImplementedException();
         }
 
-        public Task Insert(AuditTrail auditTrail)
+        public async Task Insert(AuditTrail auditTrail)
         {
-            throw new NotImplementedException();
+            using(var conn = connectionFactory.Connection)
+            {
+                await conn.ExecuteAsync("sp_AuditTrail_Insert", auditTrail,
+                    commandType: CommandType.StoredProcedure);
+            }
         }
 
-        public Task Update(AuditTrail auditTrail)
-        {
-            throw new NotImplementedException();
-        }
+        //public Task Update(AuditTrail auditTrail)
+        //{
+        //    throw new NotImplementedException();
+        //}
     }
 }

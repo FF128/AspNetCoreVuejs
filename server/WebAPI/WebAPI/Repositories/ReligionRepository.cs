@@ -21,7 +21,7 @@ namespace WebAPI.Repositories
         {
             using (var conn = connectionFactory.Connection)
             {
-                await conn.ExecuteAsync("sp_Religion_Delete",
+                await conn.ExecuteAsync("sp_ReligionSetUp_Delete",
                     new { Id = id },
                     commandType: CommandType.StoredProcedure);
             }
@@ -32,7 +32,18 @@ namespace WebAPI.Repositories
             using (var conn = connectionFactory.Connection)
             {
                 return
-                    await conn.QueryAsync<Religion>("sp_Religion_View");
+                    await conn.QueryAsync<Religion>("sp_ReligionSetUp_View");
+            }
+        }
+
+        public async Task<Religion> GetByCode(string code)
+        {
+            using (var conn = connectionFactory.Connection)
+            {
+                return
+                    await conn.QueryFirstOrDefaultAsync<Religion>("sp_ReligionSetUp_ViewByCode",
+                        new { Code = code },
+                        commandType: CommandType.StoredProcedure);
             }
         }
 
@@ -41,7 +52,7 @@ namespace WebAPI.Repositories
             using (var conn = connectionFactory.Connection)
             {
                 return
-                    await conn.QueryFirstOrDefaultAsync<Religion>("sp_Religion_ViewById",
+                    await conn.QueryFirstOrDefaultAsync<Religion>("sp_ReligionSetUp_ViewById",
                         new { Id = id },
                         commandType: CommandType.StoredProcedure);
             }
@@ -51,7 +62,7 @@ namespace WebAPI.Repositories
         {
             using (var conn = connectionFactory.Connection)
             {
-                await conn.ExecuteAsync("sp_Religion_Insert",
+                await conn.ExecuteAsync("sp_ReligionSetUp_Insert",
                     rel, commandType: CommandType.StoredProcedure);
             }
         }
@@ -60,7 +71,7 @@ namespace WebAPI.Repositories
         {
             using (var conn = connectionFactory.Connection)
             {
-                await conn.ExecuteAsync("sp_Religion_Update",
+                await conn.ExecuteAsync("sp_ReligionSetUp_Update",
                     rel, commandType: CommandType.StoredProcedure);
             }
         }

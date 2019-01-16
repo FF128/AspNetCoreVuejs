@@ -10,6 +10,7 @@ namespace WebAPI.RepositoryInterfaces
     {
         Task<IEnumerable<Grade>> GetAll();
         Task<Grade> GetById(int id);
+        Task<Grade> GetByCode(string code);
         Task Insert(Grade grade);
         Task Update(Grade grade);
         Task Delete(int id);

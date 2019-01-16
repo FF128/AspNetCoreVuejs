@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using WebAPI.Models;
 using WebAPI.RepositoryInterfaces;
+using WebAPI.ServiceInterfaces;
 
 namespace WebAPI.Controllers
 {
@@ -14,9 +15,12 @@ namespace WebAPI.Controllers
     public class DesignationFileController : ControllerBase
     {
         private readonly IDesignationFileRepository repo;
-        public DesignationFileController(IDesignationFileRepository repo)
+        private readonly IDesignationFileService service;
+        public DesignationFileController(IDesignationFileRepository repo,
+            IDesignationFileService service)
         {
             this.repo = repo;
+            this.service = service;
         }
         [HttpGet]
         public async Task<IActionResult> GetAll()
@@ -41,9 +45,9 @@ namespace WebAPI.Controllers
                     return BadRequest();
                 }
 
-                await repo.Insert(designationFile);
+                var result = await service.Insert(designationFile);
 
-                return Ok();
+                return Ok(result);
             }
             catch (Exception ex)
             {
@@ -68,21 +72,29 @@ namespace WebAPI.Controllers
         [HttpPut]
         public async Task<IActionResult> Update(DesignationFile designationFile)
         {
-            if (!ModelState.IsValid)
+            try
             {
-                return Ok();
-            }
-            await repo.Update(designationFile);
+                if (!ModelState.IsValid)
+                {
+                    return Ok();
+                }
+                var result = await service.Update(designationFile);
 
-            return Ok();
+                return Ok(result);
+            }
+            catch(Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            
         }
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
             try
             {
-                await repo.Delete(id);
-                return Ok();
+                var result = await service.Delete(id);
+                return Ok(result);
             }
             catch (Exception ex)
             {

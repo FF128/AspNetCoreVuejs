@@ -36,6 +36,17 @@ namespace WebAPI.Repositories
             }
         }
 
+        public async Task<DesignationFile> GetByCode(string code)
+        {
+            using (var conn = connectionFactory.Connection)
+            {
+                return
+                    await conn.QueryFirstOrDefaultAsync<DesignationFile>("sp_DesignationFile_ViewByCode",
+                        new { Code = code },
+                        commandType: CommandType.StoredProcedure);
+            }
+        }
+
         public async Task<DesignationFile> GetById(int id)
         {
             using (var conn = connectionFactory.Connection)

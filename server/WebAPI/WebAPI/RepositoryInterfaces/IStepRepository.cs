@@ -10,6 +10,7 @@ namespace WebAPI.RepositoryInterfaces
     {
         Task<IEnumerable<Step>> GetAll();
         Task<Step> GetById(int id);
+        Task<Step> GetByCode(string code);
         Task Insert(Step step);
         Task Update(Step step);
         Task Delete(int id);

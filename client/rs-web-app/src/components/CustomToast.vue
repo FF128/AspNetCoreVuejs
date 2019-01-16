@@ -1,9 +1,14 @@
 <template>
-
+    <!-- :bottom="y === 'bottom'"
+    :left="x === 'left'"
+    :multi-line="mode === 'multi-line'" -->
   <v-snackbar
     :timeout="timeout"
     :color="color"
     v-model="active"
+
+    :right="true"
+    :top="true"
     class="application"
     @click="dismiss">
 

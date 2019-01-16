@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using WebAPI.Models;
 using WebAPI.RepositoryInterfaces;
+using WebAPI.ServiceInterfaces;
 
 namespace WebAPI.Controllers
 {
@@ -14,9 +15,12 @@ namespace WebAPI.Controllers
     public class StepController : ControllerBase
     {
         private readonly IStepRepository repo;
-        public StepController(IStepRepository repo)
+        private readonly IStepService service;
+        public StepController(IStepRepository repo,
+            IStepService service)
         {
             this.repo = repo;
+            this.service = service;
         }
         [HttpGet]
         public async Task<IActionResult> GetAll()
@@ -41,9 +45,9 @@ namespace WebAPI.Controllers
                     return BadRequest();
                 }
 
-                await repo.Insert(step);
+                var result = await service.Insert(step);
 
-                return Ok();
+                return Ok(result);
             }
             catch (Exception ex)
             {
@@ -68,21 +72,28 @@ namespace WebAPI.Controllers
         [HttpPut]
         public async Task<IActionResult> Update(Step step)
         {
-            if (!ModelState.IsValid)
+            try
             {
-                return Ok();
-            }
-            await repo.Update(step);
+                if (!ModelState.IsValid)
+                {
+                    return Ok();
+                }
+                var result = await service.Update(step);
 
-            return Ok();
+                return Ok(result);
+            }catch(Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            
         }
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
             try
             {
-                await repo.Delete(id);
-                return Ok();
+                var result = await service.Delete(id);
+                return Ok(result);
             }
             catch (Exception ex)
             {

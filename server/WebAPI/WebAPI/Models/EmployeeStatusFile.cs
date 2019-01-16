@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace WebAPI.Models
 {
-    public class EmployeeStatusFile
+    public class EmployeeStatusFile : BaseModel
     {
         public int Id { get; set; }
         public string Code { get; set; }

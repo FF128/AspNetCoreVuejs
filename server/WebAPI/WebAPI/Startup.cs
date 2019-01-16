@@ -88,6 +88,7 @@ namespace WebAPI
             services.AddScoped<ISkillsRepository, SkillsRepository>();
             services.AddScoped<IDocSubmittedRepository, DocSubmittedRepository>();
             services.AddScoped<IMajorRepository, MajorRepository>();
+            
 
             var appSettingsSection = Configuration.GetSection("AppSettings");
             services.Configure<AppSettings>(appSettingsSection);
@@ -127,10 +128,20 @@ namespace WebAPI
                     ValidateAudience = false
                 };
             });
+
             // Services 
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<ICompanyInfoService, CompanyInfoService>();
-            services.AddScoped<IAuditTrailService, AuditTrailService>();
+            services.AddScoped(typeof(IAuditTrailService<>), typeof(AuditTrailService<>));
+            services.AddScoped<ICitizenshipService, CitizenshipService>();
+            services.AddScoped<IReligionService, ReligionService>();
+            services.AddScoped<IEmployeeStatusFileService, EmployeeStatusFileService>();
+            services.AddScoped<IJobLevelService, JobLevelService>();
+            services.AddScoped<IGradeService, GradeService>();
+            services.AddScoped<IStepService, StepService>();
+            services.AddScoped<IDesignationFileService, DesignationFileService>();
+            services.AddScoped<IAreaService, AreaService>();
+            services.AddScoped<IBranchService, BranchService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

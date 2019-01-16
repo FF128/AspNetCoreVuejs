@@ -1,13 +1,15 @@
 <template>
     <div>
-        <v-form>
+        <v-form v-model="valid">
             <v-container>
                 <h1>{{title}}</h1>
                 <v-layout row wrap>
                     <v-flex xs12 sm6 md4>
                         <v-text-field
                             label="Code"
-                            v-model="employeeStatusFile.code">
+                            v-model="employeeStatusFile.code"
+                            :readonly="onEdit"
+                            :rules="codeRules">
 
                         </v-text-field>
                     </v-flex>
@@ -22,10 +24,10 @@
                     <v-btn
                         color="success"
                         @click.prevent="save"
-                        v-if="!onEdit">
+                        v-if="!onEdit && valid">
                         Save
                     </v-btn>
-                    <div v-if="onEdit">
+                    <div v-if="onEdit && valid">
                         <v-btn
                             color="success"
                             @click.prevent="update">
@@ -93,14 +95,17 @@
 </template>
 <script>
 import { mapActions, mapState } from "vuex"
-import AppToast from "@/project-modules/appToast"
+import Toast from "@/project-modules/toast"
+import codeRules from "@/rules/codeRules"
 
-let appToast = new AppToast();
+let toast = new Toast();
 export default {
     data() {
         return {
             title: "Employee Status File",
             employeeStatusFile: {},
+            valid: false,
+            codeRules,
             isSaving: false,
             isUpdating: false,
             isDeleting: false,
@@ -138,9 +143,16 @@ export default {
                 .then(response => {
                     this.isSaving = false;
 
+                    let { message, hasError } = response.data;
+
+                    // Toast custom message
+                    if(hasError) {
+                        toast.error(message)
+                    }else{
+                        toast.success(message)
+                    }
                     // Update List
-                    this.getAllEmployeeStatusFiles();
-                    this.employeeStatusFile = {}
+                    this.cancel();
                 })
                 .catch(err => {
                     this.isSaving = false;
@@ -155,9 +167,18 @@ export default {
             this.$axios.put(this.apiEndpoint, this.employeeStatusFile)
                 .then(response => {
                     this.isUpdating = false;
-                    this.onEdit = false;
+                   // this.onEdit = false;
 
-                    this.getAllEmployeeStatusFiles();
+                    let { message, hasError } = response.data;
+
+                    // Toast custom message
+                    if(hasError) {
+                        toast.error(message)
+                    }else{
+                        toast.success(message)
+                    }
+
+                   this.cancel();
                 })
                 .catch(err => {
                     this.isUpdating = false;
@@ -173,6 +194,15 @@ export default {
                 .then(response => {
                     this.getAllEmployeeStatusFiles();
                     
+                    let { message, hasError } = response.data;
+
+                    // Toast custom message
+                    if(hasError) {
+                        toast.error(message)
+                    }else{
+                        toast.success(message)
+                    }
+
                     this.isDeleting = false;
                     this.deleteDialog = false;
                 })

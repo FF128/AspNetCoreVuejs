@@ -11,7 +11,7 @@ namespace WebAPI.RepositoryInterfaces
         Task<IEnumerable<AuditTrail>> GetAll();
         Task<AuditTrail> GetById(int id);
         Task Insert(AuditTrail auditTrail);
-        Task Update(AuditTrail auditTrail);
-        Task Delete(int id);
+       // Task Update(AuditTrail auditTrail);
+        //Task Delete(int id);
     }
 }

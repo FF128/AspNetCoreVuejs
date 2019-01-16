@@ -1,13 +1,15 @@
 <template>
     <div>
-        <v-form>
+        <v-form v-model="valid" ref="form">
             <v-container>
                 <h1>{{title}}</h1>
                 <v-layout row wrap>
                     <v-flex xs12 sm6 md4>
                         <v-text-field
                             label="Code"
-                            v-model="cit.code">
+                            v-model="cit.code"
+                            :readonly="onEdit"
+                            :rules="codeRules">
 
                         </v-text-field>
                     </v-flex>
@@ -22,10 +24,10 @@
                     <v-btn
                         color="success"
                         @click.prevent="save"
-                        v-if="!onEdit">
+                        v-if="!onEdit && valid">
                         Save
                     </v-btn>
-                    <div v-if="onEdit">
+                    <div v-if="onEdit && valid">
                         <v-btn
                             color="success"
                             @click.prevent="update">
@@ -93,14 +95,18 @@
 </template>
 <script>
 import { mapActions, mapState } from "vuex"
-import AppToast from "@/project-modules/appToast"
+import codeRules from "@/rules/codeRules"
+import Toast from "@/project-modules/toast"
 
-let appToast = new AppToast();
+let toast = new Toast();
+
 export default {
     data() {
         return {
+            valid: false,
             title: "Citizenship",
             cit: {},
+            codeRules,
             isSaving: false,
             isUpdating: false,
             isDeleting: false,
@@ -140,7 +146,14 @@ export default {
             this.$axios.post(this.apiEndpoint, this.cit)
                 .then(response => {
                     this.isSaving = false;
+                    let { message, hasError } = response.data;
 
+                    // Toast custom message
+                    if(hasError) {
+                        toast.error(message)
+                    }else{
+                        toast.success(message)
+                    }
                     // Update List
                     this.getAllCitizenship();
                     this.cit = {}
@@ -160,7 +173,17 @@ export default {
                     this.isUpdating = false;
                     this.onEdit = false;
 
+                    let { message, hasError } = response.data;
+
+                    if(hasError) {
+                        toast.error(message)
+                    }else{
+                        toast.success(message)
+                    }
+
                     this.getAllCitizenship();
+
+                    this.cit = {}
                 })
                 .catch(err => {
                     this.isUpdating = false;
@@ -175,7 +198,15 @@ export default {
             this.$axios.delete(`${this.apiEndpoint}/${this.selectedCit.id}`)
                 .then(response => {
                     this.getAllCitizenship();
-                    
+
+                    let { message, hasError } = response.data;
+
+                    if(hasError) {
+                        toast.error(message)
+                    }else{
+                        toast.success(message)
+                    }
+
                     this.isDeleting = false;
                     this.deleteDialog = false;
                 })
