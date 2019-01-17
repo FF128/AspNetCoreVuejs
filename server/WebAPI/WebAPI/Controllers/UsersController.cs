@@ -24,35 +24,30 @@ namespace WebAPI.Controllers
     [Route("api/[controller]")]
     public class UsersController : ControllerBase
     {
-        private IUserService _userService;
-        private IMapper _mapper;
-        private readonly AppSettings _appSettings;
+        private IUserService userService;
+        private IMapper mapper;
+        private readonly AppSettings appSettings;
 
         public UsersController(
             IUserService userService,
             IMapper mapper,
             IOptions<AppSettings> appSettings)
         {
-            _userService = userService;
-            _mapper = mapper;
-            _appSettings = appSettings.Value;
-        }
-        [HttpGet("values")]
-        public ActionResult<IEnumerable<string>> Get()
-        {
-            return new string[] { "value1", "value2" };
+            this.userService = userService;
+            this.mapper = mapper;
+            this.appSettings = appSettings.Value;
         }
         [AllowAnonymous]
         [HttpPost("authenticate")]
         public IActionResult Authenticate([FromBody]UserDto userDto)
         {
-            var user = _userService.Authenticate(userDto.Username, userDto.Password);
+            var user = userService.Authenticate(userDto.Username, userDto.Password);
 
             if (user == null)
                 return BadRequest(new { message = "Username or password is incorrect" });
 
             var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.ASCII.GetBytes(_appSettings.Secret);
+            var key = Encoding.ASCII.GetBytes(appSettings.Secret);
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(new Claim[]
@@ -82,12 +77,12 @@ namespace WebAPI.Controllers
         public IActionResult Register([FromBody]UserDto userDto)
         {
             // map dto to entity
-            var user = _mapper.Map<User>(userDto);
+            var user = mapper.Map<User>(userDto);
 
             try
             {
                 // save 
-                _userService.Create(user, userDto.Password);
+                userService.Create(user, userDto.Password);
                 return Ok();
             }
             catch (AppException ex)
@@ -100,16 +95,16 @@ namespace WebAPI.Controllers
         [HttpGet]
         public IActionResult GetAll()
         {
-            var users = _userService.GetAll();
-            var userDtos = _mapper.Map<IList<UserDto>>(users);
+            var users = userService.GetAll();
+            var userDtos = mapper.Map<IList<UserDto>>(users);
             return Ok(userDtos);
         }
 
         [HttpGet("{id}")]
         public IActionResult GetById(int id)
         {
-            var user = _userService.GetById(id);
-            var userDto = _mapper.Map<UserDto>(user);
+            var user = userService.GetById(id);
+            var userDto = mapper.Map<UserDto>(user);
             return Ok(userDto);
         }
 
@@ -117,13 +112,13 @@ namespace WebAPI.Controllers
         public IActionResult Update(int id, [FromBody]UserDto userDto)
         {
             // map dto to entity and set id
-            var user = _mapper.Map<User>(userDto);
+            var user = mapper.Map<User>(userDto);
             user.Id = id;
 
             try
             {
                 // save 
-                _userService.Update(user, userDto.Password);
+                userService.Update(user, userDto.Password);
                 return Ok();
             }
             catch (AppException ex)
@@ -136,7 +131,7 @@ namespace WebAPI.Controllers
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {
-            _userService.Delete(id);
+            userService.Delete(id);
             return Ok();
         }
     }

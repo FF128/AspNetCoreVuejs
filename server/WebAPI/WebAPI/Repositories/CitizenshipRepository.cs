@@ -21,8 +21,18 @@ namespace WebAPI.Repositories
         {
             using (var conn = connectionFactory.Connection)
             {
-                await conn.ExecuteAsync("sp_CitizenshipSetUp_Delete",
+                await conn.ExecuteAsync("sp_tbl_fsCitizenship_Delete",
                     new { Id = id },
+                    commandType: CommandType.StoredProcedure);
+            }
+        }
+
+        public async Task DeleteByCode(string code)
+        {
+            using (var conn = connectionFactory.Connection)
+            {
+                await conn.ExecuteAsync("sp_tbl_fsCitizenship_DeleteByCode",
+                    new { Code = code },
                     commandType: CommandType.StoredProcedure);
             }
         }
@@ -32,7 +42,7 @@ namespace WebAPI.Repositories
             using (var conn = connectionFactory.Connection)
             {
                 return
-                    await conn.QueryAsync<Citizenship>("sp_CitizenshipSetUp_View");
+                    await conn.QueryAsync<Citizenship>("sp_tbl_fsCitizenship_View");
             }
         }
 
@@ -41,7 +51,7 @@ namespace WebAPI.Repositories
             using (var conn = connectionFactory.Connection)
             {
                 return
-                    await conn.QueryFirstOrDefaultAsync<Citizenship>("sp_CitizenshipSetUp_ViewByCode",
+                    await conn.QueryFirstOrDefaultAsync<Citizenship>("sp_tbl_fsCitizenship_ViewByCode",
                         new { Code = code },
                         commandType: CommandType.StoredProcedure);
             }
@@ -52,7 +62,7 @@ namespace WebAPI.Repositories
             using (var conn = connectionFactory.Connection)
             {
                 return
-                    await conn.QueryFirstOrDefaultAsync<Citizenship>("sp_CitizenshipSetUp_ViewById",
+                    await conn.QueryFirstOrDefaultAsync<Citizenship>("sp_tbl_fsCitizenship_ViewById",
                         new { Id = id },
                         commandType: CommandType.StoredProcedure);
             }
@@ -62,16 +72,15 @@ namespace WebAPI.Repositories
         {
             using (var conn = connectionFactory.Connection)
             {
-                await conn.ExecuteAsync("sp_CitizenshipSetUp_Insert",
+                await conn.ExecuteAsync("sp_tbl_fsCitizenship_Insert",
                     cit, commandType: CommandType.StoredProcedure);
             }
         }
-
         public async Task Update(Citizenship cit)
         {
             using (var conn = connectionFactory.Connection)
             {
-                await conn.ExecuteAsync("sp_CitizenshipSetUp_Update",
+                await conn.ExecuteAsync("sp_tbl_fsCitizenship_Update",
                     cit, commandType: CommandType.StoredProcedure);
             }
         }

@@ -22,6 +22,14 @@ namespace WebAPI.Dtos
         public string Philhealth { get; set; }
         public string Pagibig { get; set; }
         public int BIRBranchCode { get; set; }
+        public bool TKSFlag { get; set; }
+        public bool PayrollFlag { get; set; }
+        public bool HRISFlag { get; set; }
+        public bool EmpOnlineFlag { get; set; }
+        public string TKSDB { get; set; }
+        public string PayrollDB { get; set; }
+        public string HRISDB { get; set; }
+        public string OnlineDB { get; set; }
 
         public byte[] LogoForReports { get; set; }
         public byte[] LogoForSite { get; set; }

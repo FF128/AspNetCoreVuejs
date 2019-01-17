@@ -7,11 +7,10 @@ using WebAPI.Models;
 
 namespace WebAPI.ServiceInterfaces
 {
-    public interface ICitizenshipService
+    public interface IPersonnelRequestTypeService
     {
-        Task<CustomMessage> Insert(Citizenship cit);
-        Task<CustomMessage> Update(Citizenship cit);
+        Task<CustomMessage> Insert(PersonnelRequestType prt);
+        Task<CustomMessage> Update(PersonnelRequestType prt);
         Task<CustomMessage> Delete(int id);
-        Task<CustomMessage> DeleteByCode(string code);
     }
 }

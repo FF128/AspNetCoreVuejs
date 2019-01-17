@@ -21,7 +21,7 @@ namespace WebAPI.Repositories
         {
             using (var conn = connectionFactory.Connection)
             {
-                await conn.ExecuteAsync("sp_Affiliations_Delete",
+                await conn.ExecuteAsync("sp_AffiliationsSetUp_Delete",
                     new { Id = id },
                     commandType: CommandType.StoredProcedure);
             }
@@ -32,7 +32,18 @@ namespace WebAPI.Repositories
             using (var conn = connectionFactory.Connection)
             {
                 return
-                    await conn.QueryAsync<Affiliations>("sp_Affiliations_View");
+                    await conn.QueryAsync<Affiliations>("sp_AffiliationsSetUp_View");
+            }
+        }
+
+        public async Task<Affiliations> GetByCode(string code)
+        {
+            using (var conn = connectionFactory.Connection)
+            {
+                return
+                    await conn.QueryFirstOrDefaultAsync<Affiliations>("sp_AffiliationsSetUp_ViewByCode",
+                        new { Code = code },
+                        commandType: CommandType.StoredProcedure);
             }
         }
 
@@ -41,7 +52,7 @@ namespace WebAPI.Repositories
             using (var conn = connectionFactory.Connection)
             {
                 return
-                    await conn.QueryFirstOrDefaultAsync<Affiliations>("sp_Affiliations_ViewById",
+                    await conn.QueryFirstOrDefaultAsync<Affiliations>("sp_AffiliationsSetUp_ViewById",
                         new { Id = id },
                         commandType: CommandType.StoredProcedure);
             }
@@ -51,7 +62,7 @@ namespace WebAPI.Repositories
         {
             using (var conn = connectionFactory.Connection)
             {
-                await conn.ExecuteAsync("sp_Affiliations_Insert",
+                await conn.ExecuteAsync("sp_AffiliationsSetUp_Insert",
                     affiliations, commandType: CommandType.StoredProcedure);
             }
         }
@@ -60,7 +71,7 @@ namespace WebAPI.Repositories
         {
             using (var conn = connectionFactory.Connection)
             {
-                await conn.ExecuteAsync("sp_Affiliations_Update",
+                await conn.ExecuteAsync("sp_AffiliationsSetUp_Update",
                     affiliations, commandType: CommandType.StoredProcedure);
             }
         }

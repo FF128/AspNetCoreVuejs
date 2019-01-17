@@ -1,5 +1,8 @@
 import Vue from "vue";
 import Router from "vue-router";
+import AuthService from "../_services/auth"
+
+let authService = new AuthService();
 Vue.use(Router);
 
 // Default Layout 
@@ -79,6 +82,8 @@ import licenseRoute from "./licenseRoute"
 import residenceTypeRoute from "./residenceTypeRoute"
 import skillsRoute from "./skillsRoute"
 import docsRoute from "./docsRoute"
+import affRoute from "./affRoute"
+import prtRoute from "./prtRoute"
 
 const router = new Router({
   mode: "history",
@@ -130,7 +135,9 @@ const router = new Router({
     licenseRoute,
     residenceTypeRoute,
     skillsRoute,
-    docsRoute
+    docsRoute,
+    affRoute,
+    prtRoute
   ]
 });
 
@@ -138,7 +145,8 @@ router.beforeEach((to, from, next) => {
   // redirect to login page if not logged in and trying to access a restricted page
   const publicPages = ['/login', '/register'];
   const authRequired = !publicPages.includes(to.path);
-  const loggedIn = localStorage.getItem('_u');
+ // const loggedIn = localStorage.getItem('_u');
+  const loggedIn  = authService.isLoggedIn()
 
   if (authRequired && !loggedIn) {
     return next('/login');

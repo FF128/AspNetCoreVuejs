@@ -33,6 +33,8 @@ import license from "./modules/license"
 import residenceType from "./modules/residenceType"
 import skills from "./modules/skills"
 import docSubmitted from "./modules/docSubmitted"
+import affiliations from "./modules/affiliation"
+import personnelReqType from "./modules/personnelReqType"
 
 Vue.use(Vuex);
 
@@ -72,6 +74,8 @@ export default new Vuex.Store({
     license,
     residenceType,
     skills,
-    docSubmitted
+    docSubmitted,
+    affiliations,
+    personnelReqType
   }
 });

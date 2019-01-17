@@ -10,6 +10,7 @@ namespace WebAPI.RepositoryInterfaces
     {
         Task<IEnumerable<PersonnelRequestType>> GetAll();
         Task<PersonnelRequestType> GetById(int id);
+        Task<PersonnelRequestType> GetByCode(string code);
         Task Insert(PersonnelRequestType prt);
         Task Update(PersonnelRequestType prt);
         Task Delete(int id);

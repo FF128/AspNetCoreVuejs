@@ -21,7 +21,7 @@ namespace WebAPI.Repositories
         {
             using (var conn = connectionFactory.Connection)
             {
-                await conn.ExecuteAsync("sp_PersonnelRequestType_Delete",
+                await conn.ExecuteAsync("sp_PersonnelReqType_Delete",
                     new { Id = id },
                     commandType: CommandType.StoredProcedure);
             }
@@ -32,7 +32,18 @@ namespace WebAPI.Repositories
             using (var conn = connectionFactory.Connection)
             {
                 return
-                    await conn.QueryAsync<PersonnelRequestType>("sp_PersonnelRequestType_View");
+                    await conn.QueryAsync<PersonnelRequestType>("sp_PersonnelReqType_View");
+            }
+        }
+
+        public async Task<PersonnelRequestType> GetByCode(string code)
+        {
+            using (var conn = connectionFactory.Connection)
+            {
+                return
+                    await conn.QueryFirstOrDefaultAsync<PersonnelRequestType>("sp_PersonnelReqType_ViewByCode",
+                        new { Code = code },
+                        commandType: CommandType.StoredProcedure);
             }
         }
 
@@ -41,7 +52,7 @@ namespace WebAPI.Repositories
             using (var conn = connectionFactory.Connection)
             {
                 return
-                    await conn.QueryFirstOrDefaultAsync<PersonnelRequestType>("sp_PersonnelRequestType_ViewById",
+                    await conn.QueryFirstOrDefaultAsync<PersonnelRequestType>("sp_PersonnelReqType_ViewById",
                         new { Id = id },
                         commandType: CommandType.StoredProcedure);
             }
@@ -51,7 +62,7 @@ namespace WebAPI.Repositories
         {
             using (var conn = connectionFactory.Connection)
             {
-                await conn.ExecuteAsync("sp_PersonnelRequestType_Insert",
+                await conn.ExecuteAsync("sp_PersonnelReqType_Insert",
                     prt, commandType: CommandType.StoredProcedure);
             }
         }
@@ -60,7 +71,7 @@ namespace WebAPI.Repositories
         {
             using (var conn = connectionFactory.Connection)
             {
-                await conn.ExecuteAsync("sp_PersonnelRequestType_Update",
+                await conn.ExecuteAsync("sp_PersonnelReqType_Update",
                     prt, commandType: CommandType.StoredProcedure);
             }
         }

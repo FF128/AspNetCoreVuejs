@@ -117,6 +117,66 @@
                         required
                     ></v-text-field>
                 </v-flex>
+                <v-flex xs12 sm12 md12>
+                    <h4>System Integration</h4>
+                </v-flex>             
+
+                <v-flex 
+                    xs12 sm6 md3>
+                    <v-text-field
+                        v-model="ci.tksdb"
+                        label="128 Timekeeping System"
+                        required
+                    ></v-text-field>
+                     <v-checkbox
+                        v-model="ci.tksFlag"
+                        type="checkbox"
+                        required
+                        >
+                    </v-checkbox>
+                </v-flex>
+                <v-flex 
+                    xs12 sm6 md3>
+                    <v-text-field
+                        v-model="ci.payrollDB"
+                        label="128 Payroll System"
+                        required
+                    ></v-text-field>
+                     <v-checkbox
+                        v-model="ci.payrollFlag"
+                        type="checkbox"
+                        required
+                        >
+                    </v-checkbox>
+                </v-flex>
+                <v-flex 
+                    xs12 sm6 md3>
+                    <v-text-field
+                        v-model="ci.onlineDB"
+                        label="128 Employee Online System"
+                        required
+                    ></v-text-field>
+                     <v-checkbox
+                        v-model="ci.empOnlineFlag"
+                        type="checkbox"
+                        required
+                        >
+                    </v-checkbox>
+                </v-flex>
+                <v-flex 
+                    xs12 sm6 md3>
+                    <v-text-field
+                        v-model="ci.onlineDB"
+                        label="128 Human Resource Information System"
+                        required
+                    ></v-text-field>
+                     <v-checkbox
+                        v-model="ci.empOnlineFlag"
+                        type="checkbox"
+                        required
+                        >
+                    </v-checkbox>
+                </v-flex>
 
                 <v-flex md12>
                     <img v-bind:src="'data:image/jpeg;base64,'+ci.logoForReports" class="img-responsive" v-if="ci.logoForReports"/>

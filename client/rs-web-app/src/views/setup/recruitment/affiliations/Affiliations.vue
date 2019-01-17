@@ -7,7 +7,7 @@
                     <v-flex xs12 sm6 md4>
                         <v-text-field
                             label="Code"
-                            v-model="cit.citiCode"
+                            v-model="affiliation.affiliationsCode"
                             :readonly="onEdit"
                             :rules="codeRules">
 
@@ -17,7 +17,7 @@
                     <v-flex xs12 sm6 md8>
                         <v-text-field
                             label="Description"
-                            v-model="cit.citiDesc">
+                            v-model="affiliation.affiliationsDesc">
 
                         </v-text-field>
                     </v-flex>
@@ -48,12 +48,12 @@
         <v-container>
             <v-data-table
                 :headers="headers"
-                :items="citData"
+                :items="affiliationData"
                 class="elevation-1">
 
                 <template slot="items" slot-scope="props">
-                    <td>{{ props.item.citiCode }}</td>
-                    <td class="text-xs-left">{{ props.item.citiDesc }}</td>
+                    <td>{{ props.item.affiliationsCode }}</td>
+                    <td class="text-xs-left">{{ props.item.affiliationsDesc }}</td>
                     <td>
                         <v-btn icon
                             @click.prevent="edit(props.item)">
@@ -75,7 +75,7 @@
                 <v-card-title class="headline">Confirmation</v-card-title>
 
                 <v-card-text>
-                    Do you want to delete this Code: {{ selectedCit.citiCode }}?
+                    Do you want to delete this Code: {{ selectedAff.affiliationsCode }}?
                 </v-card-text>
 
                 <v-card-actions>
@@ -99,18 +99,17 @@
 </template>
 <script>
 import { mapActions, mapState } from "vuex"
-import codeRules from "@/rules/codeRules"
 import Toast from "@/project-modules/toast"
+import codeRules from "@/rules/codeRules"
 
 let toast = new Toast();
-
 export default {
     data() {
         return {
-            valid: false,
-            title: "Citizenship",
-            cit: {},
+            title: "Affiliations/Membership to Organization",
+            affiliation: {},
             codeRules,
+            valid: false,
             isSaving: false,
             isUpdating: false,
             isDeleting: false,
@@ -124,7 +123,7 @@ export default {
             isFocusable: false,
             hasMobileCards: true,
             deleteDialog: false,
-            selectedCit: {},
+            selectedAff: {},
             headers: [
                 {
                     text: 'Code',
@@ -135,32 +134,24 @@ export default {
                 { text: 'Description', value: 'description', align: 'left' },
                 { text: '', value: 'actions' }
             ],
-            apiEndpoint: "api/citizenship"
+            apiEndpoint: "api/affiliations"
         }
     },
     methods: {
-        ...mapActions('citizenship', [
-            'getAllCitizenship'
-        ]),
-        ...mapActions('user', [
-            'decodeToken'
+        ...mapActions('affiliations', [
+            'getAllAffiliations'
         ]),
         save() {
             this.isSaving = true;
-            this.$axios.post(this.apiEndpoint, this.cit)
+            this.$axios.post(this.apiEndpoint, this.affiliation)
                 .then(response => {
                     this.isSaving = false;
                     let { message, hasError } = response.data;
 
                     // Toast custom message
-                    if(hasError) {
-                        toast.error(message)
-                    }else{
-                        toast.success(message)
-                    }
+                    toast.show(message, hasError);
                     // Update List
-                    this.getAllCitizenship();
-                    this.cit = {}
+                    this.cancel();
                 })
                 .catch(err => {
                     this.isSaving = false;
@@ -168,26 +159,18 @@ export default {
         },
         edit(item){
             this.onEdit = true;
-            this.cit = item;
+            this.affiliation = item;
         },
         update() {
             this.isUpdating = true
-            this.$axios.put(this.apiEndpoint, this.cit)
+            this.$axios.put(this.apiEndpoint, this.affiliation)
                 .then(response => {
                     this.isUpdating = false;
-                    this.onEdit = false;
-
                     let { message, hasError } = response.data;
 
-                    if(hasError) {
-                        toast.error(message)
-                    }else{
-                        toast.success(message)
-                    }
-
-                    this.getAllCitizenship();
-
-                    this.cit = {}
+                    // Toast custom message
+                    toast.show(message, hasError);
+                    this.cancel();
                 })
                 .catch(err => {
                     this.isUpdating = false;
@@ -195,22 +178,18 @@ export default {
         },
         deleteInfo(item) {
             this.deleteDialog = true;
-            this.selectedCit = item;
+            this.selectedAff = item;
         },
         deleteConfirmed() {
             this.isDeleting = true;
-            this.$axios.delete(`${this.apiEndpoint}/${this.selectedCit.citiCode}`)
+            this.$axios.delete(`${this.apiEndpoint}/${this.selectedAff.id}`)
                 .then(response => {
-                    this.getAllCitizenship();
-
                     let { message, hasError } = response.data;
 
-                    if(hasError) {
-                        toast.error(message)
-                    }else{
-                        toast.success(message)
-                    }
+                    // Toast custom message
+                    toast.show(message, hasError);
 
+                    this.cancel();
                     this.isDeleting = false;
                     this.deleteDialog = false;
                 })
@@ -223,32 +202,19 @@ export default {
         },
         cancel() {
             this.onEdit = false;
-            this.cit = {}
+            this.affiliation = {}
 
-            this.getAllCitizenship();
+            this.getAllAffiliations();
         }
-        // getCompanyCode() {
-        //     var user = getUserDetails();
-        //     var decodedToken = this.$jwt.decode(user.token);
-            
-        //     this.companyCode = decodedToken.CompanyCode;
-        // }
     },
     computed: {
-        ...mapState('citizenship', {
-            citData: state => state.cit,
+        ...mapState('affiliations', {
+            affiliationData: state => state.affData,
             isLoading: state => state.loading
-        }),
-        ...mapState('user', {
-            companyCode: state => state.companyCode
         })
     },
     created() {
-        // decode token and company code
-        //this.getCompanyCode();
-        this.decodeToken();
-        // get all citizenship
-        this.getAllCitizenship();
+        this.getAllAffiliations();
     }
 }
 </script>

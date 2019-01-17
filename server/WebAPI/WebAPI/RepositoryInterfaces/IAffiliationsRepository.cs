@@ -10,6 +10,7 @@ namespace WebAPI.RepositoryInterfaces
     {
         Task<IEnumerable<Affiliations>> GetAll();
         Task<Affiliations> GetById(int id);
+        Task<Affiliations> GetByCode(string code);
         Task Insert(Affiliations affiliations);
         Task Update(Affiliations affiliations);
         Task Delete(int id);

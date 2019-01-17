@@ -39,13 +39,27 @@ namespace WebAPI.Services
             return CustomMessageHandler.Error("Data doesn't exist");
         }
 
+        public async Task<CustomMessage> DeleteByCode(string code)
+        {
+            var cit = await repo.GetByCode(code);
+            if (cit != null)
+            {
+                await repo.DeleteByCode(code);
+
+                await auditTrailService.Save(new Citizenship(), cit, "DELETE");
+
+                return CustomMessageHandler.RecordDeleted();
+            }
+            return CustomMessageHandler.Error("Data doesn't exist");
+        }
+
         public async Task<CustomMessage> Insert(Citizenship cit)
         {
-            if (String.IsNullOrEmpty(cit.Code) || String.IsNullOrWhiteSpace(cit.Code))
+            if (String.IsNullOrEmpty(cit.CitiCode) || String.IsNullOrWhiteSpace(cit.CitiCode))
             {
                 return CustomMessageHandler.Error("Code: field is required");
             }
-            if ((await repo.GetByCode(cit.Code)) == null)
+            if ((await repo.GetByCode(cit.CitiCode)) == null)
             {
                 await repo.Insert(cit);
 
@@ -59,7 +73,7 @@ namespace WebAPI.Services
 
         public async Task<CustomMessage> Update(Citizenship cit)
         {
-            var citData = await repo.GetByCode(cit.Code);
+            var citData = await repo.GetByCode(cit.CitiCode);
             if (citData != null)
             {
                 await repo.Update(cit);

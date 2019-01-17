@@ -2,24 +2,23 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using WebAPI.Helpers;
 using WebAPI.Models;
 using WebAPI.RepositoryInterfaces;
 using WebAPI.ServiceInterfaces;
 
 namespace WebAPI.Controllers
 {
-    //[Authorize]
-    [Route("api/[controller]")]
+    [Route("api/prt")]
     [ApiController]
-    public class CitizenshipController : ControllerBase
+    public class PersonnelReqTypeController : ControllerBase
     {
-        private readonly ICitizenshipRepository repo;
-        private readonly ICitizenshipService service;
-        public CitizenshipController(ICitizenshipRepository repo,
-            ICitizenshipService service)
+        private readonly IPersonnelRequestTypeRepository repo;
+        private readonly IPersonnelRequestTypeService service;
+        public PersonnelReqTypeController(IPersonnelRequestTypeRepository repo,
+            IPersonnelRequestTypeService service)
         {
             this.repo = repo;
             this.service = service;
@@ -29,17 +28,16 @@ namespace WebAPI.Controllers
         {
             try
             {
-                var c = GetCompanyCodeClaim();
-
-                return Ok(await repo.GetAll());                
-            }catch(Exception ex)
+                return Ok(await repo.GetAll());
+            }
+            catch (Exception ex)
             {
-                return Ok(ex.InnerException);
+                return BadRequest(CustomMessageHandler.Error(ex.Message));
             }
         }
 
         [HttpPost]
-        public async Task<IActionResult> Insert(Citizenship cit)
+        public async Task<IActionResult> Insert(PersonnelRequestType prt)
         {
             try
             {
@@ -47,14 +45,14 @@ namespace WebAPI.Controllers
                 {
                     return BadRequest();
                 }
-
-                var result = await service.Insert(cit);
+                prt.CompanyCode = User.FindFirst("CompanyCode")?.Value;
+                var result = await service.Insert(prt);
 
                 return Ok(result);
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                return BadRequest(CustomMessageHandler.Error(ex.Message));
             }
 
         }
@@ -68,11 +66,12 @@ namespace WebAPI.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                return BadRequest(CustomMessageHandler.Error(ex.Message));
             }
+
         }
         [HttpPut]
-        public async Task<IActionResult> Update(Citizenship cit)
+        public async Task<IActionResult> Update(PersonnelRequestType prt)
         {
             try
             {
@@ -80,14 +79,15 @@ namespace WebAPI.Controllers
                 {
                     return Ok();
                 }
-                var result = await service.Update(cit);
+                var result = await service.Update(prt);
 
                 return Ok(result);
-            }catch(Exception ex)
-            {
-                return BadRequest(ex.Message);
             }
-           
+            catch (Exception ex)
+            {
+                return BadRequest(CustomMessageHandler.Error(ex.Message));
+            }
+
         }
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
@@ -95,38 +95,12 @@ namespace WebAPI.Controllers
             try
             {
                 var result = await service.Delete(id);
-
-                return Ok(result);
-            }
-            catch(Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-            
-        }
-        [HttpDelete("{code}")]
-        public async Task<IActionResult> Delete(string code)
-        {
-            try
-            {
-                var result = await service.DeleteByCode(code);
-
                 return Ok(result);
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                return BadRequest(CustomMessageHandler.Error(ex.Message));
             }
-
-        }
-        //string GetCompanyCodeClaim()
-        //{
-        //    return User.FindFirst("CompanyCode")?.Value;
-        //}
-
-        string GetCompanyCodeClaim()
-        {
-            return User.FindFirst("CompanyCode")?.Value;
 
         }
     }

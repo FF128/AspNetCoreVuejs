@@ -164,6 +164,8 @@ namespace WebAPI
             services.AddScoped<IResidenceTypeService, ResidenceTypeService>();
             services.AddScoped<ISkillsService, SkillsService>();
             services.AddScoped<IDocSubmittedService, DocSubmittedService>();
+            services.AddScoped<IAffiliationsService, AffiliationsService>();
+            services.AddScoped<IPersonnelRequestTypeService, PersonnelRequestTypeService>();
 
         }
 
