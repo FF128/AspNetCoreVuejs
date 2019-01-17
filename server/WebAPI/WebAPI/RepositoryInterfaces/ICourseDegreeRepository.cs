@@ -11,6 +11,7 @@ namespace WebAPI.RepositoryInterfaces
     {
         Task<IEnumerable<CourseDegree>> GetAll();
         Task<CourseDegree> GetById(int id);
+        Task<CourseDegree> GetByCode(string code);
         Task Insert(CourseDegree cd);
         Task Update(CourseDegree cd);
         Task Delete(int id);

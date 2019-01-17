@@ -11,6 +11,7 @@ namespace WebAPI.RepositoryInterfaces
     {
         Task<IEnumerable<LevelsOfEmployee>> GetAll();
         Task<LevelsOfEmployee> GetById(int id);
+        Task<LevelsOfEmployee> GetByCode(string code);
         Task Insert(LevelsOfEmployee loe);
         Task Update(LevelsOfEmployee loe);
         Task Delete(int id);

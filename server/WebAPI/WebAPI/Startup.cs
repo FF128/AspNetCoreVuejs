@@ -149,6 +149,16 @@ namespace WebAPI
             services.AddScoped<ISectionService, SectionService>();
             services.AddScoped<IRankService, RankService>();
             services.AddScoped<IProjectCodeService, ProjectCodeService>();
+            services.AddScoped<IPayHouseService, PayHouseService>();
+            services.AddScoped<IRegionService, RegionService>();
+            services.AddScoped<ILevelsOfEmployeeService, LevelsOfEmployeeService>();
+            services.AddScoped<ICourseDegreeService, CourseDegreeService>();
+            services.AddScoped<IMajorService, MajorService>();
+            services.AddScoped<ISchoolService, SchoolService>();
+            services.AddScoped<IDutiesAndResponsibilitiesService, DutiesAndResponsibilitiesService>();
+            services.AddScoped<IFieldOfInterestService, FieldOfInterestService>();
+            services.AddScoped<IGovExamsService, GovExamsService>();
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

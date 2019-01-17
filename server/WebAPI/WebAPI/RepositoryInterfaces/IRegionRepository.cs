@@ -11,6 +11,7 @@ namespace WebAPI.RepositoryInterfaces
     {
         Task<IEnumerable<Region>> GetAll();
         Task<Region> GetById(int id);
+        Task<Region> GetByCode(string code);
         Task Insert(Region reg);
         Task Update(Region reg);
         Task Delete(int id);

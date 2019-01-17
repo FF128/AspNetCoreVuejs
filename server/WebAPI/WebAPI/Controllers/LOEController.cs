@@ -8,6 +8,8 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
 using Microsoft.AspNetCore.Mvc;
+using WebAPI.ServiceInterfaces;
+using WebAPI.Helpers;
 
 namespace WebAPI.Controllers
 {
@@ -16,9 +18,12 @@ namespace WebAPI.Controllers
     public class LOEController : ControllerBase
     {
         private readonly ILevelsOfEmployeeRepository repo;
-        public LOEController(ILevelsOfEmployeeRepository repo)
+        private readonly ILevelsOfEmployeeService service;
+        public LOEController(ILevelsOfEmployeeRepository repo,
+            ILevelsOfEmployeeService service)
         {
             this.repo = repo;
+            this.service = service;
         }
         [HttpGet]
         public async Task<IActionResult> GetAll()
@@ -29,7 +34,7 @@ namespace WebAPI.Controllers
             }
             catch (Exception ex)
             {
-                return Ok(ex.InnerException);
+                return BadRequest(CustomMessageHandler.Error(ex.Message));
             }
         }
 
@@ -43,13 +48,13 @@ namespace WebAPI.Controllers
                     return BadRequest();
                 }
 
-                await repo.Insert(loe);
+               var result = await service.Insert(loe);
 
-                return Ok();
+                return Ok(result);
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                return BadRequest(CustomMessageHandler.Error(ex.Message));
             }
 
         }
@@ -63,32 +68,40 @@ namespace WebAPI.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                return BadRequest(CustomMessageHandler.Error(ex.Message));
             }
 
         }
         [HttpPut]
         public async Task<IActionResult> Update(LevelsOfEmployee loe)
         {
-            if (!ModelState.IsValid)
+            try
             {
-                return Ok();
-            }
-            await repo.Update(loe);
+                if (!ModelState.IsValid)
+                {
+                    return Ok();
+                }
+                var result = await service.Update(loe);
 
-            return Ok();
+                return Ok(result);
+            }
+            catch(Exception ex)
+            {
+                return BadRequest(CustomMessageHandler.Error(ex.Message));
+            }
+            
         }
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
             try
             {
-                await repo.Delete(id);
-                return Ok();
+                var result = await service.Delete(id);
+                return Ok(result);
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                return BadRequest(CustomMessageHandler.Error(ex.Message));
             }
 
         }

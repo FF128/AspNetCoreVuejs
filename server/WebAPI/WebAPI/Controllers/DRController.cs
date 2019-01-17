@@ -8,6 +8,8 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
 using Microsoft.AspNetCore.Mvc;
+using WebAPI.ServiceInterfaces;
+using WebAPI.Helpers;
 
 namespace WebAPI.Controllers
 {
@@ -16,9 +18,12 @@ namespace WebAPI.Controllers
     public class DRController : ControllerBase
     {
         private readonly IDutiesAndResponsibilitiesRepository repo;
-        public DRController(IDutiesAndResponsibilitiesRepository repo)
+        private readonly IDutiesAndResponsibilitiesService service;
+        public DRController(IDutiesAndResponsibilitiesRepository repo,
+            IDutiesAndResponsibilitiesService service)
         {
             this.repo = repo;
+            this.service = service;
         }
         [HttpGet]
         public async Task<IActionResult> GetAll()
@@ -29,7 +34,7 @@ namespace WebAPI.Controllers
             }
             catch (Exception ex)
             {
-                return Ok(ex.InnerException);
+                return BadRequest(CustomMessageHandler.Error(ex.Message));
             }
         }
 
@@ -43,13 +48,13 @@ namespace WebAPI.Controllers
                     return BadRequest();
                 }
 
-                await repo.Insert(dr);
+                var result = await service.Insert(dr);
 
-                return Ok();
+                return Ok(result);
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                return BadRequest(CustomMessageHandler.Error(ex.Message));
             }
 
         }
@@ -64,20 +69,28 @@ namespace WebAPI.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                return BadRequest(CustomMessageHandler.Error(ex.Message));
             }
 
         }
         [HttpPut]
         public async Task<IActionResult> Update(DutiesAndResponsibilities dr)
         {
-            if (!ModelState.IsValid)
+            try
             {
-                return Ok();
-            }
-            await repo.Update(dr);
+                if (!ModelState.IsValid)
+                {
+                    return Ok();
+                }
+                var result = await service.Update(dr);
 
-            return Ok();
+                return Ok(result);
+            }
+            catch(Exception ex)
+            {
+                return BadRequest(CustomMessageHandler.Error(ex.Message));
+            }
+           
         }
         [HttpDelete]
         [Route("{id}")]
@@ -85,12 +98,12 @@ namespace WebAPI.Controllers
         {
             try
             {
-                await repo.Delete(id);
-                return Ok();
+                var result = await service.Delete(id);
+                return Ok(result);
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                return BadRequest(CustomMessageHandler.Error(ex.Message));
             }
 
         }

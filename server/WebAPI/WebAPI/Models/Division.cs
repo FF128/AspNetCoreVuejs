@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Web;
 
 namespace WebAPI.Models
 {
+    [Description("Division")]
     public class Division : BaseModel
     {
         public int Id { get; set; }

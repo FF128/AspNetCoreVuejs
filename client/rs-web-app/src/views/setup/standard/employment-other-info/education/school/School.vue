@@ -1,13 +1,15 @@
 <template>
     <div>
-        <v-form>
+        <v-form v-model="valid">
             <v-container>
                 <h1>{{title}}</h1>
                 <v-layout row wrap>
                     <v-flex xs12 sm6 md4>
                         <v-text-field
                             label="Code"
-                            v-model="school.schoolCode">
+                            v-model="school.schoolCode"
+                            :readonly="onEdit"
+                            :rules="codeRules">
 
                         </v-text-field>
                     </v-flex>
@@ -22,13 +24,17 @@
                     <v-btn
                         color="success"
                         @click.prevent="save"
-                        v-if="!onEdit">
+                        v-if="!onEdit"
+                        :loading="isSaving"
+                        :disabled="!valid">
                         Save
                     </v-btn>
                     <div v-if="onEdit">
                         <v-btn
                             color="success"
-                            @click.prevent="update">
+                            @click.prevent="update"
+                            :loading="isUpdating"
+                            :disabled="!valid">
                             Update
                         </v-btn>
                         <v-btn
@@ -93,11 +99,17 @@
 </template>
 <script>
 import { mapActions, mapState } from "vuex"
+import Toast from "@/project-modules/toast"
+import codeRules from "@/rules/codeRules"
+
+let toast = new Toast();
 export default {
     data() {
         return {
             title: "School",
             school: {},
+            codeRules,
+            valid: false,
             isSaving: false,
             isUpdating: false,
             isDeleting: false,
@@ -134,10 +146,12 @@ export default {
             this.$axios.post(this.apiEndpoint, this.school)
                 .then(response => {
                     this.isSaving = false;
+                    let { message, hasError } = response.data;
 
+                    // Toast custom message
+                    toast.show(message, hasError);
                     // Update List
-                    this.getAllSchools();
-                    this.school = {}
+                    this.cancel();
                 })
                 .catch(err => {
                     this.isSaving = false;
@@ -152,7 +166,10 @@ export default {
             this.$axios.put(this.apiEndpoint, this.school)
                 .then(response => {
                     this.isUpdating = false;
-                    
+                    let { message, hasError } = response.data;
+
+                    // Toast custom message
+                    toast.show(message, hasError);
                     this.cancel();
                 })
                 .catch(err => {
@@ -167,8 +184,12 @@ export default {
             this.isDeleting = true;
             this.$axios.delete(`${this.apiEndpoint}/${this.selectedSchool.id}`)
                 .then(response => {
-                    this.getAllSchools();
-                    
+                    let { message, hasError } = response.data;
+
+                    // Toast custom message
+                    toast.show(message, hasError);
+
+                    this.cancel();
                     this.isDeleting = false;
                     this.deleteDialog = false;
                 })

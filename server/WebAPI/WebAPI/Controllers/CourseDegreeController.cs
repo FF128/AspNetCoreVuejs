@@ -8,6 +8,8 @@ using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
+using WebAPI.ServiceInterfaces;
+using WebAPI.Helpers;
 
 namespace WebAPI.Controllers
 {
@@ -16,9 +18,12 @@ namespace WebAPI.Controllers
     public class CourseDegreeController : ControllerBase
     {
         private readonly ICourseDegreeRepository repo;
-        public CourseDegreeController(ICourseDegreeRepository repo)
+        private readonly ICourseDegreeService service;
+        public CourseDegreeController(ICourseDegreeRepository repo,
+            ICourseDegreeService service)
         {
             this.repo = repo;
+            this.service = service;
         }
         [HttpGet]
         public async Task<IActionResult> GetAll()
@@ -29,7 +34,7 @@ namespace WebAPI.Controllers
             }
             catch (Exception ex)
             {
-                return Ok(ex.InnerException);
+                return BadRequest(CustomMessageHandler.Error(ex.Message));
             }
         }
 
@@ -43,18 +48,17 @@ namespace WebAPI.Controllers
                     return BadRequest();
                 }
 
-                await repo.Insert(cd);
+                var result =  await service.Insert(cd);
 
-                return Ok();
+                return Ok(result);
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                return BadRequest(CustomMessageHandler.Error(ex.Message));
             }
 
         }
-        [HttpGet]
-        [Route("{id}")]
+        [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
             try
@@ -64,32 +68,40 @@ namespace WebAPI.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                return BadRequest(CustomMessageHandler.Error(ex.Message));
             }
 
         }
         [HttpPut]
         public async Task<IActionResult> Update(CourseDegree cd)
         {
-            if (!ModelState.IsValid)
+            try
             {
-                return Ok();
-            }
-            await repo.Update(cd);
+                if (!ModelState.IsValid)
+                {
+                    return Ok();
+                }
+                var result = await service.Update(cd);
 
-            return Ok();
+                return Ok(result);
+            }
+            catch(Exception ex)
+            {
+                return BadRequest(CustomMessageHandler.Error(ex.Message));
+            }
+            
         }
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
             try
             {
-                await repo.Delete(id);
-                return Ok();
+                var result = await service.Delete(id);
+                return Ok(result);
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                return BadRequest(CustomMessageHandler.Error(ex.Message));
             }
 
         }

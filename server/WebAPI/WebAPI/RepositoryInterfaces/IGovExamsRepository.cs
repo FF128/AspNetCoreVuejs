@@ -11,6 +11,7 @@ namespace WebAPI.RepositoryInterfaces
     {
         Task<IEnumerable<GovExams>> GetAll();
         Task<GovExams> GetById(int id);
+        Task<GovExams> GetByCode(string code);
         Task Insert(GovExams ge);
         Task Update(GovExams ge);
         Task Delete(int id);

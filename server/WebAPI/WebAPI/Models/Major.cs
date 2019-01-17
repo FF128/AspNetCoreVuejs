@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Web;
 
 namespace WebAPI.Models
 {
+    [Description("Major")]
     public class Major : BaseModel
     {
         public int Id { get; set; }

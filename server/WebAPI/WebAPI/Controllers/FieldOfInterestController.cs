@@ -8,6 +8,8 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
 using Microsoft.AspNetCore.Mvc;
+using WebAPI.ServiceInterfaces;
+using WebAPI.Helpers;
 
 namespace WebAPI.Controllers
 {
@@ -16,9 +18,12 @@ namespace WebAPI.Controllers
     public class FieldOfInterestController : ControllerBase
     {
         private readonly IFieldOfInterestRepository repo;
-        public FieldOfInterestController(IFieldOfInterestRepository repo)
+        private readonly IFieldOfInterestService service;
+        public FieldOfInterestController(IFieldOfInterestRepository repo,
+            IFieldOfInterestService service)
         {
             this.repo = repo;
+            this.service = service;
         }
         //[Route("all")]
         [HttpGet]
@@ -30,7 +35,7 @@ namespace WebAPI.Controllers
             }
             catch (Exception ex)
             {
-                return Ok(ex.InnerException);
+                return BadRequest(CustomMessageHandler.Error(ex.Message));
             }
         }
 
@@ -44,18 +49,17 @@ namespace WebAPI.Controllers
                     return BadRequest();
                 }
 
-                await repo.Insert(foi);
+               var result = await service.Insert(foi);
 
-                return Ok();
+                return Ok(result);
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                return BadRequest(CustomMessageHandler.Error(ex.Message));
             }
 
         }
-        [HttpGet]
-        [Route("{id}")]
+        [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
             try
@@ -65,33 +69,40 @@ namespace WebAPI.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                return BadRequest(CustomMessageHandler.Error(ex.Message));
             }
 
         }
         [HttpPut]
         public async Task<IActionResult> Update(FieldOfInterest foi)
         {
-            if (!ModelState.IsValid)
+            try
             {
-                return Ok();
-            }
-            await repo.Update(foi);
+                if (!ModelState.IsValid)
+                {
+                    return Ok();
+                }
+                var result = await service.Update(foi);
 
-            return Ok();
+                return Ok(result);
+            }
+            catch(Exception ex)
+            {
+                return BadRequest(CustomMessageHandler.Error(ex.Message));
+            }
+            
         }
-        [HttpDelete]
-        [Route("{id}")]
+        [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
             try
             {
-                await repo.Delete(id);
-                return Ok();
+                var result =  await service.Delete(id);
+                return Ok(result);
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                return BadRequest(CustomMessageHandler.Error(ex.Message));
             }
 
         }

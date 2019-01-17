@@ -37,6 +37,17 @@ namespace WebAPI.Repositories
             }
         }
 
+        public async Task<LevelsOfEmployee> GetByCode(string code)
+        {
+            using (var conn = connectionFactory.Connection)
+            {
+                return
+                    await conn.QueryFirstOrDefaultAsync<LevelsOfEmployee>("sp_LevelsOfEmployeeSetUp_ViewByCode",
+                        new { Code = code },
+                        commandType: CommandType.StoredProcedure);
+            }
+        }
+
         public async Task<LevelsOfEmployee> GetById(int id)
         {
             using (var conn = connectionFactory.Connection)

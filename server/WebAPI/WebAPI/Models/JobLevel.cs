@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace WebAPI.Models
 {
+    [Description("Job Level")]
     public class JobLevel : BaseModelCodeDescription
     {
         public int Id { get; set; }

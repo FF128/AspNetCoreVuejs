@@ -7,6 +7,7 @@ using WebAPI.RepositoryInterfaces;
 using WebAPI.ServiceInterfaces;
 using _128Utility.Network.Machine;
 using WebAPI.Utilities;
+using System.ComponentModel;
 
 namespace WebAPI.Services
 {
@@ -33,17 +34,28 @@ namespace WebAPI.Services
                 //var cloneData = utils.Clone<T>(newObj);
 
                 var auditTrail = new AuditTrail();
-                //auditTrail.
                 auditTrail.ClientNetAddress = GetIpAddress;
                 auditTrail.HostName = GetHost;
                 auditTrail.Trans = trans;
                 auditTrail.Message = message;
+                auditTrail.Module = GetDescription(typeof(T));
 
                 await repo.Insert(auditTrail);
             }catch(Exception ex)
             {
                 throw new Exception(ex.Message);
             }
+        }
+        private string GetDescription(Type type)
+        {
+            var descriptions = (DescriptionAttribute[])
+                type.GetCustomAttributes(typeof(DescriptionAttribute), false);
+
+            if (descriptions.Length == 0)
+            {
+                return null;
+            }
+            return descriptions[0].Description;
         }
     }
 }

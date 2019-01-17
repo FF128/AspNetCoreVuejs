@@ -11,6 +11,7 @@ namespace WebAPI.RepositoryInterfaces
     {
         Task<IEnumerable<PayHouse>> GetAll();
         Task<PayHouse> GetById(int id);
+        Task<PayHouse> GetByCode(string code);
         Task Insert(PayHouse ph);
         Task Update(PayHouse ph);
         Task Delete(int id);
