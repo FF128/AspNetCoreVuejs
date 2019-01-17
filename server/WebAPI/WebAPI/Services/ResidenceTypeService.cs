@@ -9,12 +9,12 @@ using WebAPI.ServiceInterfaces;
 
 namespace WebAPI.Services
 {
-    public class JobReqService : IJobReqService
+    public class ResidenceTypeService : IResidenceTypeService
     {
-        private readonly IJobReqRepository repo;
-        private readonly IAuditTrailService<JobReq> auditTrailService;
-        public JobReqService(IJobReqRepository repo,
-             IAuditTrailService<JobReq> auditTrailService)
+        private readonly IResidenceTypeRepository repo;
+        private readonly IAuditTrailService<ResidenceType> auditTrailService;
+        public ResidenceTypeService(IResidenceTypeRepository repo,
+             IAuditTrailService<ResidenceType> auditTrailService)
         {
             this.repo = repo;
             this.auditTrailService = auditTrailService;
@@ -22,30 +22,30 @@ namespace WebAPI.Services
 
         public async Task<CustomMessage> Delete(int id)
         {
-            var payHouse = await repo.GetById(id);
-            if (payHouse != null)
+            var resType = await repo.GetById(id);
+            if (resType != null)
             {
                 await repo.Delete(id);
 
-                await auditTrailService.Save(new JobReq(), payHouse, "DELETE");
+                await auditTrailService.Save(new ResidenceType(), resType, "DELETE");
 
                 return CustomMessageHandler.RecordDeleted();
             }
             return CustomMessageHandler.Error("Data doesn't exist");
         }
 
-        public async Task<CustomMessage> Insert(JobReq ph)
+        public async Task<CustomMessage> Insert(ResidenceType rt)
         {
-            if (String.IsNullOrEmpty(ph.JobReqCode) || String.IsNullOrWhiteSpace(ph.JobReqCode))
+            if (String.IsNullOrEmpty(rt.ResidenceTypeCode) || String.IsNullOrWhiteSpace(rt.ResidenceTypeCode))
             {
                 return CustomMessageHandler.Error("Code: field is required");
             }
 
-            if ((await repo.GetByCode(ph.JobReqCode)) == null)
+            if ((await repo.GetByCode(rt.ResidenceTypeCode)) == null)
             {
-                await repo.Insert(ph);
+                await repo.Insert(rt);
 
-                await auditTrailService.Save(new JobReq(), ph, "ADD");
+                await auditTrailService.Save(new ResidenceType(), rt, "ADD");
 
                 return CustomMessageHandler.RecordAdded();
 
@@ -53,15 +53,15 @@ namespace WebAPI.Services
             return CustomMessageHandler.Error("Code is already used");
         }
 
-        public async Task<CustomMessage> Update(JobReq ph)
+        public async Task<CustomMessage> Update(ResidenceType rt)
         {
-            var payHouse = await repo.GetByCode(ph.JobReqCode);
-            if (payHouse != null)
+            var resType = await repo.GetByCode(rt.ResidenceTypeCode);
+            if (resType != null)
             {
-                await repo.Update(ph);
+                await repo.Update(rt);
 
                 //Audit Trail
-                await auditTrailService.Save(payHouse, ph, "EDIT");
+                await auditTrailService.Save(resType, rt, "EDIT");
 
                 return CustomMessageHandler.RecordUpdated();
 

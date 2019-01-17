@@ -11,6 +11,7 @@ namespace WebAPI.RepositoryInterfaces
     {
         Task<IEnumerable<License>> GetAll();
         Task<License> GetById(int id);
+        Task<License> GetByCode(string code);
         Task Insert(License lic);
         Task Update(License lic);
         Task Delete(int id);

@@ -11,6 +11,7 @@ namespace WebAPI.RepositoryInterfaces
     {
         Task<IEnumerable<ResidenceType>> GetAll();
         Task<ResidenceType> GetById(int id);
+        Task<ResidenceType> GetByCode(string code);
         Task Insert(ResidenceType rt);
         Task Update(ResidenceType rt);
         Task Delete(int id);

@@ -7,10 +7,10 @@ using WebAPI.Models;
 
 namespace WebAPI.ServiceInterfaces
 {
-    public interface IJobReqService
+    public interface ILicenseService
     {
-        Task<CustomMessage> Insert(JobReq jr);
-        Task<CustomMessage> Update(JobReq jr);
+        Task<CustomMessage> Insert(License lic);
+        Task<CustomMessage> Update(License lic);
         Task<CustomMessage> Delete(int id);
     }
 }

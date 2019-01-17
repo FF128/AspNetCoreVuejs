@@ -8,6 +8,8 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
 using Microsoft.AspNetCore.Mvc;
+using WebAPI.ServiceInterfaces;
+using WebAPI.Helpers;
 
 namespace WebAPI.Controllers
 {
@@ -16,9 +18,12 @@ namespace WebAPI.Controllers
     public class SkillsController : ControllerBase
     {
         private readonly ISkillsRepository repo;
-        public SkillsController(ISkillsRepository repo)
+        private readonly ISkillsService service;
+        public SkillsController(ISkillsRepository repo,
+            ISkillsService service)
         {
             this.repo = repo;
+            this.service = service;
         }
         [HttpGet]
         public async Task<IActionResult> GetAll()
@@ -29,7 +34,7 @@ namespace WebAPI.Controllers
             }
             catch (Exception ex)
             {
-                return Ok(ex.InnerException);
+                return BadRequest(CustomMessageHandler.Error(ex.Message));
             }
         }
 
@@ -43,13 +48,13 @@ namespace WebAPI.Controllers
                     return BadRequest();
                 }
 
-                await repo.Insert(sk);
+                var result = await service.Insert(sk);
 
-                return Ok();
+                return Ok(result);
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                return BadRequest(CustomMessageHandler.Error(ex.Message));
             }
 
         }
@@ -63,7 +68,7 @@ namespace WebAPI.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                return BadRequest(CustomMessageHandler.Error(ex.Message));
             }
 
         }
@@ -76,13 +81,13 @@ namespace WebAPI.Controllers
                 {
                     return Ok();
                 }
-                await repo.Update(sk);
+                var result = await service.Update(sk);
 
-                return Ok();
+                return Ok(result);
             }
             catch(Exception ex)
             {
-                return BadRequest(ex.Message);
+                return BadRequest(CustomMessageHandler.Error(ex.Message));
             }
             
         }
@@ -91,12 +96,12 @@ namespace WebAPI.Controllers
         {
             try
             {
-                await repo.Delete(id);
-                return Ok();
+                var result = await service.Delete(id);
+                return Ok(result);
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                return BadRequest(CustomMessageHandler.Error(ex.Message));
             }
 
         }

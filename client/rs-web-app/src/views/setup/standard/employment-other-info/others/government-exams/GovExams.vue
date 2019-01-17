@@ -146,7 +146,7 @@ export default {
             this.$axios.post(this.apiEndpoint, this.govExam)
                 .then(response => {
                     this.isSaving = false;
-                     let { message, hasError } = response.data;
+                    let { message, hasError } = response.data;
 
                     // Toast custom message
                     toast.show(message, hasError);

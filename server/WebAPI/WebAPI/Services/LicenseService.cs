@@ -9,12 +9,12 @@ using WebAPI.ServiceInterfaces;
 
 namespace WebAPI.Services
 {
-    public class JobReqService : IJobReqService
+    public class LicenseService : ILicenseService
     {
-        private readonly IJobReqRepository repo;
-        private readonly IAuditTrailService<JobReq> auditTrailService;
-        public JobReqService(IJobReqRepository repo,
-             IAuditTrailService<JobReq> auditTrailService)
+        private readonly ILicenseRepository repo;
+        private readonly IAuditTrailService<License> auditTrailService;
+        public LicenseService(ILicenseRepository repo,
+             IAuditTrailService<License> auditTrailService)
         {
             this.repo = repo;
             this.auditTrailService = auditTrailService;
@@ -22,30 +22,30 @@ namespace WebAPI.Services
 
         public async Task<CustomMessage> Delete(int id)
         {
-            var payHouse = await repo.GetById(id);
-            if (payHouse != null)
+            var license = await repo.GetById(id);
+            if (license != null)
             {
                 await repo.Delete(id);
 
-                await auditTrailService.Save(new JobReq(), payHouse, "DELETE");
+                await auditTrailService.Save(new License(), license, "DELETE");
 
                 return CustomMessageHandler.RecordDeleted();
             }
             return CustomMessageHandler.Error("Data doesn't exist");
         }
 
-        public async Task<CustomMessage> Insert(JobReq ph)
+        public async Task<CustomMessage> Insert(License lic)
         {
-            if (String.IsNullOrEmpty(ph.JobReqCode) || String.IsNullOrWhiteSpace(ph.JobReqCode))
+            if (String.IsNullOrEmpty(lic.LicenseCode) || String.IsNullOrWhiteSpace(lic.LicenseCode))
             {
                 return CustomMessageHandler.Error("Code: field is required");
             }
 
-            if ((await repo.GetByCode(ph.JobReqCode)) == null)
+            if ((await repo.GetByCode(lic.LicenseCode)) == null)
             {
-                await repo.Insert(ph);
+                await repo.Insert(lic);
 
-                await auditTrailService.Save(new JobReq(), ph, "ADD");
+                await auditTrailService.Save(new License(), lic, "ADD");
 
                 return CustomMessageHandler.RecordAdded();
 
@@ -53,15 +53,15 @@ namespace WebAPI.Services
             return CustomMessageHandler.Error("Code is already used");
         }
 
-        public async Task<CustomMessage> Update(JobReq ph)
+        public async Task<CustomMessage> Update(License lic)
         {
-            var payHouse = await repo.GetByCode(ph.JobReqCode);
-            if (payHouse != null)
+            var license = await repo.GetByCode(lic.LicenseCode);
+            if (license != null)
             {
-                await repo.Update(ph);
+                await repo.Update(lic);
 
                 //Audit Trail
-                await auditTrailService.Save(payHouse, ph, "EDIT");
+                await auditTrailService.Save(license, lic, "EDIT");
 
                 return CustomMessageHandler.RecordUpdated();
 

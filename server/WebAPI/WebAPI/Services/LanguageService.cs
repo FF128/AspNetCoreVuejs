@@ -9,12 +9,12 @@ using WebAPI.ServiceInterfaces;
 
 namespace WebAPI.Services
 {
-    public class JobReqService : IJobReqService
+    public class LanguageService : ILanguageService
     {
-        private readonly IJobReqRepository repo;
-        private readonly IAuditTrailService<JobReq> auditTrailService;
-        public JobReqService(IJobReqRepository repo,
-             IAuditTrailService<JobReq> auditTrailService)
+        private readonly ILanguageRepository repo;
+        private readonly IAuditTrailService<Language> auditTrailService;
+        public LanguageService(ILanguageRepository repo,
+             IAuditTrailService<Language> auditTrailService)
         {
             this.repo = repo;
             this.auditTrailService = auditTrailService;
@@ -22,30 +22,30 @@ namespace WebAPI.Services
 
         public async Task<CustomMessage> Delete(int id)
         {
-            var payHouse = await repo.GetById(id);
-            if (payHouse != null)
+            var language = await repo.GetById(id);
+            if (language != null)
             {
                 await repo.Delete(id);
 
-                await auditTrailService.Save(new JobReq(), payHouse, "DELETE");
+                await auditTrailService.Save(new Language(), language, "DELETE");
 
                 return CustomMessageHandler.RecordDeleted();
             }
             return CustomMessageHandler.Error("Data doesn't exist");
         }
 
-        public async Task<CustomMessage> Insert(JobReq ph)
+        public async Task<CustomMessage> Insert(Language lang)
         {
-            if (String.IsNullOrEmpty(ph.JobReqCode) || String.IsNullOrWhiteSpace(ph.JobReqCode))
+            if (String.IsNullOrEmpty(lang.LanguageCode) || String.IsNullOrWhiteSpace(lang.LanguageCode))
             {
                 return CustomMessageHandler.Error("Code: field is required");
             }
 
-            if ((await repo.GetByCode(ph.JobReqCode)) == null)
+            if ((await repo.GetByCode(lang.LanguageCode)) == null)
             {
-                await repo.Insert(ph);
+                await repo.Insert(lang);
 
-                await auditTrailService.Save(new JobReq(), ph, "ADD");
+                await auditTrailService.Save(new Language(), lang, "ADD");
 
                 return CustomMessageHandler.RecordAdded();
 
@@ -53,15 +53,15 @@ namespace WebAPI.Services
             return CustomMessageHandler.Error("Code is already used");
         }
 
-        public async Task<CustomMessage> Update(JobReq ph)
+        public async Task<CustomMessage> Update(Language lang)
         {
-            var payHouse = await repo.GetByCode(ph.JobReqCode);
-            if (payHouse != null)
+            var language = await repo.GetByCode(lang.LanguageCode);
+            if (language != null)
             {
-                await repo.Update(ph);
+                await repo.Update(lang);
 
                 //Audit Trail
-                await auditTrailService.Save(payHouse, ph, "EDIT");
+                await auditTrailService.Save(language, lang, "EDIT");
 
                 return CustomMessageHandler.RecordUpdated();
 

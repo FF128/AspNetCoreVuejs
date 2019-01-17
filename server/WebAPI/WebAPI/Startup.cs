@@ -158,6 +158,12 @@ namespace WebAPI
             services.AddScoped<IDutiesAndResponsibilitiesService, DutiesAndResponsibilitiesService>();
             services.AddScoped<IFieldOfInterestService, FieldOfInterestService>();
             services.AddScoped<IGovExamsService, GovExamsService>();
+            services.AddScoped<IJobReqService, JobReqService>();
+            services.AddScoped<ILanguageService, LanguageService>();
+            services.AddScoped<ILicenseService, LicenseService>();
+            services.AddScoped<IResidenceTypeService, ResidenceTypeService>();
+            services.AddScoped<ISkillsService, SkillsService>();
+            services.AddScoped<IDocSubmittedService, DocSubmittedService>();
 
         }
 
