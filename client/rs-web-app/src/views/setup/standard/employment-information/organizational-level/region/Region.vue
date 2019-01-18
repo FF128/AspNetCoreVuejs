@@ -25,7 +25,8 @@
                     <v-flex xs12 sm6 md4>
                         <v-text-field
                             label="Minimum Wage"
-                            v-model="region.minimumWage">
+                            v-model="region.minimumWage"
+                            type="number">
 
                         </v-text-field>
                     </v-flex>
@@ -119,7 +120,9 @@ export default {
     data() {
         return {
             title: "Region",
-            region: {},
+            region: {
+                minimumWage: 0
+            },
             codeRules,
             valid: false,
             isSaving: false,

@@ -53,7 +53,7 @@ namespace WebAPI.Repositories
             {
                 return
                     await conn.QueryFirstOrDefaultAsync<Affiliations>("sp_AffiliationsSetUp_ViewById",
-                        new { Id = id },
+                        new { id },
                         commandType: CommandType.StoredProcedure);
             }
         }

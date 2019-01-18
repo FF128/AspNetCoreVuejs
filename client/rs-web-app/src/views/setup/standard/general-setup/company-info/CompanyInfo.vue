@@ -166,12 +166,12 @@
                 <v-flex 
                     xs12 sm6 md3>
                     <v-text-field
-                        v-model="ci.onlineDB"
+                        v-model="ci.hrisdb"
                         label="128 Human Resource Information System"
                         required
                     ></v-text-field>
                      <v-checkbox
-                        v-model="ci.empOnlineFlag"
+                        v-model="ci.hrisFlag"
                         type="checkbox"
                         required
                         >
@@ -179,7 +179,7 @@
                 </v-flex>
 
                 <v-flex md12>
-                    <img v-bind:src="'data:image/jpeg;base64,'+ci.logoForReports" class="img-responsive" v-if="ci.logoForReports"/>
+                    <!-- <img v-bind:src="'data:image/jpeg;base64,'+ci.logoForReports" class="img-responsive" v-if="ci.logoForReports"/> -->
                     <img :src="logoForReports.imageUrl" height="100" width="100%" v-if="logoForReports.imageUrl"/>
                     <!-- <v-text-field label="Logo for Reports" @click='pickFile' v-model='logoForReports.imageName' prepend-icon='attach_file'></v-text-field>
                     <input
@@ -196,7 +196,7 @@
 
                 
                 <v-flex xs12 sm12 md12>
-                    <img v-bind:src="'data:image/jpeg;base64,'+ci.logoForSite" class="img-responsive" v-if="ci.logoForSite"/>
+                    <!-- <img v-bind:src="'data:image/jpeg;base64,'+ci.logoForSite" class="img-responsive" v-if="ci.logoForSite"/> -->
                     <img :src="logoForSite.imageUrl" height="100" width="100%" v-if="logoForSite.imageUrl"/>
                     <!-- <v-text-field label="Logo for Site" @click='pickFileForSite' v-model='logoForSite.imageName' prepend-icon='attach_file'></v-text-field>
                     <input
@@ -212,7 +212,7 @@
                 </v-flex>
 
                 <v-flex xs12 sm12 md12>
-                    <img v-bind:src="'data:image/jpeg;base64,'+ci.contentForSite" class="img-responsive" v-if="ci.contentForSite"/>
+                    <!-- <img v-bind:src="'data:image/jpeg;base64,'+ci.contentForSite" class="img-responsive" v-if="ci.contentForSite"/> -->
                     <img :src="contentForSite.imageUrl" height="100" width="100%" v-if="contentForSite.imageUrl"/>
                     <!-- <v-text-field label="Content for Site" @click='pickFile' v-model='contentForSite.imageName' prepend-icon='attach_file'></v-text-field>
                     <input
@@ -229,7 +229,8 @@
                 <v-flex xs12 sm12 md12>
                     <v-btn
                         color="success"
-                        @click.prevent="processForm">
+                        @click.prevent="processForm"
+                        :loading="isSaving">
                         Save
                     </v-btn>
                 </v-flex>
@@ -240,6 +241,10 @@
 </template>
 <script>
 import { mapActions, mapState } from "vuex"
+import Toast from "@/project-modules/toast"
+import codeRules from "@/rules/codeRules"
+
+let toast = new Toast();
 export default {
     data() {
         return {
@@ -276,7 +281,10 @@ export default {
         save() {
             this.$axios.post("api/companyInfo", this.ci)
                 .then(response => {
-                    console.log(response.data);
+                    let { message, hasError } = response.data;
+
+                    // Toast custom message
+                    toast.show(message, hasError);
                 })
                 .catch(err => console.log(err));
         },
@@ -318,37 +326,61 @@ export default {
             this.ci.contentForSite = files[0]
         },
         processForm() {
+            this.isSaving = true;
             var bodyFormData = new FormData();
-            bodyFormData.set('code', this.ci.code);
-            bodyFormData.set('address', this.ci.address);
-            bodyFormData.set('province', this.ci.province);
-            bodyFormData.set('city', this.ci.city);
-            bodyFormData.set('zipCode', this.ci.zipCode);
-            bodyFormData.set('telNum', this.ci.telNum);
-            bodyFormData.set('email', this.ci.email);
+            bodyFormData.set('Code', this.ci.code);
+            bodyFormData.set('Description', this.ci.description);
+            bodyFormData.set('Address', this.ci.address);
+            bodyFormData.set('Province', this.ci.province);
+            bodyFormData.set('City', this.ci.city);
+            bodyFormData.set('ZipCode', this.ci.zipCode);
+            bodyFormData.set('TelNum', this.ci.telNum);
+            bodyFormData.set('Email', this.ci.email);
             bodyFormData.set('TIN', this.ci.tin);
             bodyFormData.set('SSS', this.ci.sss);
-            bodyFormData.set('pagibig', this.ci.pagibig);
-            bodyFormData.set('philhealth', this.ci.philhealth);
-            bodyFormData.set('birBranchCode', this.ci.birBranchCode);
+            bodyFormData.set('Pagibig', this.ci.pagibig);
+            bodyFormData.set('Philhealth', this.ci.philhealth);
+            bodyFormData.set('BirBranchCode', this.ci.birBranchCode);
+            bodyFormData.set('TKSFlag', this.ci.tksFlag);
+            bodyFormData.set('PayrollFlag', this.ci.payrollFlag);
+            bodyFormData.set('HRISFlag', this.ci.hrisFlag);
+            bodyFormData.set('EmpOnlineFlag', this.ci.empOnlineFlag);
+            bodyFormData.set('TKSDB', this.ci.tksdb);
+            bodyFormData.set('PayrollDB', this.ci.payrollDB);
+            bodyFormData.set('HRISDB', this.ci.hrisdb);
+            bodyFormData.set('OnlineDB', this.ci.onlineDB);
+
+            // bodyFormData.append('LogoForReports',null);
+            // bodyFormData.append('LogoForSite', null);
+            // bodyFormData.append('ContentForSite', null);
 
             bodyFormData.append('LogoForReportsFile', this.ci.logoForReports);
             bodyFormData.append('LogoForSiteFile', this.ci.logoForSite);
             bodyFormData.append('ContentForSiteFile', this.ci.contentForSite);
-
+            let self = this;
             this.$axios({
-                    method: 'post',
+                    method: 'POST',
                     url: this.apiEndpoint,
                     data: bodyFormData,
                     config: { headers: {'Content-Type': 'multipart/form-data' }}
                 })
                 .then(function (response) {
                     //handle success
-                    console.log(response);
+                    let { message, hasError } = response.data;
+
+                    // Toast custom message
+                    toast.show(message, hasError);
+                    self.isSaving = false;
+                    self.getCompanyInfoByCode();
                 })
-                .catch(function (response) {
+                .catch(function (err) {
                     //handle error
-                    console.log(response);
+                    let { message, hasError } = err.response.data;
+
+                    // Toast custom message
+                    toast.show(message, hasError);
+
+                    self.isSaving = false;
                 });
         },
         getCompanyInfoByCode() {

@@ -26,7 +26,8 @@ let companyInfoRoute = {
 // End Company info
 
 //Citizenship 
-let Citizenship = () => import("../views/setup/standard/personal-information/citizenship/Citizenship.vue");
+const Citizenship = resolve => require(['../views/setup/standard/personal-information/citizenship/Citizenship.vue'], resolve);
+//let Citizenship = () => import("../views/setup/standard/personal-information/citizenship/Citizenship.vue");
 let citizenshipRoute = {
   path: "/",
   component: Layout,
@@ -40,7 +41,7 @@ let citizenshipRoute = {
 // End Citizenship
 
 // Religion 
-let Religion = () => import("../views/setup/standard/personal-information/religion/Religion.vue")
+let Religion = resolve => require(["../views/setup/standard/personal-information/religion/Religion.vue"], resolve);
 let religionRoute = {
   path: "/",
   component: Layout,
@@ -52,6 +53,7 @@ let religionRoute = {
   ]
 }
 // End Religion
+import redirectionRoute from "./redirectionRoute"
 
 import employeeStatusFileRoute from "./employeeStatusFileRoute"
 import jobLevelRoute from "./jobLevelRoute"
@@ -104,6 +106,7 @@ const router = new Router({
       path: "/login",
       component: Login
     },
+    redirectionRoute,
     companyInfoRoute,
     citizenshipRoute,
     religionRoute,

@@ -7,6 +7,7 @@ using AutoMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -50,6 +51,7 @@ namespace WebAPI
             services.AddCors();
 
             services.AddScoped<IConnectionFactory, ConnectionFactory>();
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             // Repositories
             services.AddScoped<ISampleRepository, SampleRepository>();
             services.AddScoped<ICompanyInformationRepository, CompanyInformationRepository>();

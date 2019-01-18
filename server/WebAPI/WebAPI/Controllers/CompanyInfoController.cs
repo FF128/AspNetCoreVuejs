@@ -5,8 +5,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using WebAPI.Dtos;
+using WebAPI.Helpers;
 using WebAPI.Models;
 using WebAPI.RepositoryInterfaces;
+using WebAPI.ServiceInterfaces;
 
 namespace WebAPI.Controllers
 {
@@ -15,9 +18,12 @@ namespace WebAPI.Controllers
     public class CompanyInfoController : ControllerBase
     {
         private readonly ICompanyInformationRepository repo;
-        public CompanyInfoController(ICompanyInformationRepository repo)
+        private readonly ICompanyInfoService service;
+        public CompanyInfoController(ICompanyInformationRepository repo,
+            ICompanyInfoService service)
         {
             this.repo = repo;
+            this.service = service;
         }
 
         [HttpPost]
@@ -29,16 +35,16 @@ namespace WebAPI.Controllers
                 {
                     return BadRequest();
                 }
+                var result = await service.InsertOrUpdate(info);
+               // await repo.Insert(info);
 
-                await repo.Insert(info);
-
-                return Ok();
+                return Ok(result);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                return BadRequest(CustomMessageHandler.Error(ex.Message));
             }
-            
+
         }
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
@@ -49,11 +55,11 @@ namespace WebAPI.Controllers
                 var info = await repo.GetById(id);
                 return Ok(info);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                return BadRequest(CustomMessageHandler.Error(ex.Message));
             }
-            
+
         }
         [HttpGet("company-code/{code}")]
         public async Task<IActionResult> GetByCompanyCode(string code)
@@ -61,27 +67,45 @@ namespace WebAPI.Controllers
             try
             {
                 return Ok(await repo.GetByCompanyCode(code));
-            }catch(Exception ex)
+            }
+            catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                return BadRequest(CustomMessageHandler.Error(ex.Message));
             }
         }
         [HttpPut]
         public async Task<IActionResult> Update(CompanyInformation info)
         {
-            if (!ModelState.IsValid)
+            try
             {
-                return Ok();
-            }
-            await repo.Update(info);
+                if (!ModelState.IsValid)
+                {
+                    return Ok();
+                }
+                var result = await service.InsertOrUpdate(info);
+                //await repo.Update(info);
 
-            return Ok();
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(CustomMessageHandler.Error(ex.Message));
+            }
+
         }
         [HttpDelete]
         public async Task<IActionResult> Delete(int id)
         {
-            await repo.Delete(id);
-            return Ok();
+            try
+            {
+                await repo.Delete(id);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(CustomMessageHandler.Error(ex.Message));
+            }
+
         }
     }
 }

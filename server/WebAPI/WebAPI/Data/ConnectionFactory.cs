@@ -11,10 +11,10 @@ namespace WebAPI.Data
 {
     public class ConnectionFactory : IConnectionFactory
     {
-        private readonly IConfiguration _config;
+        private readonly IConfiguration config;
         public ConnectionFactory(IConfiguration config)
         {
-            _config = config;
+            this.config = config;
         }
 
         public IDbConnection Connection
@@ -24,7 +24,7 @@ namespace WebAPI.Data
                 //var connStr = @"Server=.\SQL2017; Initial Catalog=RS_DB; Integrated Security=false; User Id=sa; Password=128TechInc";
                 //var test = new SqlConnection(connStr);
 
-                return new SqlConnection(_config.GetConnectionString("ConnStr"));
+                return new SqlConnection(config.GetConnectionString("ConnStr"));
 
             }
         }

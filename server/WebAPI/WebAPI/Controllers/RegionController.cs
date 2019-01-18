@@ -97,7 +97,7 @@ namespace WebAPI.Controllers
             try
             {
                 var result = await service.Delete(id);
-                return Ok();
+                return Ok(result);
             }
             catch (Exception ex)
             {

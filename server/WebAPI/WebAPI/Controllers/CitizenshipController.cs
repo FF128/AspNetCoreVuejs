@@ -29,8 +29,6 @@ namespace WebAPI.Controllers
         {
             try
             {
-                var c = GetCompanyCodeClaim();
-
                 return Ok(await repo.GetAll());                
             }catch(Exception ex)
             {

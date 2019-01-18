@@ -72,6 +72,8 @@ namespace WebAPI.Repositories
         {
             using (var conn = connectionFactory.Connection)
             {
+                
+
                 await conn.ExecuteAsync("sp_tbl_fsCitizenship_Insert",
                     cit, commandType: CommandType.StoredProcedure);
             }

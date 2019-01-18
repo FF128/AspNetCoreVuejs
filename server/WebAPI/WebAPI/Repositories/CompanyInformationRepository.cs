@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Dapper;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -16,15 +17,40 @@ namespace WebAPI.Repositories
     public class CompanyInformationRepository: ICompanyInformationRepository
     {
         private readonly IConnectionFactory connectionFactory;
-        private readonly ICompanyInfoService service;
+       // private readonly ICompanyInfoService service;
         private readonly IMapper mapper;
+        private readonly IHttpContextAccessor httpContextAccessor;
         public CompanyInformationRepository(IConnectionFactory connectionFactory,
-            ICompanyInfoService service,
-            IMapper mapper)
+            IMapper mapper,
+            IHttpContextAccessor httpContextAccessor)
         {
             this.connectionFactory = connectionFactory;
-            this.service = service;
             this.mapper = mapper;
+            this.httpContextAccessor = httpContextAccessor;
+        }
+
+        public async Task<bool> CheckDBIfExists(string dbName)
+        {
+            using (var conn = connectionFactory.Connection)
+            {
+
+                var result = await conn.QueryFirstOrDefaultAsync<bool>("sp_CheckDBIfExists",
+                    new { DBName = dbName }, commandType: CommandType.StoredProcedure );
+
+                return result;
+            }
+        }
+
+        public async Task<bool> CheckTableIfExists(string dbName, string tableName)
+        {
+            using (var conn = connectionFactory.Connection)
+            {
+
+                var result = await conn.QueryFirstOrDefaultAsync<bool>("sp_CheckTableIfExists",
+                    new { DBName = dbName, tableName }, commandType: CommandType.StoredProcedure);
+
+                return result;
+            }
         }
 
         public async Task Delete(int id)
@@ -56,6 +82,7 @@ namespace WebAPI.Repositories
                     await conn.QueryFirstOrDefaultAsync<CompanyInformation>("sp_CompanyInfo_GetByCompanyCode",
                         new { CompanyCode = code },
                         commandType: CommandType.StoredProcedure);
+
                 return mapper.Map<CompanyInfoDto>(companyInfo);
             }
         }
@@ -73,20 +100,26 @@ namespace WebAPI.Repositories
             }
         }
 
-        public async Task Insert(CompanyInformation info)
+        public string GetCompanyCode()
+        {
+            //return null;
+            return httpContextAccessor.HttpContext.User.FindFirst("CompanyCode")?.Value;
+        }
+
+        public async Task Insert(CompanyInfoDto info)
         {
             using (var conn = connectionFactory.Connection)
             {
                 try
                 {
-                    info.LogoForReports = service.ConvertFileToByte(info.LogoForReportsFile);
-                    info.LogoForSite = service.ConvertFileToByte(info.LogoForSiteFile);
-                    info.ContentForSite = service.ConvertFileToByte(info.ContentForSiteFile);
+                    //info.LogoForReports = service.ConvertFileToByte(info.LogoForReportsFile);
+                    //info.LogoForSite = service.ConvertFileToByte(info.LogoForSiteFile);
+                    //info.ContentForSite = service.ConvertFileToByte(info.ContentForSiteFile);
 
-                    var ciDto = mapper.Map<CompanyInfoDto>(info);
+                  //  var ciDto = mapper.Map<CompanyInfoDto>(info);
 
                     await conn.ExecuteAsync("sp_CompanyInfo_Insert",
-                        ciDto, commandType: CommandType.StoredProcedure);
+                        info, commandType: CommandType.StoredProcedure);
                 }
                 catch(Exception ex)
                 {
@@ -96,7 +129,7 @@ namespace WebAPI.Repositories
             }
         }
 
-        public async Task Update(CompanyInformation info)
+        public async Task Update(CompanyInfoDto info)
         {
             using(var conn = connectionFactory.Connection)
             {
