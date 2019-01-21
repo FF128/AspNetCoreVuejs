@@ -86,6 +86,12 @@ import skillsRoute from "./skillsRoute"
 import docsRoute from "./docsRoute"
 import affRoute from "./affRoute"
 import prtRoute from "./prtRoute"
+import screenTypeRoute from "./screenTypeRoute"
+import ratingsRoute from "./ratingsRoute"
+import overallRatingsRoute from "./overallRatingsRoute"
+import preEmpReqRoute from "./preEmpReqRoute"
+import dutiesReqRoute from "./dutiesReqRoute"
+import appEntryRoute from "./appEntryRoute"
 
 const router = new Router({
   mode: "history",
@@ -140,7 +146,13 @@ const router = new Router({
     skillsRoute,
     docsRoute,
     affRoute,
-    prtRoute
+    prtRoute,
+    screenTypeRoute,
+    ratingsRoute,
+    overallRatingsRoute,
+    preEmpReqRoute,
+    dutiesReqRoute,
+    appEntryRoute
   ]
 });
 

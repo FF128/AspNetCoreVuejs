@@ -11,6 +11,7 @@ namespace WebAPI.Helpers
             CreateMap<CompanyInfoDto, CompanyInformation>();
             CreateMap<User, UserDto>();
             CreateMap<UserDto, User>();
+            CreateMap<PreEmpReqEmpStatusDesignationDto, PreEmpReq>();
         }
     }
 }

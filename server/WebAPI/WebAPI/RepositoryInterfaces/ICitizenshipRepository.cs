@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using WebAPI.Dtos;
 using WebAPI.Models;
 
 namespace WebAPI.RepositoryInterfaces
@@ -11,10 +12,14 @@ namespace WebAPI.RepositoryInterfaces
         Task<IEnumerable<Citizenship>> GetAll();
         Task<Citizenship> GetById(int id);
         Task<Citizenship> GetByCode(string code);
+        Task<dynamic> GetByCodeFromPayroll(string code, string payrollDB);
+        Task<dynamic> GetByCodeFromHRIS(string code, string hrisDB);
+
         Task Insert(Citizenship cit);
         Task Update(Citizenship cit);
         Task Delete(int id);
         Task DeleteByCode(string code);
-
+        Task InsertToPayrollFileSetUp(CitizenshipInsertToFileSetUpDto dto);
+        Task InsertToHRISFileSetUp(CitizenshipInsertToFileSetUpDto dto);
     }
 }

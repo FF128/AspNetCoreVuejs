@@ -35,6 +35,11 @@ import skills from "./modules/skills"
 import docSubmitted from "./modules/docSubmitted"
 import affiliations from "./modules/affiliation"
 import personnelReqType from "./modules/personnelReqType"
+import screenType from "./modules/screenType"
+import ratings from "./modules/ratings"
+import overallRatings from "./modules/overallRatings"
+import preEmpReq from "./modules/preEmpReq"
+import appEntry from "./modules/appEntry"
 
 Vue.use(Vuex);
 
@@ -76,6 +81,11 @@ export default new Vuex.Store({
     skills,
     docSubmitted,
     affiliations,
-    personnelReqType
+    personnelReqType,
+    screenType,
+    ratings,
+    overallRatings,
+    preEmpReq,
+    appEntry
   }
 });

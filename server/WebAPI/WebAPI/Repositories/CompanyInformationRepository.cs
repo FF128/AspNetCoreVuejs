@@ -17,16 +17,13 @@ namespace WebAPI.Repositories
     public class CompanyInformationRepository: ICompanyInformationRepository
     {
         private readonly IConnectionFactory connectionFactory;
-       // private readonly ICompanyInfoService service;
         private readonly IMapper mapper;
-        private readonly IHttpContextAccessor httpContextAccessor;
+      //  private readonly IHttpContextAccessor httpContextAccessor;
         public CompanyInformationRepository(IConnectionFactory connectionFactory,
-            IMapper mapper,
-            IHttpContextAccessor httpContextAccessor)
+            IMapper mapper)
         {
             this.connectionFactory = connectionFactory;
             this.mapper = mapper;
-            this.httpContextAccessor = httpContextAccessor;
         }
 
         public async Task<bool> CheckDBIfExists(string dbName)
@@ -102,8 +99,8 @@ namespace WebAPI.Repositories
 
         public string GetCompanyCode()
         {
-            //return null;
-            return httpContextAccessor.HttpContext.User.FindFirst("CompanyCode")?.Value;
+            return null;
+           // return httpContextAccessor.HttpContext.User.FindFirst("CompanyCode")?.Value;
         }
 
         public async Task Insert(CompanyInfoDto info)

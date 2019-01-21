@@ -5,6 +5,7 @@ using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using WebAPI.Data;
+using WebAPI.Dtos;
 using WebAPI.Models;
 using WebAPI.RepositoryInterfaces;
 
@@ -72,8 +73,6 @@ namespace WebAPI.Repositories
         {
             using (var conn = connectionFactory.Connection)
             {
-                
-
                 await conn.ExecuteAsync("sp_tbl_fsCitizenship_Insert",
                     cit, commandType: CommandType.StoredProcedure);
             }
@@ -84,6 +83,44 @@ namespace WebAPI.Repositories
             {
                 await conn.ExecuteAsync("sp_tbl_fsCitizenship_Update",
                     cit, commandType: CommandType.StoredProcedure);
+            }
+        }
+        public async Task InsertToPayrollFileSetUp(CitizenshipInsertToFileSetUpDto dto)
+        {
+            using (var conn = connectionFactory.Connection)
+            {
+                await conn.ExecuteAsync("sp_tbl_fsCitizenship_InsertToPayroll",
+                    dto, commandType: CommandType.StoredProcedure);
+            }
+        }
+        public async Task InsertToHRISFileSetUp(CitizenshipInsertToFileSetUpDto dto)
+        {
+            using (var conn = connectionFactory.Connection)
+            {
+                await conn.ExecuteAsync("sp_tbl_fsCitizenship_InsertToHRIS",
+                    dto, commandType: CommandType.StoredProcedure);
+            }
+        }
+
+        public async Task<dynamic> GetByCodeFromPayroll(string code, string payrollDB)
+        {
+            using (var conn = connectionFactory.Connection)
+            {
+                return
+                    await conn.QueryFirstOrDefaultAsync("sp_tbl_fsCitizenship_ViewByCodeFromPayroll",
+                        new { Code = code, DBName = payrollDB },
+                        commandType: CommandType.StoredProcedure);
+            }
+        }
+
+        public async Task<dynamic> GetByCodeFromHRIS(string code, string hrisDB)
+        {
+            using (var conn = connectionFactory.Connection)
+            {
+                return
+                    await conn.QueryFirstOrDefaultAsync("sp_tbl_fsCitizenship_ViewByCodeFromHRIS",
+                        new { Code = code, DBName = hrisDB },
+                        commandType: CommandType.StoredProcedure);
             }
         }
     }

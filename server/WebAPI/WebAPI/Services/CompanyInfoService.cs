@@ -16,12 +16,15 @@ namespace WebAPI.Services
     public class CompanyInfoService : ICompanyInfoService
     {
         private readonly ICompanyInformationRepository repo;
+        private readonly IHttpContextAccessor httpContextAccessor;
         private readonly IMapper mapper;
         public CompanyInfoService(ICompanyInformationRepository repo,
-            IMapper mapper)
+            IMapper mapper,
+            IHttpContextAccessor httpContextAccessor)
         {
             this.repo = repo;
             this.mapper = mapper;
+            this.httpContextAccessor = httpContextAccessor;
         }
         private byte[] ConvertFileToByte(IFormFile file)
         {
@@ -94,5 +97,7 @@ namespace WebAPI.Services
 
             
         }
+
+        public string CompanyCode => httpContextAccessor.HttpContext.User.FindFirst("CompanyCode")?.Value;
     }
 }

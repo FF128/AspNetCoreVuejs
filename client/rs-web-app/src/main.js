@@ -11,6 +11,10 @@ import store from "./store/store";
 import "./filters/filter";
 import VueJWT from 'vuejs-jwt'
 import Toasted from 'vue-toasted';
+// import VueMaterial from 'vue-material'
+// import 'vue-material/dist/vue-material.min.css'
+
+// Vue.use(VueMaterial)
 
 Vue.use(Toasted)
 

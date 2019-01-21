@@ -90,8 +90,15 @@ namespace WebAPI
             services.AddScoped<ISkillsRepository, SkillsRepository>();
             services.AddScoped<IDocSubmittedRepository, DocSubmittedRepository>();
             services.AddScoped<IMajorRepository, MajorRepository>();
-            
+            services.AddScoped<IScreenTypeRepository, ScreenTypeRepository>();
+            services.AddScoped<IRatingsRepository, RatingsRepository>();
+            services.AddScoped<IOverallRatingsRepository, OverallRatingsRepository>();
+            services.AddScoped<IPreEmpReqRepository, PreEmpReqRepository>();
+            services.AddScoped<IAppEntryGenInfoRepository, AppEntryGenInfoRepository>();
+            services.AddScoped<IAppEntryTextCertRepository, AppEntryTextCertRepository>();
+            services.AddScoped<IAppEntryEssayInfoRepository, AppEntryEssayInfoRepository>();
 
+            #region JWT Service Configuration
             var appSettingsSection = Configuration.GetSection("AppSettings");
             services.Configure<AppSettings>(appSettingsSection);
 
@@ -130,6 +137,8 @@ namespace WebAPI
                     ValidateAudience = false
                 };
             });
+            #endregion
+
 
             // Services 
             services.AddScoped<IUserService, UserService>();
@@ -168,6 +177,13 @@ namespace WebAPI
             services.AddScoped<IDocSubmittedService, DocSubmittedService>();
             services.AddScoped<IAffiliationsService, AffiliationsService>();
             services.AddScoped<IPersonnelRequestTypeService, PersonnelRequestTypeService>();
+            services.AddScoped<IScreenTypeService, ScreenTypeService>();
+            services.AddScoped<IRatingsService, RatingsService>();
+            services.AddScoped<IOverallRatingsService, OverallRatingsService>();
+            services.AddScoped<IPreEmpReqService, PreEmpReqService>();
+            services.AddScoped<IAppEntryGenInfoService, AppEntryGenInfoService>();
+            services.AddScoped<IAppEntryTextCertService, AppEntryTextCertService>();
+            services.AddScoped<IAppEntryEssayInfoService, AppEntryEssayInfoService>();
 
         }
 

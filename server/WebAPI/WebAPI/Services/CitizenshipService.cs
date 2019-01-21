@@ -9,6 +9,7 @@ using WebAPI.ServiceInterfaces;
 using WebAPI.Utilities;
 using _128Utility.Network.Machine;
 using Microsoft.AspNetCore.Http;
+using WebAPI.Dtos;
 
 namespace WebAPI.Services
 {
@@ -85,80 +86,129 @@ namespace WebAPI.Services
                 }
                 else
                 {
-                    // SAVE
-
-
-                }
-                
-                if(companyInfo.PayrollFlag) // Check if Payroll is integrated
-                {
-                    #region Check if Payroll Database exists
-
-                    if (await comInfoRepo.CheckDBIfExists(companyInfo.PayrollDB)) 
+                    // PAYROLL 
+                    var result = await comInfoRepo.CheckTableIfExists(companyInfo.PayrollDB, "tbl_fsCitizenship");
+                    if (result && companyInfo.PayrollFlag)
                     {
+                        // Check from payroll database
+                        var results = await repo.GetByCodeFromPayroll(cit.CitiCode, companyInfo.PayrollDB);
+                        if(results != null)
+                        {
+                            // SAVE TO PAYROLL DB
+                            await repo.InsertToPayrollFileSetUp(new CitizenshipInsertToFileSetUpDto
+                            {
+                                CitiCode = cit.CitiCode,
+                                CitiDesc = cit.CitiDesc,
+                                DBName = companyInfo.PayrollDB,
+                                CreatedBy = "" // Current User
+                            });
+                        }
                         
-                        var result = await comInfoRepo.CheckTableIfExists(companyInfo.PayrollDB, "tbl_fsCitizenship");
-                        if(result)
+                    }
+
+                    // TIME KEEPING
+                    var tksResult = await comInfoRepo.CheckTableIfExists(companyInfo.TKSDB, "tbl_fsCitizenship");
+                    if (tksResult && companyInfo.TKSFlag)
+                    {
+
+                        // SAVE TO TKS DB
+                        await repo.InsertToPayrollFileSetUp(new CitizenshipInsertToFileSetUpDto
                         {
-                            //save
-                        }
+                            CitiCode = cit.CitiCode,
+                            CitiDesc = cit.CitiDesc,
+                            DBName = companyInfo.TKSDB,
+                            CreatedBy = "" // Current User
+                        });
                     }
-                    else
+                    // HRIS
+                    var hrisResult = await comInfoRepo.CheckTableIfExists(companyInfo.HRISDB, "tbl_fsCitizenship");
+                    if (hrisResult && companyInfo.HRISFlag)
                     {
-                        return CustomMessageHandler.Error("Database doesn't exist!");
-                    }
-                    #endregion
-                }
-                if (companyInfo.TKSFlag) // Check if Timekeeping is integrated
-                {
-                    #region Check if TKS Database exists
-
-                    if (await comInfoRepo.CheckDBIfExists(companyInfo.TKSDB))
-                    {
-                        var result = await comInfoRepo.CheckTableIfExists(companyInfo.TKSDB, "tbl_fsCitizenship");
-                        if (result)
+                        var results = await repo.GetByCodeFromHRIS(cit.CitiCode, companyInfo.HRISDB);
+                        if(results != null)
                         {
-                            // Save
+                            // SAVE TO HRIS DB
+                            await repo.InsertToHRISFileSetUp(new CitizenshipInsertToFileSetUpDto
+                            {
+                                CitiCode = cit.CitiCode,
+                                CitiDesc = cit.CitiDesc,
+                                DBName = companyInfo.HRISDB,
+                                CreatedBy = "" // Current User
+                            });
                         }
+                        
                     }
-                    else
-                    {
-                        return CustomMessageHandler.Error("Database doesn't exist!");
-
-                    }
-                    #endregion
                 }
-                if (companyInfo.EmpOnlineFlag) // Check if Employee Online is integrated
-                {
-                    #region Check if Employee Online Database exists
+                #region Condition for saving citizenship file setup
+                //if(companyInfo.PayrollFlag) // Check if Payroll is integrated
+                //{
+                //    #region Check if Payroll Database exists
 
-                    if (await comInfoRepo.CheckDBIfExists(companyInfo.OnlineDB))
-                    {
+                //    if (await comInfoRepo.CheckDBIfExists(companyInfo.PayrollDB)) 
+                //    {
 
-                    }
-                    else
-                    {
-                        return CustomMessageHandler.Error("Database doesn't exist!");
+                //        var result = await comInfoRepo.CheckTableIfExists(companyInfo.PayrollDB, "tbl_fsCitizenship");
+                //        if(result)
+                //        {
+                //            //save
+                //        }
+                //    }
+                //    else
+                //    {
+                //        return CustomMessageHandler.Error("Database doesn't exist!");
+                //    }
+                //    #endregion
+                //}
+                //if (companyInfo.TKSFlag) // Check if Timekeeping is integrated
+                //{
+                //    #region Check if TKS Database exists
 
-                    }
-                    #endregion
-                }
-                if (companyInfo.HRISFlag) // Check if HRIS is integrated
-                {
-                    #region Check if HRIS Database exists
+                //    if (await comInfoRepo.CheckDBIfExists(companyInfo.TKSDB))
+                //    {
+                //        var result = await comInfoRepo.CheckTableIfExists(companyInfo.TKSDB, "tbl_fsCitizenship");
+                //        if (result)
+                //        {
+                //            // Save
+                //        }
+                //    }
+                //    else
+                //    {
+                //        return CustomMessageHandler.Error("Database doesn't exist!");
 
-                    if (await comInfoRepo.CheckDBIfExists(companyInfo.HRISDB))
-                    {
+                //    }
+                //    #endregion
+                //}
+                //if (companyInfo.EmpOnlineFlag) // Check if Employee Online is integrated
+                //{
+                //    #region Check if Employee Online Database exists
 
-                    }
-                    else
-                    {
-                        return CustomMessageHandler.Error("Database doesn't exist!");
+                //    if (await comInfoRepo.CheckDBIfExists(companyInfo.OnlineDB))
+                //    {
 
-                    }
-                    #endregion
-                }
-                
+                //    }
+                //    else
+                //    {
+                //        return CustomMessageHandler.Error("Database doesn't exist!");
+
+                //    }
+                //    #endregion
+                //}
+                //if (companyInfo.HRISFlag) // Check if HRIS is integrated
+                //{
+                //    #region Check if HRIS Database exists
+
+                //    if (await comInfoRepo.CheckDBIfExists(companyInfo.HRISDB))
+                //    {
+
+                //    }
+                //    else
+                //    {
+                //        return CustomMessageHandler.Error("Database doesn't exist!");
+
+                //    }
+                //    #endregion
+                //}
+                #endregion
 
                 await repo.Insert(cit); 
 

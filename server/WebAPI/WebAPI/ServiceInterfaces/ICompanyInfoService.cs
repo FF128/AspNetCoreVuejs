@@ -11,5 +11,6 @@ namespace WebAPI.ServiceInterfaces
     public interface ICompanyInfoService
     {
         Task<CustomMessage> InsertOrUpdate(CompanyInformation info);
+        string CompanyCode { get; }
     }
 }
