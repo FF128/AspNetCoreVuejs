@@ -107,5 +107,24 @@ namespace WebAPI.Services
             }
             return CustomMessageHandler.Error("Code is already used"); 
         }
+
+        public async Task<CustomMessage> Update(DesignationDutiesReqDto dto)
+        {
+            if ((await repo.GetByCode(dto.DesignationCode)) != null)
+            {
+                var data = mapper.Map<DesignationDuties>(dto);
+
+                await repo.Update(data);
+                //list.Where(w => w.Name == "height").ToList().ForEach(s => s.Value = 30);
+                dto.DesignationDutiesResponsibilities.ToList().ForEach(x => x.DesignationCode = data.DesignationCode);
+                await repo.UpdateDutiesReq(dto.DesignationDutiesResponsibilities);
+
+                dto.DesignationDutiesJobReqs.ToList().ForEach(x => x.DesignationCode = data.DesignationCode);
+                await repo.UpdateJobReq(dto.DesignationDutiesJobReqs);
+
+                return CustomMessageHandler.RecordAdded();
+            }
+            return CustomMessageHandler.Error("Code is already used");
+        }
     }
 }

@@ -40,7 +40,7 @@ namespace WebAPI.Controllers
         {
             try
             {
-                var result = await service.Insert(dto);
+                var result = await service.Update(dto);
                 return Ok(result);
             }
             catch (Exception ex)

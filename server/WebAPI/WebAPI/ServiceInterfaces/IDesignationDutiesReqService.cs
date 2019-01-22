@@ -10,6 +10,7 @@ namespace WebAPI.ServiceInterfaces
     public interface IDesignationDutiesReqService
     {
         Task<CustomMessage> Insert(DesignationDutiesReqDto dto);
+        Task<CustomMessage> Update(DesignationDutiesReqDto dto);
         Task<IEnumerable<GetDesignationDutiesReqDto>> GetAll();
 
         Task<CustomMessage> Delete(string code);

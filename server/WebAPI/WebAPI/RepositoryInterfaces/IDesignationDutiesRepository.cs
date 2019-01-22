@@ -12,6 +12,11 @@ namespace WebAPI.RepositoryInterfaces
         Task Insert(DesignationDuties data);
         Task InsertDutiesReq(IEnumerable<DesignationDutiesResponsibilities> data);
         Task InsertJobReq(IEnumerable<DesignationDutiesJobReq> data);
+
+        Task Update(DesignationDuties data);
+        Task UpdateDutiesReq(IEnumerable<DesignationDutiesResponsibilities> data);
+        Task UpdateJobReq(IEnumerable<DesignationDutiesJobReq> data);
+
         Task<DesignationDuties> GetByCode(string code);
         Task<IEnumerable<DesignationDuties>> GetAll();
         Task<IEnumerable<DesignationDutiesResponsibilities>> GetDesignationDutiesResponsibilities(string code);

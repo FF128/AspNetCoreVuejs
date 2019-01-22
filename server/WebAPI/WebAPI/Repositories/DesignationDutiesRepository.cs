@@ -128,5 +128,35 @@ namespace WebAPI.Repositories
                    commandType: System.Data.CommandType.StoredProcedure);
             }
         }
+
+        public async Task Update(DesignationDuties data)
+        {
+            using (var conn = connectionFactory.Connection)
+            {
+
+                await conn.ExecuteAsync("sp_DesignationDutiesReqSetUp_Update", data,
+                    commandType: System.Data.CommandType.StoredProcedure);
+            }
+        }
+
+        public async Task UpdateDutiesReq(IEnumerable<DesignationDutiesResponsibilities> data)
+        {
+            using (var conn = connectionFactory.Connection)
+            {
+
+                await conn.ExecuteAsync("sp_DesignationDutiesReqResponsibilities_Update", data,
+                    commandType: System.Data.CommandType.StoredProcedure);
+            }
+        }
+
+        public async Task UpdateJobReq(IEnumerable<DesignationDutiesJobReq> data)
+        {
+            using (var conn = connectionFactory.Connection)
+            {
+
+                await conn.ExecuteAsync("sp_DesignationDutiesReqJobReq_Update", data,
+                    commandType: System.Data.CommandType.StoredProcedure);
+            }
+        }
     }
 }
