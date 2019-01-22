@@ -6,11 +6,12 @@ using System.Threading.Tasks;
 
 namespace WebAPI.Models.ApplicantsEntrySetUp
 {
-    [Description("Applicants Entry: Essay Questions Definition")]
-    public class AppEntryEssayInfo : BaseModel
+    [Description("Applicants Entry: Source of Information")]
+    public class AppEntrySource : BaseModel
     {
         public int Id { get; set; }
-        public string Question { get; set; }
+        public string Code { get; set; }
+        public string Desc { get; set; }
         public bool Active { get; set; }
     }
 }

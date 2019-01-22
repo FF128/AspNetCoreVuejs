@@ -37,6 +37,17 @@ namespace WebAPI.Repositories
             }
         }
 
+        public async Task<IEnumerable<DutiesAndResponsibilities>> GetAllByCode(string code)
+        {
+            using (var conn = connectionFactory.Connection)
+            {
+                return
+                    await conn.QueryAsync<DutiesAndResponsibilities>("sp_DutiesResponsibilities_ViewByCode",
+                        new { Code = code },
+                        commandType: CommandType.StoredProcedure);
+            }
+        }
+
         public async Task<DutiesAndResponsibilities> GetByCode(string code)
         {
             using (var conn = connectionFactory.Connection)

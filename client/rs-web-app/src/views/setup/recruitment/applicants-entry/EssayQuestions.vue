@@ -3,50 +3,18 @@
         <v-form>
             <v-container>
                 <v-layout row wrap>
+                    <v-flex xs12 sm6 md8>
+                        <v-text-field
+                            label="Essay Question"
+                            v-model="essay.question">
+
+                        </v-text-field>
+                    </v-flex>
                     <v-flex xs12 sm6 md4>
                         <v-switch
                             label="Is Active"
-                            v-model="genInfo.active"
+                            v-model="essay.active"
                         ></v-switch>
-                    </v-flex>
-                    <v-flex xs12 sm6 md4>
-                        <v-switch
-                            label="Show [Yes] Option"
-                            v-model="genInfo.showYes"
-                        ></v-switch>
-                    </v-flex>
-                    <v-flex xs12 sm6 md4>
-                        <v-switch
-                            label="Show [No] Option"
-                            v-model="genInfo.showNo"
-                        ></v-switch>
-                    </v-flex>
-                    <v-flex xs12 sm6 md4>
-                        <v-switch
-                            label="Show [None] Option"
-                            v-model="genInfo.showNone"
-                        ></v-switch>
-                    </v-flex>
-                    <v-flex xs12 sm6 md4>
-                        <v-switch
-                            label="Show [Why] Field"
-                            v-model="genInfo.showWhy"
-                        ></v-switch>
-                    </v-flex>
-                    
-                    <v-flex xs12 sm6 md6>
-                        <v-text-field
-                            label="Show [Why Text] Field"
-                            v-model="genInfo.showWhyText">
-
-                        </v-text-field>
-                    </v-flex>
-                    <v-flex xs12 sm6 md6>
-                        <v-text-field
-                            label="Question"
-                            v-model="genInfo.question">
-
-                        </v-text-field>
                     </v-flex>
                     <v-flex xs12 sm12 md12>
                         <v-btn
@@ -70,34 +38,31 @@
                         </div>
                     </v-flex>
                 </v-layout>
-                <v-data-table
-                    :items="genInfoData"
-                    class="elevation-1"
-                    hide-actions
-                    :headers="headers"
-                >
-                    <template slot="items" slot-scope="props">
-                    <td>{{ props.item.active }}</td>
-                    <td class="text-xs-right">{{ props.item.showYes }}</td>
-                    <td class="text-xs-right">{{ props.item.showNo }}</td>
-                    <td class="text-xs-right">{{ props.item.showNone }}</td>
-                    <td class="text-xs-right">{{ props.item.showWhy }}</td>
-                    <td class="text-xs-right">{{ props.item.showWhyText }}</td>
-                    <td class="text-xs-right">{{ props.item.question }}</td>
-                    <td>
-                        <v-btn icon
-                            @click.prevent="edit(props.item)">
-                            <v-icon>edit</v-icon>
-                        </v-btn>
-                        <v-btn icon
-                            @click.prevent="deleteInfo(props.item)">
-                            <v-icon color="red">delete</v-icon>
-                        </v-btn>
-                    </td>
-                    </template>
-                </v-data-table>
             </v-container>
         </v-form>
+        <v-container>
+            <v-data-table
+                :items="essayQuestions"
+                class="elevation-1"
+                hide-actions
+                :headers="headers"
+            >
+                <template slot="items" slot-scope="props">
+                <td>{{ props.item.active }}</td>
+                <td class="text-xs-left">{{ props.item.question }}</td>
+                <td>
+                    <v-btn icon
+                        @click.prevent="edit(props.item)">
+                        <v-icon>edit</v-icon>
+                    </v-btn>
+                    <v-btn icon
+                        @click.prevent="deleteInfo(props.item)">
+                        <v-icon color="red">delete</v-icon>
+                    </v-btn>
+                </td>
+                </template>
+            </v-data-table>
+        </v-container>
         <v-dialog
             v-model="deleteDialog"
             max-width="300">
@@ -135,7 +100,7 @@ let toast = new Toast();
 export default {
     data() {
         return {
-            genInfo: {},
+            essay: {},
             onEdit: false,
             isSaving: false,
             isUpdating: false,
@@ -146,26 +111,21 @@ export default {
                     sortable: false,
                     value: 'active'
                 },
-                { text: 'Show Yes', value: 'showYes' },
-                { text: 'Show No', value: 'showNo' },
-                { text: 'Show None', value: 'showNone' },
-                { text: 'Show Why', value: 'showWhy' },
-                { text: 'Show Why Text', value: 'showWhyText' },
-                { text: 'Question', value: 'question' },
+                { text: 'Essay Question', value: 'question' },
                 { text: '', value: 'actions'}
             ],
-            selectedInfo: {},
+            selectedQuestion: {},
             deleteDialog: false,
-            apiEndpoint: "api/applicants-entry/gen"
+            apiEndpoint: "api/applicants-entry/essay"
         }
     },
-    methods: {
+     methods: {
         ...mapActions('appEntry',[
-            'getAllGenInfoData'
+            'getAllQuestions'
         ]),
         save() {
             this.isSaving = true
-            this.$axios.post(this.apiEndpoint, this.genInfo)
+            this.$axios.post(this.apiEndpoint, this.essay)
                 .then(({ data }) => {
                     let { message, hasError } = data;
                     toast.show(message, hasError);
@@ -180,18 +140,18 @@ export default {
                 });
         },
         edit(item) {
-            this.genInfo = item;
+            this.essay = item;
 
             this.onEdit = true;
         },
         cancel() {
             this.onEdit = false;
-            this.genInfo = {}
-            this.getAllGenInfoData();
+            this.essay = {}
+            this.getAllQuestions();
         },
         update() {
             this.isUpdating = false;
-            this.$axios.put(`${this.apiEndpoint}`, this.genInfo)
+            this.$axios.put(`${this.apiEndpoint}`, this.essay)
                 .then(({ data }) => {
                     let { message, hasError } = data;
                     toast.show(message, hasError);
@@ -226,11 +186,11 @@ export default {
     },
     computed: {
         ...mapState('appEntry', {
-            genInfoData: state => state.genInfoData
+            essayQuestions: state => state.essayQuestions
         })
     },
     created() {
-        this.getAllGenInfoData();
+        this.getAllQuestions();
     }
 }
 </script>

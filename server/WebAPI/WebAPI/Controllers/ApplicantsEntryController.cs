@@ -22,12 +22,22 @@ namespace WebAPI.Controllers
 
         private readonly IAppEntryEssayInfoRepository essayInfoRepo;
         private readonly IAppEntryEssayInfoService essayInfoService;
+
+        private readonly IAppEntryAttachReqRepository attachReqRepo;
+        private readonly IAppEntryAttachReqService attachReqService;
+
+        private readonly IAppEntrySourceRepository sourceRepo;
+        private readonly IAppEntrySourceService sourceService;
         public ApplicantsEntryController(IAppEntryGenInfoRepository genInfoRepo,
             IAppEntryGenInfoService genInfoService,
             IAppEntryTextCertRepository textCertRepo,
             IAppEntryTextCertService textCertService,
             IAppEntryEssayInfoRepository essayInfoRepo,
-            IAppEntryEssayInfoService essayInfoService)
+            IAppEntryEssayInfoService essayInfoService,
+            IAppEntryAttachReqRepository attachReqRepo,
+            IAppEntryAttachReqService attachReqService,
+            IAppEntrySourceRepository sourceRepo,
+            IAppEntrySourceService sourceService)
         {
             this.genInfoRepo = genInfoRepo;
             this.genInfoService = genInfoService;
@@ -35,7 +45,14 @@ namespace WebAPI.Controllers
             this.textCertService = textCertService;
             this.essayInfoRepo = essayInfoRepo;
             this.essayInfoService = essayInfoService;
+
+            this.attachReqRepo = attachReqRepo;
+            this.attachReqService = attachReqService;
+
+            this.sourceRepo = sourceRepo;
+            this.sourceService = sourceService;
         }
+        #region General Information
         [HttpGet("gen")]
         public async Task<IActionResult> GetAllGenInfo()
         {
@@ -43,11 +60,11 @@ namespace WebAPI.Controllers
             {
                 return Ok(await genInfoRepo.GetAll());
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return BadRequest(CustomMessageHandler.Error(ex.Message));
             }
-          
+
         }
         [HttpPost("gen")]
         public async Task<IActionResult> InsertGenInfo(AppEntryGenInfo info)
@@ -56,7 +73,8 @@ namespace WebAPI.Controllers
             {
                 var result = await genInfoService.Insert(info);
                 return Ok(result);
-            }catch(Exception ex)
+            }
+            catch (Exception ex)
             {
                 return BadRequest(CustomMessageHandler.Error(ex.Message));
             }
@@ -87,6 +105,9 @@ namespace WebAPI.Controllers
                 return BadRequest(CustomMessageHandler.Error(ex.Message));
             }
         }
+        #endregion
+
+        #region  Text Certification
         [HttpGet("text")]
         public async Task<IActionResult> GetTextCert()
         {
@@ -94,7 +115,8 @@ namespace WebAPI.Controllers
             {
                 return Ok(await textCertRepo.GetTextCert());
 
-            }catch(Exception ex)
+            }
+            catch (Exception ex)
             {
                 return BadRequest(CustomMessageHandler.Error(ex.Message));
             }
@@ -125,7 +147,9 @@ namespace WebAPI.Controllers
                 return BadRequest(CustomMessageHandler.Error(ex.Message));
             }
         }
+        #endregion
 
+        #region Essay Questions Definition
         [HttpGet("essay")]
         public async Task<IActionResult> GetAllEssayQuestions()
         {
@@ -178,5 +202,116 @@ namespace WebAPI.Controllers
                 return BadRequest(CustomMessageHandler.Error(ex.Message));
             }
         }
+        #endregion
+
+        #region Attachments Required
+        [HttpGet("attachment")]
+        public async Task<IActionResult> GetAllAttachments()
+        {
+            try
+            {
+                return Ok(await attachReqRepo.GetAll());
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(CustomMessageHandler.Error(ex.Message));
+            }
+
+        }
+        [HttpPost("attachment")]
+        public async Task<IActionResult> InsertAttachement(AppEntryAttachReq info)
+        {
+            try
+            {
+                var result = await attachReqService.Insert(info);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(CustomMessageHandler.Error(ex.Message));
+            }
+        }
+        [HttpPut("attachment")]
+        public async Task<IActionResult> UpdateAttachment(AppEntryAttachReq info)
+        {
+            try
+            {
+                var result = await attachReqService.Update(info);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(CustomMessageHandler.Error(ex.Message));
+            }
+        }
+        [HttpDelete("attachment/{id}")]
+        public async Task<IActionResult> DeleteAttachment(int id)
+        {
+            try
+            {
+                var result = await attachReqService.Delete(id);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(CustomMessageHandler.Error(ex.Message));
+            }
+        }
+        #endregion
+
+        #region Source of Information
+        [HttpGet("source")]
+        public async Task<IActionResult> GetAllSourceOfInfo()
+        {
+            try
+            {
+                return Ok(await sourceRepo.GetAll());
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(CustomMessageHandler.Error(ex.Message));
+            }
+
+        }
+        [HttpPost("source")]
+        public async Task<IActionResult> InsertSource(AppEntrySource info)
+        {
+            try
+            {
+                var result = await sourceService.Insert(info);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(CustomMessageHandler.Error(ex.Message));
+            }
+        }
+        [HttpPut("source")]
+        public async Task<IActionResult> UpdateSource(AppEntrySource info)
+        {
+            try
+            {
+                var result = await sourceService.Update(info);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(CustomMessageHandler.Error(ex.Message));
+            }
+        }
+        [HttpDelete("source/{id}")]
+        public async Task<IActionResult> DeleteSource(int id)
+        {
+            try
+            {
+                var result = await sourceService.Delete(id);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(CustomMessageHandler.Error(ex.Message));
+            }
+        }
+        #endregion
     }
 }

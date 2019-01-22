@@ -37,6 +37,17 @@ namespace WebAPI.Repositories
             }
         }
 
+        public async Task<IEnumerable<JobLevel>> GetAllByCode(string code)
+        {
+            using (var conn = connectionFactory.Connection)
+            {
+                return
+                    await conn.QueryAsync<JobLevel>("sp_JobLevel_ViewByCode",
+                        new { Code = code },
+                        commandType: CommandType.StoredProcedure);
+            }
+        }
+
         public async Task<JobLevel> GetByCode(string code)
         {
             using (var conn = connectionFactory.Connection)

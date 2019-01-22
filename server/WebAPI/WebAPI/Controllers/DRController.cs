@@ -73,6 +73,19 @@ namespace WebAPI.Controllers
             }
 
         }
+        [HttpGet("{code}")]
+        public async Task<IActionResult> GetByCode(string code)
+        {
+            try
+            {
+                var info = await repo.GetByCode(code);
+                return Ok(info);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(CustomMessageHandler.Error(ex.Message));
+            }
+        }
         [HttpPut]
         public async Task<IActionResult> Update(DutiesAndResponsibilities dr)
         {

@@ -13,15 +13,15 @@
                 </v-expansion-panel-content>
                 <v-expansion-panel-content>
                     <div slot="header">Essay Questions Definition</div>
-                    <!-- <general-info></general-info> -->
+                    <essay-questions></essay-questions>
                 </v-expansion-panel-content>
                 <v-expansion-panel-content>
                     <div slot="header">Attachments Required</div>
-                    <general-info></general-info>
+                    <attachments-required></attachments-required>
                 </v-expansion-panel-content>
                 <v-expansion-panel-content>
                     <div slot="header">Source of Information</div>
-                    <general-info></general-info>
+                    <source-info></source-info>
                 </v-expansion-panel-content>
             </v-expansion-panel>
            
@@ -31,10 +31,16 @@
 <script>
 import GeneralInfo from "./GeneralInfo"
 import TextCertificate from "./TextCertificate"
+import EssayQuestions from "./EssayQuestions"
+import AttachmentsRequired from "./AttachmentsRequired"
+import SourceInfo from "./SourceInfo"
 export default {
     components: {
         GeneralInfo,
-        TextCertificate
+        TextCertificate,
+        EssayQuestions,
+        AttachmentsRequired,
+        SourceInfo
     },
     data() {
         return {

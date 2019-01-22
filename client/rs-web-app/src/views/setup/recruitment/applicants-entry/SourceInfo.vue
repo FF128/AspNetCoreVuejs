@@ -1,66 +1,45 @@
 <template>
     <div>
-        <v-form>
+        <v-form v-model="valid">
             <v-container>
                 <v-layout row wrap>
-                    <v-flex xs12 sm6 md4>
+                    <v-flex xs12 sm6 md3>
+                        <v-text-field
+                            label="Code"
+                            v-model="source.code"
+                            :rules="codeRules"
+                            :readonly="onEdit">
+
+                        </v-text-field>
+                    </v-flex>
+                    <v-flex xs12 sm6 md6>
+                        <v-text-field
+                            label="Source of Information"
+                            v-model="source.desc">
+
+                        </v-text-field>
+                    </v-flex>
+                    <v-flex xs12 sm6 md3>
                         <v-switch
                             label="Is Active"
-                            v-model="genInfo.active"
+                            v-model="source.active"
                         ></v-switch>
-                    </v-flex>
-                    <v-flex xs12 sm6 md4>
-                        <v-switch
-                            label="Show [Yes] Option"
-                            v-model="genInfo.showYes"
-                        ></v-switch>
-                    </v-flex>
-                    <v-flex xs12 sm6 md4>
-                        <v-switch
-                            label="Show [No] Option"
-                            v-model="genInfo.showNo"
-                        ></v-switch>
-                    </v-flex>
-                    <v-flex xs12 sm6 md4>
-                        <v-switch
-                            label="Show [None] Option"
-                            v-model="genInfo.showNone"
-                        ></v-switch>
-                    </v-flex>
-                    <v-flex xs12 sm6 md4>
-                        <v-switch
-                            label="Show [Why] Field"
-                            v-model="genInfo.showWhy"
-                        ></v-switch>
-                    </v-flex>
-                    
-                    <v-flex xs12 sm6 md6>
-                        <v-text-field
-                            label="Show [Why Text] Field"
-                            v-model="genInfo.showWhyText">
-
-                        </v-text-field>
-                    </v-flex>
-                    <v-flex xs12 sm6 md6>
-                        <v-text-field
-                            label="Question"
-                            v-model="genInfo.question">
-
-                        </v-text-field>
                     </v-flex>
                     <v-flex xs12 sm12 md12>
                         <v-btn
                             @click.prevent="save"
                             v-if="!onEdit"
                             color="success"
-                            :loading="isSaving">
+                            :loading="isSaving"
+                            :disabled="!valid">
                             Add
                         </v-btn>
                         <div v-if="onEdit">
                             <v-btn
                                 color="success"
                                 @click.prevent="update"
-                                :loading="isUpdating">
+                                :loading="isUpdating"
+                                :disabled="!valid">
                                 Update
                             </v-btn>
                             <v-btn
@@ -70,34 +49,32 @@
                         </div>
                     </v-flex>
                 </v-layout>
-                <v-data-table
-                    :items="genInfoData"
-                    class="elevation-1"
-                    hide-actions
-                    :headers="headers"
-                >
-                    <template slot="items" slot-scope="props">
-                    <td>{{ props.item.active }}</td>
-                    <td class="text-xs-right">{{ props.item.showYes }}</td>
-                    <td class="text-xs-right">{{ props.item.showNo }}</td>
-                    <td class="text-xs-right">{{ props.item.showNone }}</td>
-                    <td class="text-xs-right">{{ props.item.showWhy }}</td>
-                    <td class="text-xs-right">{{ props.item.showWhyText }}</td>
-                    <td class="text-xs-right">{{ props.item.question }}</td>
-                    <td>
-                        <v-btn icon
-                            @click.prevent="edit(props.item)">
-                            <v-icon>edit</v-icon>
-                        </v-btn>
-                        <v-btn icon
-                            @click.prevent="deleteInfo(props.item)">
-                            <v-icon color="red">delete</v-icon>
-                        </v-btn>
-                    </td>
-                    </template>
-                </v-data-table>
             </v-container>
         </v-form>
+        <v-container>
+            <v-data-table
+                :items="sources"
+                class="elevation-1"
+                hide-actions
+                :headers="headers"
+            >
+                <template slot="items" slot-scope="props">
+                <td>{{ props.item.active }}</td>
+                <td class="text-xs-left">{{ props.item.code }}</td>
+                <td class="text-xs-left">{{ props.item.desc }}</td>
+                <td>
+                    <v-btn icon
+                        @click.prevent="edit(props.item)">
+                        <v-icon>edit</v-icon>
+                    </v-btn>
+                    <v-btn icon
+                        @click.prevent="deleteInfo(props.item)">
+                        <v-icon color="red">delete</v-icon>
+                    </v-btn>
+                </td>
+                </template>
+            </v-data-table>
+        </v-container>
         <v-dialog
             v-model="deleteDialog"
             max-width="300">
@@ -129,16 +106,19 @@
 </template>
 <script>
 import Toast from "@/project-modules/toast"
+import codeRules from "@/rules/codeRules"
 import { mapState, mapActions } from 'vuex';
 
 let toast = new Toast();
 export default {
     data() {
         return {
-            genInfo: {},
+            source: {},
             onEdit: false,
             isSaving: false,
             isUpdating: false,
+            codeRules,
+            valid:false,
             headers: [
                 {
                     text: 'Active',
@@ -146,26 +126,22 @@ export default {
                     sortable: false,
                     value: 'active'
                 },
-                { text: 'Show Yes', value: 'showYes' },
-                { text: 'Show No', value: 'showNo' },
-                { text: 'Show None', value: 'showNone' },
-                { text: 'Show Why', value: 'showWhy' },
-                { text: 'Show Why Text', value: 'showWhyText' },
-                { text: 'Question', value: 'question' },
+                { text: 'Code', value: 'code' },
+                { text: 'Description', value: 'desc'},
                 { text: '', value: 'actions'}
             ],
             selectedInfo: {},
             deleteDialog: false,
-            apiEndpoint: "api/applicants-entry/gen"
+            apiEndpoint: "api/applicants-entry/source"
         }
     },
-    methods: {
+     methods: {
         ...mapActions('appEntry',[
-            'getAllGenInfoData'
+            'getAllSourceOfInfo'
         ]),
         save() {
             this.isSaving = true
-            this.$axios.post(this.apiEndpoint, this.genInfo)
+            this.$axios.post(this.apiEndpoint, this.source)
                 .then(({ data }) => {
                     let { message, hasError } = data;
                     toast.show(message, hasError);
@@ -180,18 +156,18 @@ export default {
                 });
         },
         edit(item) {
-            this.genInfo = item;
+            this.source = item;
 
             this.onEdit = true;
         },
         cancel() {
             this.onEdit = false;
-            this.genInfo = {}
-            this.getAllGenInfoData();
+            this.source = {}
+            this.getAllSourceOfInfo();
         },
         update() {
             this.isUpdating = false;
-            this.$axios.put(`${this.apiEndpoint}`, this.genInfo)
+            this.$axios.put(`${this.apiEndpoint}`, this.source)
                 .then(({ data }) => {
                     let { message, hasError } = data;
                     toast.show(message, hasError);
@@ -226,11 +202,11 @@ export default {
     },
     computed: {
         ...mapState('appEntry', {
-            genInfoData: state => state.genInfoData
+            sources: state => state.sources
         })
     },
     created() {
-        this.getAllGenInfoData();
+        this.getAllSourceOfInfo();
     }
 }
 </script>

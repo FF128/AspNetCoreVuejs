@@ -56,7 +56,6 @@ export default {
         getTextCertificate() {
             this.$axios.get(`${this.apiEndpoint}`)
                 .then(({ data }) => {
-                    console.log(data);
                     this.text = data.textCertification;
                 })
                 .catch(({ response }) => {

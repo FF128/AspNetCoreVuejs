@@ -97,6 +97,9 @@ namespace WebAPI
             services.AddScoped<IAppEntryGenInfoRepository, AppEntryGenInfoRepository>();
             services.AddScoped<IAppEntryTextCertRepository, AppEntryTextCertRepository>();
             services.AddScoped<IAppEntryEssayInfoRepository, AppEntryEssayInfoRepository>();
+            services.AddScoped<IAppEntryAttachReqRepository, AppEntryAttachReqRepository>();
+            services.AddScoped<IAppEntrySourceRepository, AppEntrySourceRepository>();
+            services.AddScoped<IDesignationDutiesRepository, DesignationDutiesRepository>();
 
             #region JWT Service Configuration
             var appSettingsSection = Configuration.GetSection("AppSettings");
@@ -184,7 +187,9 @@ namespace WebAPI
             services.AddScoped<IAppEntryGenInfoService, AppEntryGenInfoService>();
             services.AddScoped<IAppEntryTextCertService, AppEntryTextCertService>();
             services.AddScoped<IAppEntryEssayInfoService, AppEntryEssayInfoService>();
-
+            services.AddScoped<IAppEntryAttachReqService, AppEntryAttachReqService>();
+            services.AddScoped<IAppEntrySourceService, AppEntrySourceService>();
+            services.AddScoped<IDesignationDutiesReqService, DesignationDutiesReqService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

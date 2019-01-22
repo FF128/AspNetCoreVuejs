@@ -4,6 +4,9 @@ const API_ENDPOINT = "api/applicants-entry"
 
 const state = {
     genInfoData: [],
+    essayQuestions: [],
+    attachments: [],
+    sources: [],
     loading: false
 }
 
@@ -20,18 +23,53 @@ const mutations = {
                 state.loading = false;
             })
             .catch(err => {
-                // console.log(err.response.status)
-                // if(err.response.status === 401){
-                //     alert("Unauthorized")
-                // }
                 state.loading = false;
             });
+    },
+    getAllQuestions(state) {
+        axios.get(`${API_ENDPOINT}/essay`)
+            .then(response => {
+                var { data } = response;
+                state.essayQuestions = data;
+            })
+            .catch(err => {
+
+            })
+    },
+    getAllAttachments(state) {
+        axios.get(`${API_ENDPOINT}/attachment`)
+            .then(response => {
+                var { data } = response;
+                state.attachments = data;
+            })
+            .catch(err => {
+
+            })
+    },
+    getAllSourceOfInfo() {
+        axios.get(`${API_ENDPOINT}/source`)
+            .then(response => {
+                var { data } = response;
+                state.sources = data;
+            })
+            .catch(err => {
+
+            })
     }
 }
 
 const actions = {
     getAllGenInfoData({ commit }) {
         commit("getAllGenInfoData");
+    },
+    getAllQuestions({ commit }) {
+        commit("getAllQuestions")
+    },
+    getAllAttachments({ commit }) {
+        commit("getAllAttachments");
+    },
+    getAllSourceOfInfo({ commit }) {
+        commit("getAllSourceOfInfo");
     }
 }
 

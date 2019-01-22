@@ -119,11 +119,11 @@
         <v-toolbar-title class="white--text"></v-toolbar-title>
 
         <v-spacer></v-spacer>
-        <v-toolbar-items>
+        <!-- <v-toolbar-items>
             <v-btn flat @click.prevent="logout">
                 Logout
             </v-btn>
-        </v-toolbar-items>
+        </v-toolbar-items> -->
         <!-- <v-btn icon>
           <v-icon>search</v-icon>
         </v-btn>
@@ -135,13 +135,57 @@
         <v-btn icon>
           <v-icon>refresh</v-icon>
         </v-btn> -->
+        <v-toolbar-items>
+            <v-btn flat @click.prevent="logout">
+                Setup
+            </v-btn>
+        </v-toolbar-items>
+        <v-toolbar-items>
+            <v-btn flat @click.prevent="logout">
+                Transactions
+            </v-btn>
+        </v-toolbar-items>
+        <v-toolbar-items>
+            <v-btn flat @click.prevent="logout">
+                Reports
+            </v-btn>
+        </v-toolbar-items>
+        <v-toolbar-items>
+            <v-btn flat @click.prevent="logout">
+                Admin
+            </v-btn>
+        </v-toolbar-items>
+          <v-menu bottom offset-y>
+            <v-btn
+              slot="activator"
+              dark
+              icon
+            >
+              <v-icon>more_vert</v-icon>
+            </v-btn>
+
+            <v-list>
+              <v-list-tile
+                @click="logout"
+              >
+                <v-list-tile-title>Settings</v-list-tile-title>
+              </v-list-tile>
+            </v-list>
+             <v-list>
+              <v-list-tile
+                @click="logout"
+              >
+                <v-list-tile-title>Logout</v-list-tile-title>
+              </v-list-tile>
+            </v-list>
+          </v-menu>
       </v-toolbar>
       <!-- Content -->
       <v-content>
-           <img src="@/assets/banner.png" class="img-responsive"/>
-          <router-view></router-view>
+        <img src="@/assets/banner.png" class="img-responsive"/>
+        <router-view></router-view>
       </v-content>
-      <v-footer>© 2019 - 128 Tech Consulting Inc.</v-footer>
+      <v-footer app>© 2019 - 128 Tech Consulting Inc.</v-footer>
     </v-app>
   </div>
   

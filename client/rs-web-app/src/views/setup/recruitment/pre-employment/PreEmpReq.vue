@@ -22,7 +22,7 @@
                         </v-text-field>
                     </v-flex>
 
-                     <v-flex xs12 sm4 md3>
+                    <v-flex xs12 sm4 md3>
                         <v-text-field
                             label="Employee Status"
                             v-model="preEmpReq.employmentStatusCode"
@@ -268,7 +268,7 @@ export default {
         ...mapActions('employeeStatusFile', [
             'getAllEmployeeStatusFiles',
         ]),
-         ...mapActions('designationFile', [
+        ...mapActions('designationFile', [
             'getAllDesignationFiles'
         ]),
         ...mapActions('preEmpReq', [

@@ -12,6 +12,8 @@ namespace WebAPI.Helpers
             CreateMap<User, UserDto>();
             CreateMap<UserDto, User>();
             CreateMap<PreEmpReqEmpStatusDesignationDto, PreEmpReq>();
+
+            CreateMap<DesignationDutiesReqDto, DesignationDuties>();
         }
     }
 }

@@ -12,6 +12,7 @@ namespace WebAPI.RepositoryInterfaces
         Task<IEnumerable<DutiesAndResponsibilities>> GetAll();
         Task<DutiesAndResponsibilities> GetById(int id);
         Task<DutiesAndResponsibilities> GetByCode(string code);
+        Task<IEnumerable<DutiesAndResponsibilities>> GetAllByCode(string code);
         Task Insert(DutiesAndResponsibilities dr);
         Task Update(DutiesAndResponsibilities dr);
         Task Delete(int id);

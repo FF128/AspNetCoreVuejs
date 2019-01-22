@@ -40,6 +40,7 @@ import ratings from "./modules/ratings"
 import overallRatings from "./modules/overallRatings"
 import preEmpReq from "./modules/preEmpReq"
 import appEntry from "./modules/appEntry"
+import dutiesReq from "./modules/designationDutiesReq"
 
 Vue.use(Vuex);
 
@@ -86,6 +87,7 @@ export default new Vuex.Store({
     ratings,
     overallRatings,
     preEmpReq,
-    appEntry
+    appEntry,
+    dutiesReq
   }
 });
