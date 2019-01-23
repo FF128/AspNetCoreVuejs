@@ -15,19 +15,19 @@ namespace WebAPI.Services
     {
         private readonly IDesignationDutiesRepository repo;
         private readonly IDutiesAndResponsibilitiesRepository responsibilitiesRepo;
-        private readonly IJobLevelRepository jobLevelRepo;
         private readonly IJobReqRepository jobReqRepo;
+        private readonly IDesignationFileRepository designationFileRepo;
         private readonly IMapper mapper;
         public DesignationDutiesReqService(IDesignationDutiesRepository repo,
             IDutiesAndResponsibilitiesRepository responsibilitiesRepo,
-            IJobLevelRepository jobLevelRepo,
             IJobReqRepository jobReqRepo,
+            IDesignationFileRepository designationFileRepo,
             IMapper mapper)
         {
             this.repo = repo;
             this.responsibilitiesRepo = responsibilitiesRepo;
-            this.jobLevelRepo = jobLevelRepo;
             this.jobReqRepo = jobReqRepo;
+            this.designationFileRepo = designationFileRepo;
             this.mapper = mapper;
         }
 
@@ -76,9 +76,12 @@ namespace WebAPI.Services
                        // strJobLevel = string.Join(Environment.NewLine, strJobLevel);
                     }
                 }
+                // Add to List
                 dataList.Add(new GetDesignationDutiesReqDto {
                     DesignationCode = item.DesignationCode, DutiesRes = strDuties, JobReq = strJobLevel,
-                    DutiesAndResponsibilities = dutiesAndResponsibilities, JobReqs = jobReqList
+                    DutiesAndResponsibilities = dutiesAndResponsibilities,
+                    JobReqs = jobReqList,
+                    Description = (await designationFileRepo.GetByCode(item.DesignationCode)).DesignationFileDesc
                 });
 
                 // Instantiate new List
@@ -116,11 +119,16 @@ namespace WebAPI.Services
 
                 await repo.Update(data);
                 //list.Where(w => w.Name == "height").ToList().ForEach(s => s.Value = 30);
+
+                // Delete 
+                await repo.DeleteDesignationDutiesJobReqsByCode(dto.DesignationCode);
+                await repo.DeleteDesignationDutiesResponsibilitiesByCode(dto.DesignationCode);
+
                 dto.DesignationDutiesResponsibilities.ToList().ForEach(x => x.DesignationCode = data.DesignationCode);
-                await repo.UpdateDutiesReq(dto.DesignationDutiesResponsibilities);
+                await repo.InsertDutiesReq(dto.DesignationDutiesResponsibilities);
 
                 dto.DesignationDutiesJobReqs.ToList().ForEach(x => x.DesignationCode = data.DesignationCode);
-                await repo.UpdateJobReq(dto.DesignationDutiesJobReqs);
+                await repo.InsertJobReq(dto.DesignationDutiesJobReqs);
 
                 return CustomMessageHandler.RecordAdded();
             }

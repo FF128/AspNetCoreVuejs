@@ -7,7 +7,7 @@
                     <v-flex xs12 sm4 md3>
                         <v-text-field
                             label="Code"
-                            v-model="designationFile.code"
+                            v-model="designationFile.designationFileCode"
                             :readonly="onEdit"
                             :rules="codeRules">
 
@@ -17,7 +17,7 @@
                     <v-flex xs12 sm4 md6>
                         <v-text-field
                             label="Description"
-                            v-model="designationFile.description">
+                            v-model="designationFile.designationFileDesc">
 
                         </v-text-field>
                     </v-flex>
@@ -59,8 +59,8 @@
                 class="elevation-1">
 
                 <template slot="items" slot-scope="props">
-                    <td>{{ props.item.code }}</td>
-                    <td class="text-xs-left">{{ props.item.description }}</td>
+                    <td>{{ props.item.designationFileCode }}</td>
+                    <td class="text-xs-left">{{ props.item.designationFileDesc }}</td>
                     <td class="text-xs-left">{{ props.item.jobLevelCode }}</td>
                     <td>
                         <v-btn icon
@@ -83,7 +83,7 @@
                 <v-card-title class="headline">Confirmation</v-card-title>
 
                 <v-card-text>
-                    Do you want to delete this Code: {{ selectedDesignationFile.code }}?
+                    Do you want to delete this Code: {{ selectedDesignationFile.designationFileCode }}?
                 </v-card-text>
 
                 <v-card-actions>

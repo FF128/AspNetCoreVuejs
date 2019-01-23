@@ -20,7 +20,6 @@
         max-width="600">
         <v-card>
             <v-card-title class="headline">List of Designations</v-card-title>
-
             <v-card-text>
                 <v-layout>
                       <v-data-table
@@ -29,8 +28,8 @@
                         class="elevation-1">
 
                         <template slot="items" slot-scope="props">
-                            <td>{{ props.item.code }}</td>
-                            <td class="text-xs-left">{{ props.item.description }}</td>
+                            <td>{{ props.item.designationFileCode }}</td>
+                            <td class="text-xs-left">{{ props.item.designationFileDesc }}</td>
                             <td>
                                 <v-btn icon
                                     @click.prevent="selectDesignation(props.item)">
@@ -259,8 +258,8 @@
         this.getAllDesignationFiles();
       },
       selectDesignation(item) {
-        this.selectedDesignation = item.description;
-        this.designation.code = item.code;
+        this.selectedDesignation = item.designationFileDesc;
+        this.designation.code = item.designationFileCode;
         this.designationDialog = false;
       },
       save() {
@@ -273,7 +272,7 @@
         .then(({ data }) => {
           this.isSaving = false;
           let { message, hasError } = data;
-          this.getAllDutiesReqData();
+          this.cancel();
           toast.show(message, hasError)
         })
         .catch(({response }) => {
@@ -286,6 +285,7 @@
         this.selectedDuties = item.dutiesAndResponsibilities;
         this.selectedJobReq = item.jobReqs;
         this.designation.code = item.designationCode;
+        this.selectedDesignation = item.description;
         this.onEdit = true;
       },
       update() {
@@ -298,11 +298,11 @@
         .then(({ data }) => {
           this.isUpdating = false;
           let { message, hasError } = data;
-          this.getAllDutiesReqData();
+          this.cancel();
           toast.show(message, hasError)
         })
         .catch(({response }) => {
-          this.isSaving = false;
+          this.isUpdating = false;
           let { message, hasError } = response.data;
           toast.show(message, hasError);
         })
@@ -332,6 +332,7 @@
 
         this.selectedDuties =[]
         this.selectedJobReq =[]
+        this.selectedDesignation = ""
       }
     },
     computed: {

@@ -41,6 +41,9 @@ import overallRatings from "./modules/overallRatings"
 import preEmpReq from "./modules/preEmpReq"
 import appEntry from "./modules/appEntry"
 import dutiesReq from "./modules/designationDutiesReq"
+import jobGroup from "./modules/jobGroup"
+import jobCategory from "./modules/jobCategory"
+import emailFormat from "./modules/emailFormat"
 
 Vue.use(Vuex);
 
@@ -88,6 +91,9 @@ export default new Vuex.Store({
     overallRatings,
     preEmpReq,
     appEntry,
-    dutiesReq
+    dutiesReq,
+    jobGroup,
+    jobCategory,
+    emailFormat
   }
 });

@@ -18,11 +18,13 @@ namespace WebAPI.Repositories
     {
         private readonly IConnectionFactory connectionFactory;
         private readonly IMapper mapper;
-      //  private readonly IHttpContextAccessor httpContextAccessor;
+        private readonly IHttpContextAccessor httpContextAccessor;
         public CompanyInformationRepository(IConnectionFactory connectionFactory,
+            IHttpContextAccessor httpContextAccessor,
             IMapper mapper)
         {
             this.connectionFactory = connectionFactory;
+            this.httpContextAccessor = httpContextAccessor;
             this.mapper = mapper;
         }
 
@@ -99,8 +101,8 @@ namespace WebAPI.Repositories
 
         public string GetCompanyCode()
         {
-            return null;
-           // return httpContextAccessor.HttpContext.User.FindFirst("CompanyCode")?.Value;
+            //return null;
+           return httpContextAccessor.HttpContext.User.FindFirst("CompanyCode")?.Value;
         }
 
         public async Task Insert(CompanyInfoDto info)

@@ -92,6 +92,9 @@ import overallRatingsRoute from "./overallRatingsRoute"
 import preEmpReqRoute from "./preEmpReqRoute"
 import dutiesReqRoute from "./dutiesReqRoute"
 import appEntryRoute from "./appEntryRoute"
+import jobGroupRoute from "./jobGroupRoute"
+import jobCategoryRoute from "./jobCategoryRoute"
+import emailFormatRoute from "./emailFormat"
 
 const router = new Router({
   mode: "history",
@@ -152,7 +155,10 @@ const router = new Router({
     overallRatingsRoute,
     preEmpReqRoute,
     dutiesReqRoute,
-    appEntryRoute
+    appEntryRoute,
+    jobGroupRoute,
+    jobCategoryRoute,
+    emailFormatRoute
   ]
 });
 

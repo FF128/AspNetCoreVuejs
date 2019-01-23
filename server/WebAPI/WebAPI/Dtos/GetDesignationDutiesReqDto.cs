@@ -9,7 +9,7 @@ namespace WebAPI.Dtos
     public class GetDesignationDutiesReqDto
     {
         public string DesignationCode { get; set; }
-        //public string Description { get; set; }
+        public string Description { get; set; }
         //public string DutiesRes { get; set; }
         //public string JobReq { get; set; }
         public List<string> DutiesRes { get; set; }

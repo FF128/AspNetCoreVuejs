@@ -1,7 +1,7 @@
 <template>
   <v-container>
     <v-layout>
-      <v-btn @click="show">Show</v-btn>
+      <h1>On development...</h1>
     </v-layout>
     
   </v-container>

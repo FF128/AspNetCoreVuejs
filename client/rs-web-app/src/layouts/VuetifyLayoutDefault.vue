@@ -194,7 +194,7 @@
       <!-- Content -->
       <v-content>
         <img src="@/assets/banner.png" class="img-responsive"/>
-        <router-view></router-view>
+        <slot/>
       </v-content>
       <v-footer app>© 2019 - 128 Tech Consulting Inc.</v-footer>
     </v-app>

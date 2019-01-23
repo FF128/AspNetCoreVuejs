@@ -36,12 +36,12 @@ namespace WebAPI.Services
 
         public async Task<CustomMessage> Insert(DesignationFile df)
         {
-            if (String.IsNullOrEmpty(df.Code) || String.IsNullOrWhiteSpace(df.Code))
+            if (String.IsNullOrEmpty(df.DesignationFileCode) || String.IsNullOrWhiteSpace(df.DesignationFileCode))
             {
-                return CustomMessageHandler.Error("Code: field is required");
+                return CustomMessageHandler.Error("DesignationFileCode: field is required");
             }
 
-            if ((await repo.GetByCode(df.Code)) == null)
+            if ((await repo.GetByCode(df.DesignationFileCode)) == null)
             {
                 await repo.Insert(df);
 
@@ -50,12 +50,12 @@ namespace WebAPI.Services
                 return CustomMessageHandler.RecordAdded();
 
             }
-            return CustomMessageHandler.Error("Code is already used");
+            return CustomMessageHandler.Error("DesignationFileCode is already used");
         }
 
         public async Task<CustomMessage> Update(DesignationFile df)
         {
-            var DesignationFileData = await repo.GetByCode(df.Code);
+            var DesignationFileData = await repo.GetByCode(df.DesignationFileCode);
             if (DesignationFileData != null)
             {
                 await repo.Update(df);

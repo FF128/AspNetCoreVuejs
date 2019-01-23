@@ -29,4 +29,5 @@ Vue.use(Vuetify, {
     VToolbar 
   },
   iconfont: 'md',
+  
 })

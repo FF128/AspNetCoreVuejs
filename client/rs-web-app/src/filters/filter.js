@@ -17,3 +17,7 @@ Vue.filter("getDutiesAndResponsibilities", (code) => {
             console.log(data);
         })
 })
+
+Vue.filter("removeDoubleQuote", value => {
+    return value.replace(/^"(.*)"$/, '$1');
+});
