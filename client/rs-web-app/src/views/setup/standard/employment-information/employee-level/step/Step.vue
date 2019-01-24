@@ -94,139 +94,140 @@
     </div>
 </template>
 <script>
-import { mapActions, mapState } from "vuex"
-import Toast from "@/project-modules/toast"
-import codeRules from "@/rules/codeRules"
+import { mapActions, mapState } from "vuex";
+import Toast from "@/project-modules/toast";
+import codeRules from "@/rules/codeRules";
 
 let toast = new Toast();
 export default {
-    data() {
-        return {
-            title: "Step",
-            step: {},
-            codeRules,
-            valid: false,
-            isSaving: false,
-            isUpdating: false,
-            isDeleting: false,
-            onEdit: false,
-            data: [],
-            isEmpty: false,
-            isBordered: false,
-            isStriped: false,
-            isNarrowed: false,
-            isHoverable: false,
-            isFocusable: false,
-            hasMobileCards: true,
-            deleteDialog: false,
-            selectedStep: {},
-            headers: [
-                {
-                    text: 'Code',
-                    align: 'left',
-                    sortable: false,
-                    value: 'code'
-                },
-                { text: 'Description', value: 'description', align: 'left' },
-                { text: '', value: 'actions' }
-            ],
-            apiEndpoint: "api/step"
-        }
-    },
-    methods: {
-        ...mapActions('step', [
-            'getAllSteps'
-        ]),
-        save() {
-            this.isSaving = true;
-            this.$axios.post(this.apiEndpoint, this.step)
-                .then(response => {
-                    this.isSaving = false;
-
-                    let { message, hasError } = response.data;
-
-                    // Toast custom message
-                    if(hasError) {
-                        toast.error(message)
-                    }else{
-                        toast.success(message)
-                    }
-                    // Update List
-                    this.cancel();
-                })
-                .catch(err => {
-                    this.isSaving = false;
-                });
+  data() {
+    return {
+      title: "Step",
+      step: {},
+      codeRules,
+      valid: false,
+      isSaving: false,
+      isUpdating: false,
+      isDeleting: false,
+      onEdit: false,
+      data: [],
+      isEmpty: false,
+      isBordered: false,
+      isStriped: false,
+      isNarrowed: false,
+      isHoverable: false,
+      isFocusable: false,
+      hasMobileCards: true,
+      deleteDialog: false,
+      selectedStep: {},
+      headers: [
+        {
+          text: "Code",
+          align: "left",
+          sortable: false,
+          value: "code"
         },
-        edit(item){
-            this.onEdit = true;
-            this.step = item;
-        },
-        update() {
-            this.isUpdating = true
-            this.$axios.put(this.apiEndpoint, this.step)
-                .then(response => {
-                    this.isUpdating = false;
-                    
-                    let { message, hasError } = response.data;
+        { text: "Description", value: "description", align: "left" },
+        { text: "", value: "actions" }
+      ],
+      apiEndpoint: "api/step"
+    };
+  },
+  methods: {
+    ...mapActions("step", ["getAllSteps"]),
+    save() {
+      this.isSaving = true;
+      this.$axios
+        .post(this.apiEndpoint, this.step)
+        .then(response => {
+          this.isSaving = false;
 
-                    // Toast custom message
-                    if(hasError) {
-                        toast.error(message)
-                    }else{
-                        toast.success(message)
-                    }
+          let { message, hasError } = response.data;
 
-                    this.cancel();
-                })
-                .catch(err => {
-                    this.isUpdating = false;
-                })
-        },
-        deleteInfo(item) {
-            this.deleteDialog = true;
-            this.selectedStep = item;
-        },
-        deleteConfirmed() {
-            this.isDeleting = true;
-            this.$axios.delete(`${this.apiEndpoint}/${this.selectedStep.id}`)
-                .then(response => {
-                    let { message, hasError } = response.data;
-
-                    // Toast custom message
-                    if(hasError) {
-                        toast.error(message)
-                    }else{
-                        toast.success(message)
-                    }
-
-                    this.cancel();
-                    
-                    this.isDeleting = false;
-                    this.deleteDialog = false;
-                })
-                .catch(err => {
-                    this.isDeleting = false;
-                })
-        },
-        closeDeleteDialog() {
-            this.deleteDialog = false;
-        },
-        cancel() {
-            this.onEdit = false;
-            this.step = {}
-
-            this.getAllSteps();
-        }
-    },
-    computed: {
-        ...mapState('step', {
-            stepData: state => state.steps,
-            isLoading: state => state.loading
+          // Toast custom message
+          if (hasError) {
+            toast.error(message);
+          } else {
+            toast.success(message);
+          }
+          // Update List
+          this.cancel();
         })
+        .catch(err => {
+          this.isSaving = false;
+        });
     },
-    created() {
-        this.getAllSteps();
+    edit(item) {
+      this.onEdit = true;
+      this.step = item;
+    },
+    update() {
+      this.isUpdating = true;
+      this.$axios
+        .put(this.apiEndpoint, this.step)
+        .then(response => {
+          this.isUpdating = false;
+
+          let { message, hasError } = response.data;
+
+          // Toast custom message
+          if (hasError) {
+            toast.error(message);
+          } else {
+            toast.success(message);
+          }
+
+          this.cancel();
+        })
+        .catch(err => {
+          this.isUpdating = false;
+        });
+    },
+    deleteInfo(item) {
+      this.deleteDialog = true;
+      this.selectedStep = item;
+    },
+    deleteConfirmed() {
+      this.isDeleting = true;
+      this.$axios
+        .delete(`${this.apiEndpoint}/${this.selectedStep.id}`)
+        .then(response => {
+          let { message, hasError } = response.data;
+
+          // Toast custom message
+          if (hasError) {
+            toast.error(message);
+          } else {
+            toast.success(message);
+          }
+
+          this.cancel();
+
+          this.isDeleting = false;
+          this.deleteDialog = false;
+        })
+        .catch(err => {
+          this.isDeleting = false;
+        });
+    },
+    closeDeleteDialog() {
+      this.deleteDialog = false;
+    },
+    cancel() {
+      this.onEdit = false;
+      this.step = {};
+
+      this.getAllSteps();
     }
-}
+  },
+  computed: {
+    ...mapState("step", {
+      stepData: state => state.steps,
+      isLoading: state => state.loading
+    })
+  },
+  created() {
+    this.getAllSteps();
+  }
+};
 </script>

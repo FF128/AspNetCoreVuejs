@@ -94,135 +94,136 @@
     </div>
 </template>
 <script>
-import { mapActions, mapState } from "vuex"
-import Toast from "@/project-modules/toast"
-import codeRules from "@/rules/codeRules"
+import { mapActions, mapState } from "vuex";
+import Toast from "@/project-modules/toast";
+import codeRules from "@/rules/codeRules";
 
 let toast = new Toast();
 export default {
-    data() {
-        return {
-            title: "Rank",
-            rank: {},
-            codeRules,
-            valid: false,
-            isSaving: false,
-            isUpdating: false,
-            isDeleting: false,
-            onEdit: false,
-            data: [],
-            isEmpty: false,
-            isBordered: false,
-            isStriped: false,
-            isNarrowed: false,
-            isHoverable: false,
-            isFocusable: false,
-            hasMobileCards: true,
-            deleteDialog: false,
-            selectedRank: {},
-            headers: [
-                {
-                    text: 'Code',
-                    align: 'left',
-                    sortable: false,
-                    value: 'code'
-                },
-                { text: 'Description', value: 'description', align: 'left' },
-                { text: '', value: 'actions' }
-            ],
-            apiEndpoint: "api/rank"
-        }
-    },
-    methods: {
-        ...mapActions('rank', [
-            'getAllRanks'
-        ]),
-        save() {
-            this.isSaving = true;
-            this.$axios.post(this.apiEndpoint, this.rank)
-                .then(response => {
-                    this.isSaving = false;
-                     let { message, hasError } = response.data;
+  data() {
+    return {
+      title: "Rank",
+      rank: {},
+      codeRules,
+      valid: false,
+      isSaving: false,
+      isUpdating: false,
+      isDeleting: false,
+      onEdit: false,
+      data: [],
+      isEmpty: false,
+      isBordered: false,
+      isStriped: false,
+      isNarrowed: false,
+      isHoverable: false,
+      isFocusable: false,
+      hasMobileCards: true,
+      deleteDialog: false,
+      selectedRank: {},
+      headers: [
+        {
+          text: "Code",
+          align: "left",
+          sortable: false,
+          value: "code"
+        },
+        { text: "Description", value: "description", align: "left" },
+        { text: "", value: "actions" }
+      ],
+      apiEndpoint: "api/rank"
+    };
+  },
+  methods: {
+    ...mapActions("rank", ["getAllRanks"]),
+    save() {
+      this.isSaving = true;
+      this.$axios
+        .post(this.apiEndpoint, this.rank)
+        .then(response => {
+          this.isSaving = false;
+          let { message, hasError } = response.data;
 
-                    // Toast custom message
-                    if(hasError) {
-                        toast.error(message)
-                    }else{
-                        toast.success(message)
-                    }
-                    // Update List
-                    this.cancel();
-                })
-                .catch(err => {
-                    this.isSaving = false;
-                });
-        },
-        edit(item){
-            this.onEdit = true;
-            this.rank = item;
-        },
-        update() {
-            this.isUpdating = true
-            this.$axios.put(this.apiEndpoint, this.rank)
-                .then(response => {
-                    this.isUpdating = false;
-                     let { message, hasError } = response.data;
-
-                    // Toast custom message
-                    if(hasError) {
-                        toast.error(message)
-                    }else{
-                        toast.success(message)
-                    }
-                    this.cancel();
-                })
-                .catch(err => {
-                    this.isUpdating = false;
-                })
-        },
-        deleteInfo(item) {
-            this.deleteDialog = true;
-            this.selectedRank = item;
-        },
-        deleteConfirmed() {
-            this.isDeleting = true;
-            this.$axios.delete(`${this.apiEndpoint}/${this.selectedRank.id}`)
-                .then(response => {
-                     let { message, hasError } = response.data;
-
-                    // Toast custom message
-                    if(hasError) {
-                        toast.error(message)
-                    }else{
-                        toast.success(message)
-                    }
-
-                    this.cancel();
-                    this.isDeleting = false;
-                    this.deleteDialog = false;
-                })
-                .catch(err => {
-                    this.isDeleting = false;
-                })
-        },
-        closeDeleteDialog() {
-            this.deleteDialog = false;
-        },
-        cancel() {
-            this.onEdit = false;
-            this.rank = {}
-
-            this.getAllRanks();
-        }
-    },
-    computed: {
-        ...mapState('rank', {
-            rankData: state => state.ranks,
-            isLoading: state => state.loading
+          // Toast custom message
+          if (hasError) {
+            toast.error(message);
+          } else {
+            toast.success(message);
+          }
+          // Update List
+          this.cancel();
         })
+        .catch(err => {
+          this.isSaving = false;
+        });
     },
-    created() {
-        this.getAllRanks();
+    edit(item) {
+      this.onEdit = true;
+      this.rank = item;
+    },
+    update() {
+      this.isUpdating = true;
+      this.$axios
+        .put(this.apiEndpoint, this.rank)
+        .then(response => {
+          this.isUpdating = false;
+          let { message, hasError } = response.data;
+
+          // Toast custom message
+          if (hasError) {
+            toast.error(message);
+          } else {
+            toast.success(message);
+          }
+          this.cancel();
+        })
+        .catch(err => {
+          this.isUpdating = false;
+        });
+    },
+    deleteInfo(item) {
+      this.deleteDialog = true;
+      this.selectedRank = item;
+    },
+    deleteConfirmed() {
+      this.isDeleting = true;
+      this.$axios
+        .delete(`${this.apiEndpoint}/${this.selectedRank.id}`)
+        .then(response => {
+          let { message, hasError } = response.data;
+
+          // Toast custom message
+          if (hasError) {
+            toast.error(message);
+          } else {
+            toast.success(message);
+          }
+
+          this.cancel();
+          this.isDeleting = false;
+          this.deleteDialog = false;
+        })
+        .catch(err => {
+          this.isDeleting = false;
+        });
+    },
+    closeDeleteDialog() {
+      this.deleteDialog = false;
+    },
+    cancel() {
+      this.onEdit = false;
+      this.rank = {};
+
+      this.getAllRanks();
     }
-}
+  },
+  computed: {
+    ...mapState("rank", {
+      rankData: state => state.ranks,
+      isLoading: state => state.loading
+    })
+  },
+  created() {
+    this.getAllRanks();
+  }
+};
 </script>

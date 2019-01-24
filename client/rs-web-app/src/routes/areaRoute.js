@@ -1,7 +1,7 @@
 let Layout = () => import("../layouts/VuetifyLayout.vue");
 
-let Area = () => 
-    import("../views/setup/standard/employment-information/organizational-level/area/Area.vue");
+let Area = () =>
+  import("../views/setup/standard/employment-information/organizational-level/area/Area.vue");
 export default {
   path: "/",
   component: Layout,
@@ -11,4 +11,4 @@ export default {
       component: Area
     }
   ]
-}
+};

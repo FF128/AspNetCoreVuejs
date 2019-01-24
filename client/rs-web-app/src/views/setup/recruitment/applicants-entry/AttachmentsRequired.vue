@@ -93,104 +93,105 @@
     </div>
 </template>
 <script>
-import Toast from "@/project-modules/toast"
-import { mapState, mapActions } from 'vuex';
+import Toast from "@/project-modules/toast";
+import { mapState, mapActions } from "vuex";
 
 let toast = new Toast();
 export default {
-    data() {
-        return {
-            attachment: {},
-            onEdit: false,
-            isSaving: false,
-            isUpdating: false,
-            headers: [
-                {
-                    text: 'Active',
-                    align: 'left',
-                    sortable: false,
-                    value: 'active'
-                },
-                { text: 'Description', value: 'desc' },
-                { text: '', value: 'actions'}
-            ],
-            selectedAttachment: {},
-            deleteDialog: false,
-            apiEndpoint: "api/applicants-entry/attachment"
-        }
-    },
-     methods: {
-        ...mapActions('appEntry',[
-            'getAllAttachments'
-        ]),
-        save() {
-            this.isSaving = true
-            this.$axios.post(this.apiEndpoint, this.attachment)
-                .then(({ data }) => {
-                    let { message, hasError } = data;
-                    toast.show(message, hasError);
+  data() {
+    return {
+      attachment: {},
+      onEdit: false,
+      isSaving: false,
+      isUpdating: false,
+      headers: [
+        {
+          text: "Active",
+          align: "left",
+          sortable: false,
+          value: "active"
+        },
+        { text: "Description", value: "desc" },
+        { text: "", value: "actions" }
+      ],
+      selectedAttachment: {},
+      deleteDialog: false,
+      apiEndpoint: "api/applicants-entry/attachment"
+    };
+  },
+  methods: {
+    ...mapActions("appEntry", ["getAllAttachments"]),
+    save() {
+      this.isSaving = true;
+      this.$axios
+        .post(this.apiEndpoint, this.attachment)
+        .then(({ data }) => {
+          let { message, hasError } = data;
+          toast.show(message, hasError);
 
-                    this.isSaving = false;
-                    this.cancel();
-                })
-                .catch(( { response }) => {
-                    let { message, hasError } = response.data;
-                    toast.show(message, hasError);
-                    this.isSaving = false;
-                });
-        },
-        edit(item) {
-            this.attachment = item;
-
-            this.onEdit = true;
-        },
-        cancel() {
-            this.onEdit = false;
-            this.attachment = {}
-            this.getAllAttachments();
-        },
-        update() {
-            this.isUpdating = false;
-            this.$axios.put(`${this.apiEndpoint}`, this.attachment)
-                .then(({ data }) => {
-                    let { message, hasError } = data;
-                    toast.show(message, hasError);
-
-                    this.isUpdating = false;
-                    this.cancel();
-                })
-                .catch(({ response }) => {
-                    let { message, hasError } = response.data;
-                    toast.show(message, hasError);
-
-                    this.isUpdating = false;
-                });
-        },
-        deleteInfo(item) {
-            this.selectedInfo = item;
-            this.deleteDialog = true;
-        },
-        deleteConfirmed() {
-            this.$axios.delete(`${this.apiEndpoint}/${this.selectedInfo.id}`)
-                .then(({ data }) => {
-                    this.deleteDialog = false;
-                    let { message, hasError } = data;
-                    toast.show(message, hasError);
-                    this.cancel();
-                })
-                .catch(({ response }) => {
-                    let { message, hasError } = response.data;
-                    toast.show(message, hasError);
-                });
-        }
-    },
-    computed: {
-        ...mapState('appEntry', {
-            attachments: state => state.attachments
+          this.isSaving = false;
+          this.cancel();
         })
+        .catch(({ response }) => {
+          let { message, hasError } = response.data;
+          toast.show(message, hasError);
+          this.isSaving = false;
+        });
     },
-    created() {
-        this.getAllAttachments();
+    edit(item) {
+      this.attachment = item;
+
+      this.onEdit = true;
+    },
+    cancel() {
+      this.onEdit = false;
+      this.attachment = {};
+      this.getAllAttachments();
+    },
+    update() {
+      this.isUpdating = false;
+      this.$axios
+        .put(`${this.apiEndpoint}`, this.attachment)
+        .then(({ data }) => {
+          let { message, hasError } = data;
+          toast.show(message, hasError);
+
+          this.isUpdating = false;
+          this.cancel();
+        })
+        .catch(({ response }) => {
+          let { message, hasError } = response.data;
+          toast.show(message, hasError);
+
+          this.isUpdating = false;
+        });
+    },
+    deleteInfo(item) {
+      this.selectedInfo = item;
+      this.deleteDialog = true;
+    },
+    deleteConfirmed() {
+      this.$axios
+        .delete(`${this.apiEndpoint}/${this.selectedInfo.id}`)
+        .then(({ data }) => {
+          this.deleteDialog = false;
+          let { message, hasError } = data;
+          toast.show(message, hasError);
+          this.cancel();
+        })
+        .catch(({ response }) => {
+          let { message, hasError } = response.data;
+          toast.show(message, hasError);
+        });
     }
-}
+  },
+  computed: {
+    ...mapState("appEntry", {
+      attachments: state => state.attachments
+    })
+  },
+  created() {
+    this.getAllAttachments();
+  }
+};
 </script>

@@ -1,37 +1,35 @@
-import Vue from "vue"
-import VueJWT from "vuejs-jwt"
-import { getUserDetails } from "@/_helpers/user"
+import Vue from "vue";
+import VueJWT from "vuejs-jwt";
+import { getUserDetails } from "@/_helpers/user";
 
 Vue.use(VueJWT);
 
 const state = {
-    companyCode: ''
-}
+  companyCode: ""
+};
 
-const getters = {
-
-}
+const getters = {};
 
 const mutations = {
-    decodeToken(state) {
-        var user = getUserDetails();
-        
-        var decodedToken = Vue.$jwt.decode(user.token);
+  decodeToken(state) {
+    var user = getUserDetails();
 
-        state.companyCode = decodedToken.CompanyCode;
-    }
-}
+    var decodedToken = Vue.$jwt.decode(user.token);
+
+    state.companyCode = decodedToken.CompanyCode;
+  }
+};
 
 const actions = {
-    decodeToken({ commit }) {
-        commit('decodeToken');
-    }
-}
+  decodeToken({ commit }) {
+    commit("decodeToken");
+  }
+};
 
 export default {
-    state,
-    getters,
-    mutations,
-    actions,
-    namespaced: true
-}
+  state,
+  getters,
+  mutations,
+  actions,
+  namespaced: true
+};

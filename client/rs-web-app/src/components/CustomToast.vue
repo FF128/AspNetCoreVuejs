@@ -27,17 +27,15 @@
 
 
 <script>
-
 export default {
-
   data() {
     return {
       active: false,
-      text: '',
-      icon: '',
-      color: 'info',
+      text: "",
+      icon: "",
+      color: "info",
       timeout: 3000,
-      dismissible: true,
+      dismissible: true
     };
   },
 
@@ -62,9 +60,7 @@ export default {
       if (this.dismissible) {
         this.active = false;
       }
-    },
-  },
-
+    }
+  }
 };
-
 </script>

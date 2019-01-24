@@ -94,140 +94,140 @@
     </div>
 </template>
 <script>
-import { mapActions, mapState } from "vuex"
-import Toast from "@/project-modules/toast"
-import codeRules from "@/rules/codeRules"
+import { mapActions, mapState } from "vuex";
+import Toast from "@/project-modules/toast";
+import codeRules from "@/rules/codeRules";
 
 let toast = new Toast();
 export default {
-    data() {
-        return {
-            title: "Grade",
-            grade: {},
-            codeRules,
-            valid: false,
-            isSaving: false,
-            isUpdating: false,
-            isDeleting: false,
-            onEdit: false,
-            data: [],
-            isEmpty: false,
-            isBordered: false,
-            isStriped: false,
-            isNarrowed: false,
-            isHoverable: false,
-            isFocusable: false,
-            hasMobileCards: true,
-            deleteDialog: false,
-            selectedGrade: {},
-            headers: [
-                {
-                    text: 'Code',
-                    align: 'left',
-                    sortable: false,
-                    value: 'code'
-                },
-                { text: 'Description', value: 'description', align: 'left' },
-                { text: '', value: 'actions' }
-            ],
-            apiEndpoint: "api/grade"
-        }
-    },
-    methods: {
-        ...mapActions('grade', [
-            'getAllGrades'
-        ]),
-        save() {
-            this.isSaving = true;
-            this.$axios.post(this.apiEndpoint, this.grade)
-                .then(response => {
-                    this.isSaving = false;
-
-                    let { message, hasError } = response.data;
-
-                    // Toast custom message
-                    if(hasError) {
-                        toast.error(message)
-                    }else{
-                        toast.success(message)
-                    }
-
-                    // Update List
-                    this.cancel();
-                })
-                .catch(err => {
-                    this.isSaving = false;
-                });
+  data() {
+    return {
+      title: "Grade",
+      grade: {},
+      codeRules,
+      valid: false,
+      isSaving: false,
+      isUpdating: false,
+      isDeleting: false,
+      onEdit: false,
+      data: [],
+      isEmpty: false,
+      isBordered: false,
+      isStriped: false,
+      isNarrowed: false,
+      isHoverable: false,
+      isFocusable: false,
+      hasMobileCards: true,
+      deleteDialog: false,
+      selectedGrade: {},
+      headers: [
+        {
+          text: "Code",
+          align: "left",
+          sortable: false,
+          value: "code"
         },
-        edit(item){
-            this.onEdit = true;
-            this.grade = item;
-        },
-        update() {
-            this.isUpdating = true
-            this.$axios.put(this.apiEndpoint, this.grade)
-                .then(response => {
-                    this.isUpdating = false;
+        { text: "Description", value: "description", align: "left" },
+        { text: "", value: "actions" }
+      ],
+      apiEndpoint: "api/grade"
+    };
+  },
+  methods: {
+    ...mapActions("grade", ["getAllGrades"]),
+    save() {
+      this.isSaving = true;
+      this.$axios
+        .post(this.apiEndpoint, this.grade)
+        .then(response => {
+          this.isSaving = false;
 
-                    let { message, hasError } = response.data;
+          let { message, hasError } = response.data;
 
-                    // Toast custom message
-                    if(hasError) {
-                        toast.error(message)
-                    }else{
-                        toast.success(message)
-                    }
-                    this.cancel();
-                })
-                .catch(err => {
-                    this.isUpdating = false;
-                })
-        },
-        deleteInfo(item) {
-            this.deleteDialog = true;
-            this.selectedGrade = item;
-        },
-        deleteConfirmed() {
-            this.isDeleting = true;
-            this.$axios.delete(`${this.apiEndpoint}/${this.selectedGrade.id}`)
-                .then(response => {
+          // Toast custom message
+          if (hasError) {
+            toast.error(message);
+          } else {
+            toast.success(message);
+          }
 
-                    let { message, hasError } = response.data;
-
-                    // Toast custom message
-                    if(hasError) {
-                        toast.error(message)
-                    }else{
-                        toast.success(message)
-                    }
-
-                    this.cancel();
-                    
-                    this.isDeleting = false;
-                    this.deleteDialog = false;
-                })
-                .catch(err => {
-                    this.isDeleting = false;
-                })
-        },
-        closeDeleteDialog() {
-            this.deleteDialog = false;
-        },
-        cancel() {
-            this.onEdit = false;
-            this.grade = {}
-
-            this.getAllGrades();
-        }
-    },
-    computed: {
-        ...mapState('grade', {
-            gradeData: state => state.grades,
-            isLoading: state => state.loading
+          // Update List
+          this.cancel();
         })
+        .catch(err => {
+          this.isSaving = false;
+        });
     },
-    created() {
-        this.getAllGrades();
+    edit(item) {
+      this.onEdit = true;
+      this.grade = item;
+    },
+    update() {
+      this.isUpdating = true;
+      this.$axios
+        .put(this.apiEndpoint, this.grade)
+        .then(response => {
+          this.isUpdating = false;
+
+          let { message, hasError } = response.data;
+
+          // Toast custom message
+          if (hasError) {
+            toast.error(message);
+          } else {
+            toast.success(message);
+          }
+          this.cancel();
+        })
+        .catch(err => {
+          this.isUpdating = false;
+        });
+    },
+    deleteInfo(item) {
+      this.deleteDialog = true;
+      this.selectedGrade = item;
+    },
+    deleteConfirmed() {
+      this.isDeleting = true;
+      this.$axios
+        .delete(`${this.apiEndpoint}/${this.selectedGrade.id}`)
+        .then(response => {
+          let { message, hasError } = response.data;
+
+          // Toast custom message
+          if (hasError) {
+            toast.error(message);
+          } else {
+            toast.success(message);
+          }
+
+          this.cancel();
+
+          this.isDeleting = false;
+          this.deleteDialog = false;
+        })
+        .catch(err => {
+          this.isDeleting = false;
+        });
+    },
+    closeDeleteDialog() {
+      this.deleteDialog = false;
+    },
+    cancel() {
+      this.onEdit = false;
+      this.grade = {};
+
+      this.getAllGrades();
     }
-}
+  },
+  computed: {
+    ...mapState("grade", {
+      gradeData: state => state.grades,
+      isLoading: state => state.loading
+    })
+  },
+  created() {
+    this.getAllGrades();
+  }
+};
 </script>

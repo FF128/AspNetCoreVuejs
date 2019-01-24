@@ -98,109 +98,110 @@
     
 </template>
 <script>
-import { mapActions, mapState } from "vuex"
-import AppToast from "@/project-modules/appToast"
+import { mapActions, mapState } from "vuex";
+import AppToast from "@/project-modules/appToast";
 
 let appToast = new AppToast();
-let apiEnpoint = "api/religion"
+let apiEnpoint = "api/religion";
 export default {
-    data() {
-        return {
-            title: "Religion",
-            religion: {},
-            isSaving: false,
-            isUpdating: false,
-            isDeleting: false,
-            onEdit: false,
-            data: [],
-            isEmpty: false,
-            isBordered: false,
-            isStriped: false,
-            isNarrowed: false,
-            isHoverable: false,
-            isFocusable: false,
-            hasMobileCards: true,
-            deleteModal: false,
-            selectedRel: {}
-        }
-    },
-    methods: {
-        ...mapActions('religion', [
-            'getAllReligions'
-        ]),
-        save() {
-            this.isSaving = true;
-            this.$axios.post(apiEndpoint, this.religion)
-                .then(response => {
-                    this.isSaving = false;
+  data() {
+    return {
+      title: "Religion",
+      religion: {},
+      isSaving: false,
+      isUpdating: false,
+      isDeleting: false,
+      onEdit: false,
+      data: [],
+      isEmpty: false,
+      isBordered: false,
+      isStriped: false,
+      isNarrowed: false,
+      isHoverable: false,
+      isFocusable: false,
+      hasMobileCards: true,
+      deleteModal: false,
+      selectedRel: {}
+    };
+  },
+  methods: {
+    ...mapActions("religion", ["getAllReligions"]),
+    save() {
+      this.isSaving = true;
+      this.$axios
+        .post(apiEndpoint, this.religion)
+        .then(response => {
+          this.isSaving = false;
 
-                    appToast.success(`Successfully Added`);
-                    // Update List
-                    this.getAllReligions();
-                })
-                .catch(err => {
-                    this.isSaving = false;
-                    appToast.danger("Something went wrong!");
-                });
-        },
-        edit(item){
-            this.onEdit = true;
-            this.religion = item;
-        },
-        update() {
-            this.isUpdating = true
-            this.$axios.put(apiEndpoint, this.religion)
-                .then(response => {
-                    this.isUpdating = false;
-                    this.onEdit = false;
-                    appToast.success("Successfully Updated");
-
-                    this.getAllReligions();
-                })
-                .catch(err => {
-                    this.isUpdating = false;
-                    appToast.danger("Error");
-                })
-        },
-        deleteInfo(item) {
-            this.deleteModal = true;
-            this.selectedRel = item;
-        },
-        deleteConfirmed(item) {
-            this.isDeleting = true;
-            this.$axios.delete(`${apiEnpoint}/${item.id}`)
-                .then(response => {
-                    this.getAllReligions();
-
-                    appToast.success(`Code: ${item.code} has been deleted`);
-
-                    this.isDeleting = false;
-                    this.deleteModal = false;
-                })
-                .catch(err => {
-                    appToast.danger("Error deleting")
-
-                    this.isDeleting = false;
-                })
-        },
-        closeDeleteModal() {
-            this.deleteModal = false;
-        },
-        cancel() {
-            this.onEdit = false;
-            this.religion = {}
-
-            this.getAllReligions();
-        }
-    },
-    computed: {
-        ...mapState('religion', {
-            religionData: state => state.religions,
-            isLoading: state => state.loading
+          appToast.success(`Successfully Added`);
+          // Update List
+          this.getAllReligions();
         })
+        .catch(err => {
+          this.isSaving = false;
+          appToast.danger("Something went wrong!");
+        });
     },
-    created() {
-        this.getAllReligions();
+    edit(item) {
+      this.onEdit = true;
+      this.religion = item;
+    },
+    update() {
+      this.isUpdating = true;
+      this.$axios
+        .put(apiEndpoint, this.religion)
+        .then(response => {
+          this.isUpdating = false;
+          this.onEdit = false;
+          appToast.success("Successfully Updated");
+
+          this.getAllReligions();
+        })
+        .catch(err => {
+          this.isUpdating = false;
+          appToast.danger("Error");
+        });
+    },
+    deleteInfo(item) {
+      this.deleteModal = true;
+      this.selectedRel = item;
+    },
+    deleteConfirmed(item) {
+      this.isDeleting = true;
+      this.$axios
+        .delete(`${apiEnpoint}/${item.id}`)
+        .then(response => {
+          this.getAllReligions();
+
+          appToast.success(`Code: ${item.code} has been deleted`);
+
+          this.isDeleting = false;
+          this.deleteModal = false;
+        })
+        .catch(err => {
+          appToast.danger("Error deleting");
+
+          this.isDeleting = false;
+        });
+    },
+    closeDeleteModal() {
+      this.deleteModal = false;
+    },
+    cancel() {
+      this.onEdit = false;
+      this.religion = {};
+
+      this.getAllReligions();
     }
-}
+  },
+  computed: {
+    ...mapState("religion", {
+      religionData: state => state.religions,
+      isLoading: state => state.loading
+    })
+  },
+  created() {
+    this.getAllReligions();
+  }
+};
 </script>

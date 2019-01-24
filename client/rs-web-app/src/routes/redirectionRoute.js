@@ -1,8 +1,7 @@
-
 //let Layout = () => import("../layouts/VuetifyLayout.vue");
 
-let PageNotFound = () => 
-    import("../views/redirect/PageNotFound.vue");
+let PageNotFound = () => import("../views/redirect/PageNotFound.vue");
 export default {
-    path: "*", component: PageNotFound 
-}
+  path: "*",
+  component: PageNotFound
+};

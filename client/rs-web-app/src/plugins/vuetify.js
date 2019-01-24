@@ -1,6 +1,6 @@
-import Vue from 'vue'
-import Vuetify, { 
-  VApp, 
+import Vue from "vue";
+import Vuetify, {
+  VApp,
   VNavigationDrawer,
   VForm,
   VContainer,
@@ -10,13 +10,13 @@ import Vuetify, {
   VTextField,
   VSnackbar,
   VDataTable,
-  VToolbar 
-} from 'vuetify/lib'
-import 'vuetify/src/stylus/app.styl'
+  VToolbar
+} from "vuetify/lib";
+import "vuetify/src/stylus/app.styl";
 
 Vue.use(Vuetify, {
   components: {
-    VApp, 
+    VApp,
     VNavigationDrawer,
     VForm,
     VContainer,
@@ -26,8 +26,7 @@ Vue.use(Vuetify, {
     VTextField,
     VSnackbar,
     VDataTable,
-    VToolbar 
+    VToolbar
   },
-  iconfont: 'md',
-  
-})
+  iconfont: "md"
+});

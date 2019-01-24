@@ -33,16 +33,16 @@
     </vuetify-layout-default>
 </template>
 <script>
-import VuetifyLayoutDefault from "@/layouts/VuetifyLayoutDefault"
+import VuetifyLayoutDefault from "@/layouts/VuetifyLayoutDefault";
 export default {
-    components: {
-        VuetifyLayoutDefault
-    },
-    data() {
-        return {
-             bottomNav: 'hired',
-             title: "Email Format Setup"
-        }
-    }
-}
+  components: {
+    VuetifyLayoutDefault
+  },
+  data() {
+    return {
+      bottomNav: "hired",
+      title: "Email Format Setup"
+    };
+  }
+};
 </script>

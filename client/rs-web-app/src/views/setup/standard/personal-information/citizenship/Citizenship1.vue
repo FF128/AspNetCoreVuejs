@@ -98,110 +98,111 @@
     
 </template>
 <script>
-import { mapActions, mapState } from "vuex"
-import AppToast from "@/project-modules/appToast"
+import { mapActions, mapState } from "vuex";
+import AppToast from "@/project-modules/appToast";
 
 let appToast = new AppToast();
 let apiEndpoint = "api/citizenship";
 
 export default {
-    data() {
-        return {
-            title: "Citizenship",
-            cit: {},
-            isSaving: false,
-            isUpdating: false,
-            isDeleting: false,
-            onEdit: false,
-            data: [],
-            isEmpty: false,
-            isBordered: false,
-            isStriped: false,
-            isNarrowed: false,
-            isHoverable: false,
-            isFocusable: false,
-            hasMobileCards: true,
-            deleteModal: false,
-            selectedCit: {}
-        }
-    },
-    methods: {
-        ...mapActions('citizenship', [
-            'getAllCitizenship'
-        ]),
-        save() {
-            this.isSaving = true;
-            this.$axios.post(apiEndpoint, this.cit)
-                .then(response => {
-                    this.isSaving = false;
+  data() {
+    return {
+      title: "Citizenship",
+      cit: {},
+      isSaving: false,
+      isUpdating: false,
+      isDeleting: false,
+      onEdit: false,
+      data: [],
+      isEmpty: false,
+      isBordered: false,
+      isStriped: false,
+      isNarrowed: false,
+      isHoverable: false,
+      isFocusable: false,
+      hasMobileCards: true,
+      deleteModal: false,
+      selectedCit: {}
+    };
+  },
+  methods: {
+    ...mapActions("citizenship", ["getAllCitizenship"]),
+    save() {
+      this.isSaving = true;
+      this.$axios
+        .post(apiEndpoint, this.cit)
+        .then(response => {
+          this.isSaving = false;
 
-                    appToast.success(`Successfully Added`);
-                    // Update List
-                    this.getAllCitizenship();
-                })
-                .catch(err => {
-                    this.isSaving = false;
-                    appToast.danger("Something went wrong!");
-                });
-        },
-        edit(item){
-            this.onEdit = true;
-            this.cit = item;
-        },
-        update() {
-            this.isUpdating = true
-            this.$axios.put(apiEndpoint, this.cit)
-                .then(response => {
-                    this.isUpdating = false;
-                    this.onEdit = false;
-                    appToast.success("Successfully Updated");
-
-                    this.getAllCitizenship();
-                })
-                .catch(err => {
-                    this.isUpdating = false;
-                    appToast.danger("Error");
-                })
-        },
-        deleteInfo(item) {
-            this.deleteModal = true;
-            this.selectedCit = item;
-        },
-        deleteConfirmed(item) {
-            this.isDeleting = true;
-            this.$axios.delete(`${apiEndpoint}/${item.id}`)
-                .then(response => {
-                    this.getAllCitizenship();
-
-                    appToast.success(`Code: ${item.code} has been deleted`);
-
-                    this.isDeleting = false;
-                    this.deleteModal = false;
-                })
-                .catch(err => {
-                    appToast.danger("Error deleting")
-
-                    this.isDeleting = false;
-                })
-        },
-        closeDeleteModal() {
-            this.deleteModal = false;
-        },
-        cancel() {
-            this.onEdit = false;
-            this.cit = {}
-
-            this.getAllCitizenship();
-        }
-    },
-    computed: {
-        ...mapState('citizenship', {
-            citData: state => state.cit,
-            isLoading: state => state.loading
+          appToast.success(`Successfully Added`);
+          // Update List
+          this.getAllCitizenship();
         })
+        .catch(err => {
+          this.isSaving = false;
+          appToast.danger("Something went wrong!");
+        });
     },
-    created() {
-        this.getAllCitizenship();
+    edit(item) {
+      this.onEdit = true;
+      this.cit = item;
+    },
+    update() {
+      this.isUpdating = true;
+      this.$axios
+        .put(apiEndpoint, this.cit)
+        .then(response => {
+          this.isUpdating = false;
+          this.onEdit = false;
+          appToast.success("Successfully Updated");
+
+          this.getAllCitizenship();
+        })
+        .catch(err => {
+          this.isUpdating = false;
+          appToast.danger("Error");
+        });
+    },
+    deleteInfo(item) {
+      this.deleteModal = true;
+      this.selectedCit = item;
+    },
+    deleteConfirmed(item) {
+      this.isDeleting = true;
+      this.$axios
+        .delete(`${apiEndpoint}/${item.id}`)
+        .then(response => {
+          this.getAllCitizenship();
+
+          appToast.success(`Code: ${item.code} has been deleted`);
+
+          this.isDeleting = false;
+          this.deleteModal = false;
+        })
+        .catch(err => {
+          appToast.danger("Error deleting");
+
+          this.isDeleting = false;
+        });
+    },
+    closeDeleteModal() {
+      this.deleteModal = false;
+    },
+    cancel() {
+      this.onEdit = false;
+      this.cit = {};
+
+      this.getAllCitizenship();
     }
-}
+  },
+  computed: {
+    ...mapState("citizenship", {
+      citData: state => state.cit,
+      isLoading: state => state.loading
+    })
+  },
+  created() {
+    this.getAllCitizenship();
+  }
+};
 </script>

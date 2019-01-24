@@ -26,26 +26,27 @@
   </div>
 </template>
 <script>
-  export default {
-    data() {
-      return {
-        member: {},
-        values: []
-      }
-    },
-    methods: {
-      getValues() {
-        this.$axios.get("api/values")
-          .then(response => {
-            this.values = response.data;
-          })
-          .catch(err => {
-            console.log(err);
-          })
-      }
-    },
-    created() {
-      this.getValues();
+export default {
+  data() {
+    return {
+      member: {},
+      values: []
+    };
+  },
+  methods: {
+    getValues() {
+      this.$axios
+        .get("api/values")
+        .then(response => {
+          this.values = response.data;
+        })
+        .catch(err => {
+          console.log(err);
+        });
     }
+  },
+  created() {
+    this.getValues();
   }
+};
 </script>

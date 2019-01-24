@@ -98,122 +98,123 @@
     </div>
 </template>
 <script>
-import { mapActions, mapState } from "vuex"
-import Toast from "@/project-modules/toast"
-import codeRules from "@/rules/codeRules"
+import { mapActions, mapState } from "vuex";
+import Toast from "@/project-modules/toast";
+import codeRules from "@/rules/codeRules";
 
 let toast = new Toast();
 export default {
-    data() {
-        return {
-            title: "Government Exams",
-            govExam: {},
-            codeRules,
-            valid: false,
-            isSaving: false,
-            isUpdating: false,
-            isDeleting: false,
-            onEdit: false,
-            data: [],
-            isEmpty: false,
-            isBordered: false,
-            isStriped: false,
-            isNarrowed: false,
-            isHoverable: false,
-            isFocusable: false,
-            hasMobileCards: true,
-            deleteDialog: false,
-            selectedGovExam: {},
-            headers: [
-                {
-                    text: 'Code',
-                    align: 'left',
-                    sortable: false,
-                    value: 'code'
-                },
-                { text: 'Description', value: 'description', align: 'left' },
-                { text: '', value: 'actions' }
-            ],
-            apiEndpoint: "api/gov-exams"
-        }
-    },
-    methods: {
-        ...mapActions('government', [
-            'getAllGovExams'
-        ]),
-        save() {
-            this.isSaving = true;
-            this.$axios.post(this.apiEndpoint, this.govExam)
-                .then(response => {
-                    this.isSaving = false;
-                    let { message, hasError } = response.data;
+  data() {
+    return {
+      title: "Government Exams",
+      govExam: {},
+      codeRules,
+      valid: false,
+      isSaving: false,
+      isUpdating: false,
+      isDeleting: false,
+      onEdit: false,
+      data: [],
+      isEmpty: false,
+      isBordered: false,
+      isStriped: false,
+      isNarrowed: false,
+      isHoverable: false,
+      isFocusable: false,
+      hasMobileCards: true,
+      deleteDialog: false,
+      selectedGovExam: {},
+      headers: [
+        {
+          text: "Code",
+          align: "left",
+          sortable: false,
+          value: "code"
+        },
+        { text: "Description", value: "description", align: "left" },
+        { text: "", value: "actions" }
+      ],
+      apiEndpoint: "api/gov-exams"
+    };
+  },
+  methods: {
+    ...mapActions("government", ["getAllGovExams"]),
+    save() {
+      this.isSaving = true;
+      this.$axios
+        .post(this.apiEndpoint, this.govExam)
+        .then(response => {
+          this.isSaving = false;
+          let { message, hasError } = response.data;
 
-                    // Toast custom message
-                    toast.show(message, hasError);
-                    // Update List
-                    this.cancel();
-                })
-                .catch(err => {
-                    this.isSaving = false;
-                });
-        },
-        edit(item){
-            this.onEdit = true;
-            this.govExam = item;
-        },
-        update() {
-            this.isUpdating = true
-            this.$axios.put(this.apiEndpoint, this.govExam)
-                .then(response => {
-                    this.isUpdating = false;
-                    let { message, hasError } = response.data;
-
-                    // Toast custom message
-                    toast.show(message, hasError);
-                    this.cancel();
-                })
-                .catch(err => {
-                    this.isUpdating = false;
-                })
-        },
-        deleteInfo(item) {
-            this.deleteDialog = true;
-            this.selectedGovExam = item;
-        },
-        deleteConfirmed() {
-            this.isDeleting = true;
-            this.$axios.delete(`${this.apiEndpoint}/${this.selectedGovExam.id}`)
-                .then(response => {
-                     let { message, hasError } = response.data;
-
-                    // Toast custom message
-                    toast.show(message, hasError);
-                    this.cancel();
-                    this.isDeleting = false;
-                    this.deleteDialog = false;
-                })
-                .catch(err => {
-                    this.isDeleting = false;
-                })
-        },
-        closeDeleteDialog() {
-            this.deleteDialog = false;
-        },
-        cancel() {
-            this.onEdit = false;
-            this.govExam = {}
-
-            this.getAllGovExams();
-        }
-    },
-    computed: {
-        ...mapState('government', {
-            govExamData: state => state.govExams,
-            isLoading: state => state.loading
+          // Toast custom message
+          toast.show(message, hasError);
+          // Update List
+          this.cancel();
         })
+        .catch(err => {
+          this.isSaving = false;
+        });
     },
-    created() {
-        this.getAllGovExams();
+    edit(item) {
+      this.onEdit = true;
+      this.govExam = item;
+    },
+    update() {
+      this.isUpdating = true;
+      this.$axios
+        .put(this.apiEndpoint, this.govExam)
+        .then(response => {
+          this.isUpdating = false;
+          let { message, hasError } = response.data;
+
+          // Toast custom message
+          toast.show(message, hasError);
+          this.cancel();
+        })
+        .catch(err => {
+          this.isUpdating = false;
+        });
+    },
+    deleteInfo(item) {
+      this.deleteDialog = true;
+      this.selectedGovExam = item;
+    },
+    deleteConfirmed() {
+      this.isDeleting = true;
+      this.$axios
+        .delete(`${this.apiEndpoint}/${this.selectedGovExam.id}`)
+        .then(response => {
+          let { message, hasError } = response.data;
+
+          // Toast custom message
+          toast.show(message, hasError);
+          this.cancel();
+          this.isDeleting = false;
+          this.deleteDialog = false;
+        })
+        .catch(err => {
+          this.isDeleting = false;
+        });
+    },
+    closeDeleteDialog() {
+      this.deleteDialog = false;
+    },
+    cancel() {
+      this.onEdit = false;
+      this.govExam = {};
+
+      this.getAllGovExams();
     }
-}
+  },
+  computed: {
+    ...mapState("government", {
+      govExamData: state => state.govExams,
+      isLoading: state => state.loading
+    })
+  },
+  created() {
+    this.getAllGovExams();
+  }
+};
 </script>

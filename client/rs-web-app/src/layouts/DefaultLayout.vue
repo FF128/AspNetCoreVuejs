@@ -78,17 +78,14 @@
 </template>
 <script>
 export default {
-    data() {
-        return {
-            aside: false,
-            title: "Recruitment System"
-        }
-    },
-    methods: {
-        logout () {
-            
-        }
-    }
-}
+  data() {
+    return {
+      aside: false,
+      title: "Recruitment System"
+    };
+  },
+  methods: {
+    logout() {}
+  }
+};
 </script>
-

@@ -98,7 +98,7 @@ export default {
       localStorage.removeItem("token");
       //window.location.href = "/login";
       //this.$router.push("/login")
-      this.$router.go("/login")
+      this.$router.go("/login");
     }
   }
 };

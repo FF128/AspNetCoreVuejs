@@ -94,140 +94,141 @@
     </div>
 </template>
 <script>
-import { mapActions, mapState } from "vuex"
-import Toast from "@/project-modules/toast"
-import codeRules from "@/rules/codeRules"
+import { mapActions, mapState } from "vuex";
+import Toast from "@/project-modules/toast";
+import codeRules from "@/rules/codeRules";
 
 let toast = new Toast();
 export default {
-    data() {
-        return {
-            title: "Employee Status File",
-            employeeStatusFile: {},
-            valid: false,
-            codeRules,
-            isSaving: false,
-            isUpdating: false,
-            isDeleting: false,
-            onEdit: false,
-            data: [],
-            isEmpty: false,
-            isBordered: false,
-            isStriped: false,
-            isNarrowed: false,
-            isHoverable: false,
-            isFocusable: false,
-            hasMobileCards: true,
-            deleteDialog: false,
-            selectedEmpStatusFile: {},
-            headers: [
-                {
-                    text: 'Code',
-                    align: 'left',
-                    sortable: false,
-                    value: 'code'
-                },
-                { text: 'Description', value: 'description', align: 'left' },
-                { text: '', value: 'actions' }
-            ],
-            apiEndpoint: "api/employee-status-file"
-        }
-    },
-    methods: {
-        ...mapActions('employeeStatusFile', [
-            'getAllEmployeeStatusFiles'
-        ]),
-        save() {
-            this.isSaving = true;
-            this.$axios.post(this.apiEndpoint, this.employeeStatusFile)
-                .then(response => {
-                    this.isSaving = false;
-
-                    let { message, hasError } = response.data;
-
-                    // Toast custom message
-                    if(hasError) {
-                        toast.error(message)
-                    }else{
-                        toast.success(message)
-                    }
-                    // Update List
-                    this.cancel();
-                })
-                .catch(err => {
-                    this.isSaving = false;
-                });
+  data() {
+    return {
+      title: "Employee Status File",
+      employeeStatusFile: {},
+      valid: false,
+      codeRules,
+      isSaving: false,
+      isUpdating: false,
+      isDeleting: false,
+      onEdit: false,
+      data: [],
+      isEmpty: false,
+      isBordered: false,
+      isStriped: false,
+      isNarrowed: false,
+      isHoverable: false,
+      isFocusable: false,
+      hasMobileCards: true,
+      deleteDialog: false,
+      selectedEmpStatusFile: {},
+      headers: [
+        {
+          text: "Code",
+          align: "left",
+          sortable: false,
+          value: "code"
         },
-        edit(item){
-            this.onEdit = true;
-            this.employeeStatusFile = item;
-        },
-        update() {
-            this.isUpdating = true
-            this.$axios.put(this.apiEndpoint, this.employeeStatusFile)
-                .then(response => {
-                    this.isUpdating = false;
-                   // this.onEdit = false;
+        { text: "Description", value: "description", align: "left" },
+        { text: "", value: "actions" }
+      ],
+      apiEndpoint: "api/employee-status-file"
+    };
+  },
+  methods: {
+    ...mapActions("employeeStatusFile", ["getAllEmployeeStatusFiles"]),
+    save() {
+      this.isSaving = true;
+      this.$axios
+        .post(this.apiEndpoint, this.employeeStatusFile)
+        .then(response => {
+          this.isSaving = false;
 
-                    let { message, hasError } = response.data;
+          let { message, hasError } = response.data;
 
-                    // Toast custom message
-                    if(hasError) {
-                        toast.error(message)
-                    }else{
-                        toast.success(message)
-                    }
-
-                   this.cancel();
-                })
-                .catch(err => {
-                    this.isUpdating = false;
-                })
-        },
-        deleteInfo(item) {
-            this.deleteDialog = true;
-            this.selectedEmpStatusFile = item;
-        },
-        deleteConfirmed() {
-            this.isDeleting = true;
-            this.$axios.delete(`${this.apiEndpoint}/${this.selectedEmpStatusFile.id}`)
-                .then(response => {
-                    this.getAllEmployeeStatusFiles();
-                    
-                    let { message, hasError } = response.data;
-
-                    // Toast custom message
-                    if(hasError) {
-                        toast.error(message)
-                    }else{
-                        toast.success(message)
-                    }
-
-                    this.isDeleting = false;
-                    this.deleteDialog = false;
-                })
-                .catch(err => {
-                    this.isDeleting = false;
-                })
-        },
-        closeDeleteDialog() {
-            this.deleteDialog = false;
-        },
-        cancel() {
-            this.onEdit = false;
-            this.employeeStatusFile = {}
-
-            this.getAllEmployeeStatusFiles();
-        }
-    },
-    computed: {
-        ...mapState('employeeStatusFile', {
-            empStatusFileData: state => state.employeeStatusFiles,
-            isLoading: state => state.loading
+          // Toast custom message
+          if (hasError) {
+            toast.error(message);
+          } else {
+            toast.success(message);
+          }
+          // Update List
+          this.cancel();
         })
+        .catch(err => {
+          this.isSaving = false;
+        });
     },
-    created() {
-        this.getAllEmployeeStatusFiles();
+    edit(item) {
+      this.onEdit = true;
+      this.employeeStatusFile = item;
+    },
+    update() {
+      this.isUpdating = true;
+      this.$axios
+        .put(this.apiEndpoint, this.employeeStatusFile)
+        .then(response => {
+          this.isUpdating = false;
+          // this.onEdit = false;
+
+          let { message, hasError } = response.data;
+
+          // Toast custom message
+          if (hasError) {
+            toast.error(message);
+          } else {
+            toast.success(message);
+          }
+
+          this.cancel();
+        })
+        .catch(err => {
+          this.isUpdating = false;
+        });
+    },
+    deleteInfo(item) {
+      this.deleteDialog = true;
+      this.selectedEmpStatusFile = item;
+    },
+    deleteConfirmed() {
+      this.isDeleting = true;
+      this.$axios
+        .delete(`${this.apiEndpoint}/${this.selectedEmpStatusFile.id}`)
+        .then(response => {
+          this.getAllEmployeeStatusFiles();
+
+          let { message, hasError } = response.data;
+
+          // Toast custom message
+          if (hasError) {
+            toast.error(message);
+          } else {
+            toast.success(message);
+          }
+
+          this.isDeleting = false;
+          this.deleteDialog = false;
+        })
+        .catch(err => {
+          this.isDeleting = false;
+        });
+    },
+    closeDeleteDialog() {
+      this.deleteDialog = false;
+    },
+    cancel() {
+      this.onEdit = false;
+      this.employeeStatusFile = {};
+
+      this.getAllEmployeeStatusFiles();
     }
-}
+  },
+  computed: {
+    ...mapState("employeeStatusFile", {
+      empStatusFileData: state => state.employeeStatusFiles,
+      isLoading: state => state.loading
+    })
+  },
+  created() {
+    this.getAllEmployeeStatusFiles();
+  }
+};
 </script>

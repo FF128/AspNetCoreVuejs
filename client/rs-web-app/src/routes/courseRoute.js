@@ -1,7 +1,7 @@
 let Layout = () => import("../layouts/VuetifyLayout.vue");
 
-let CourseDegree = () => 
-    import("../views/setup/standard/employment-other-info/education/course/CourseDegree.vue")
+let CourseDegree = () =>
+  import("../views/setup/standard/employment-other-info/education/course/CourseDegree.vue");
 export default {
   path: "/",
   component: Layout,
@@ -11,4 +11,4 @@ export default {
       component: CourseDegree
     }
   ]
-}
+};

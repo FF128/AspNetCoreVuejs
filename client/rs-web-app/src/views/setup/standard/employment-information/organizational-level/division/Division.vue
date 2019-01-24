@@ -162,159 +162,158 @@
     </div>
 </template>
 <script>
-import { mapActions, mapState } from "vuex"
-import Toast from "@/project-modules/toast"
-import codeRules from "@/rules/codeRules"
+import { mapActions, mapState } from "vuex";
+import Toast from "@/project-modules/toast";
+import codeRules from "@/rules/codeRules";
 
 let toast = new Toast();
 export default {
-    data() {
-        return {
-            title: "Division",
-            div: {},
-            codeRules,
-            valid: false,
-            isSaving: false,
-            isUpdating: false,
-            isDeleting: false,
-            onEdit: false,
-            deleteDialog: false,
-            selectedDiv: {},
-            headers: [
-                {
-                    text: 'Code',
-                    align: 'left',
-                    sortable: false,
-                    value: 'divisionCode'
-                },
-                { text: 'Description', value: 'divisionDesc', align: 'left' },
-                { text: 'Head Code', value: 'headCode', align: 'left'},
-                { text: '', value: 'actions' }
-            ],
-            jobLevelHeaders: [
-                {
-                    text: 'Code',
-                    align: 'left',
-                    sortable: false,
-                    value: 'code'
-                },
-                { text: 'Description', value: 'description', align: 'left' },
-                { text: 'Grade', value: 'gradeDescription', align: 'left'},
-                { text: 'Step', value: 'stepDescription', align: 'left'},
-                { text: 'Minimum Salary', value: 'minimumSalary', align: 'left'},
-                { text: 'Maximum Salary', value: 'maximumSalary', align: 'left'},
-                { text: '', value: 'actions' }
-            ],
-            jobLevelDialog: false,
-            apiEndpoint: "api/div"
-        }
-    },
-    methods: {
-        ...mapActions('jobLevel', [
-            'getAllJobLevels'
-        ]),
-        ...mapActions('division', [
-            'getAllDivisions'
-        ]),
-        save() {
-            this.isSaving = true;
-            this.$axios.post(this.apiEndpoint, this.div)
-                .then(response => {
-                    this.isSaving = false;
-                    let { message, hasError } = response.data;
+  data() {
+    return {
+      title: "Division",
+      div: {},
+      codeRules,
+      valid: false,
+      isSaving: false,
+      isUpdating: false,
+      isDeleting: false,
+      onEdit: false,
+      deleteDialog: false,
+      selectedDiv: {},
+      headers: [
+        {
+          text: "Code",
+          align: "left",
+          sortable: false,
+          value: "divisionCode"
+        },
+        { text: "Description", value: "divisionDesc", align: "left" },
+        { text: "Head Code", value: "headCode", align: "left" },
+        { text: "", value: "actions" }
+      ],
+      jobLevelHeaders: [
+        {
+          text: "Code",
+          align: "left",
+          sortable: false,
+          value: "code"
+        },
+        { text: "Description", value: "description", align: "left" },
+        { text: "Grade", value: "gradeDescription", align: "left" },
+        { text: "Step", value: "stepDescription", align: "left" },
+        { text: "Minimum Salary", value: "minimumSalary", align: "left" },
+        { text: "Maximum Salary", value: "maximumSalary", align: "left" },
+        { text: "", value: "actions" }
+      ],
+      jobLevelDialog: false,
+      apiEndpoint: "api/div"
+    };
+  },
+  methods: {
+    ...mapActions("jobLevel", ["getAllJobLevels"]),
+    ...mapActions("division", ["getAllDivisions"]),
+    save() {
+      this.isSaving = true;
+      this.$axios
+        .post(this.apiEndpoint, this.div)
+        .then(response => {
+          this.isSaving = false;
+          let { message, hasError } = response.data;
 
-                    // Toast custom message
-                    if(hasError) {
-                        toast.error(message)
-                    }else{
-                        toast.success(message)
-                    }
-                    // Update List
-                    this.cancel();
-                })
-                .catch(err => {
-                    this.isSaving = false;
-                });
-        },
-        edit(item){
-            this.onEdit = true;
-            this.div = item;
-        },
-        update() {
-            this.isUpdating = true
-            this.$axios.put(this.apiEndpoint, this.div)
-                .then(response => {
-                    this.isUpdating = false;
-                     let { message, hasError } = response.data;
-
-                    // Toast custom message
-                    if(hasError) {
-                        toast.error(message)
-                    }else{
-                        toast.success(message)
-                    }
-
-                    this.cancel();
-                })
-                .catch(err => {
-                    this.isUpdating = false;
-                })
-        },
-        deleteInfo(item) {
-            this.deleteDialog = true;
-            this.selectedDiv = item;
-        },
-        deleteConfirmed() {
-            this.isDeleting = true;
-            this.$axios.delete(`${this.apiEndpoint}/${this.selectedDiv.id}`)
-                .then(response => {
-                     let { message, hasError } = response.data;
-
-                    // Toast custom message
-                    if(hasError) {
-                        toast.error(message)
-                    }else{
-                        toast.success(message)
-                    }
-                    this.cancel();
-                    this.isDeleting = false;
-                    this.deleteDialog = false;
-                })
-                .catch(err => {
-                    this.isDeleting = false;
-                })
-        },
-        closeDeleteDialog() {
-            this.deleteDialog = false;
-        },
-        cancel() {
-            this.onEdit = false;
-            this.div = {}
-
-            this.getAllDivisions();
-        },
-        searchJobLevelCode() {
-            this.jobLevelDialog = true;
-
-            this.getAllJobLevels();
-        },
-        selectJobLevel(item) {
-            this.division.jobLevelCode = item.code;
-
-            this.jobLevelDialog = false;
-        }
-    },
-    computed: {
-        ...mapState('jobLevel', {
-            jobLevelData: state => state.jobLevels
-        }),
-        ...mapState('division', {
-            divisionData: state => state.divisions,
-            isLoading: state => state.loading
+          // Toast custom message
+          if (hasError) {
+            toast.error(message);
+          } else {
+            toast.success(message);
+          }
+          // Update List
+          this.cancel();
         })
+        .catch(err => {
+          this.isSaving = false;
+        });
     },
-    created() {
-        this.getAllDivisions();
+    edit(item) {
+      this.onEdit = true;
+      this.div = item;
+    },
+    update() {
+      this.isUpdating = true;
+      this.$axios
+        .put(this.apiEndpoint, this.div)
+        .then(response => {
+          this.isUpdating = false;
+          let { message, hasError } = response.data;
+
+          // Toast custom message
+          if (hasError) {
+            toast.error(message);
+          } else {
+            toast.success(message);
+          }
+
+          this.cancel();
+        })
+        .catch(err => {
+          this.isUpdating = false;
+        });
+    },
+    deleteInfo(item) {
+      this.deleteDialog = true;
+      this.selectedDiv = item;
+    },
+    deleteConfirmed() {
+      this.isDeleting = true;
+      this.$axios
+        .delete(`${this.apiEndpoint}/${this.selectedDiv.id}`)
+        .then(response => {
+          let { message, hasError } = response.data;
+
+          // Toast custom message
+          if (hasError) {
+            toast.error(message);
+          } else {
+            toast.success(message);
+          }
+          this.cancel();
+          this.isDeleting = false;
+          this.deleteDialog = false;
+        })
+        .catch(err => {
+          this.isDeleting = false;
+        });
+    },
+    closeDeleteDialog() {
+      this.deleteDialog = false;
+    },
+    cancel() {
+      this.onEdit = false;
+      this.div = {};
+
+      this.getAllDivisions();
+    },
+    searchJobLevelCode() {
+      this.jobLevelDialog = true;
+
+      this.getAllJobLevels();
+    },
+    selectJobLevel(item) {
+      this.division.jobLevelCode = item.code;
+
+      this.jobLevelDialog = false;
     }
-}
+  },
+  computed: {
+    ...mapState("jobLevel", {
+      jobLevelData: state => state.jobLevels
+    }),
+    ...mapState("division", {
+      divisionData: state => state.divisions,
+      isLoading: state => state.loading
+    })
+  },
+  created() {
+    this.getAllDivisions();
+  }
+};
 </script>

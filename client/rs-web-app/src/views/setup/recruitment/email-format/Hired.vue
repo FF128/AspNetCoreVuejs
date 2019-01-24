@@ -49,13 +49,13 @@
     </div>
 </template>
 <script>
-import Toast from "@/project-modules/toast"
-import 'quill/dist/quill.core.css'
-import 'quill/dist/quill.snow.css'
-import 'quill/dist/quill.bubble.css'
+import Toast from "@/project-modules/toast";
+import "quill/dist/quill.core.css";
+import "quill/dist/quill.snow.css";
+import "quill/dist/quill.bubble.css";
 
-import { quillEditor } from 'vue-quill-editor'
-import { mapActions } from 'vuex';
+import { quillEditor } from "vue-quill-editor";
+import { mapActions } from "vuex";
 
 let toast = new Toast();
 export default {
@@ -64,48 +64,48 @@ export default {
     quillEditor
   },
   data() {
-      return {
-          title: 'Email Format Setup',
-          emailFormat: { 
-              transType: "Hired"
-          },
-          isSaving: false,
-          editorOption: {
-            //   theme: "snow",
-            //   modules: {
-            //     toolbar: false
-            //   }
-          },
-          apiEndpoint: 'api/email-format'
-      }
+    return {
+      title: "Email Format Setup",
+      emailFormat: {
+        transType: "Hired"
+      },
+      isSaving: false,
+      editorOption: {
+        //   theme: "snow",
+        //   modules: {
+        //     toolbar: false
+        //   }
+      },
+      apiEndpoint: "api/email-format"
+    };
   },
   methods: {
-      ...mapActions('emailFormat', {
-          saveEmailFormat: 'saveEmailFormat'
-      }),
-      save() {
-        this.saveEmailFormat(this.emailFormat);
-      },
-      getEmailFormat() {
-          this.$axios.get(`${this.apiEndpoint}/${this.emailFormat.transType}`)
-            .then(({ data }) => {
-                if(data) {
-                    this.emailFormat = data;
-                    return;
-                }
-                this.emailFormat = {
-                    transType: "Hired"
-                }
-            })
-            .catch(({ response }) => {
-                let { message, hasError } = response.data;
-                toast.show(message, hasError);
-            })
-      }
+    ...mapActions("emailFormat", {
+      saveEmailFormat: "saveEmailFormat"
+    }),
+    save() {
+      this.saveEmailFormat(this.emailFormat);
+    },
+    getEmailFormat() {
+      this.$axios
+        .get(`${this.apiEndpoint}/${this.emailFormat.transType}`)
+        .then(({ data }) => {
+          if (data) {
+            this.emailFormat = data;
+            return;
+          }
+          this.emailFormat = {
+            transType: "Hired"
+          };
+        })
+        .catch(({ response }) => {
+          let { message, hasError } = response.data;
+          toast.show(message, hasError);
+        });
+    }
   },
   created() {
-      this.getEmailFormat();
+    this.getEmailFormat();
   }
-    
-}
+};
 </script>

@@ -1,19 +1,17 @@
-import Vue from 'vue';
-import Toast from './CustomToast.vue';
+import Vue from "vue";
+import Toast from "./CustomToast.vue";
 
-
-const colors = ['success', 'info', 'error'];
+const colors = ["success", "info", "error"];
 
 const defaultOptions = {
-  text: '',
-  icon: '',
-  color: 'info',
+  text: "",
+  icon: "",
+  color: "info",
   timeout: 3000,
-  dismissible: true,
+  dismissible: true
 };
 
 let toastCmp = null;
-
 
 function createToastCmp() {
   const cmp = new Vue(Toast);
@@ -23,7 +21,6 @@ function createToastCmp() {
   return cmp;
 }
 
-
 function getToastCmp() {
   if (!toastCmp) {
     toastCmp = createToastCmp();
@@ -32,30 +29,30 @@ function getToastCmp() {
   return toastCmp;
 }
 
-
 function show(options = {}) {
   getToastCmp().show({ ...defaultOptions, ...options });
 }
-
 
 function close() {
   getToastCmp().close();
 }
 
-
 function createShorthands() {
   const shorthands = {};
 
-  colors.forEach(color => (shorthands[color] = (text, options = {}) => show({ color, text, ...options })));
+  colors.forEach(
+    color =>
+      (shorthands[color] = (text, options = {}) =>
+        show({ color, text, ...options }))
+  );
 
   return shorthands;
 }
-
 
 export default {
   show,
   close,
   getToastCmp,
   defaultOptions,
-  ...createShorthands(),
+  ...createShorthands()
 };

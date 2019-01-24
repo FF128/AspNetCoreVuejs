@@ -1,7 +1,7 @@
 let Layout = () => import("../layouts/VuetifyLayout.vue");
 
-let DesignationFile = () => 
-    import("../views/setup/standard/employment-information/employee-level/designation-file/DesignationFile");
+let DesignationFile = () =>
+  import("../views/setup/standard/employment-information/employee-level/designation-file/DesignationFile");
 export default {
   path: "/",
   component: Layout,
@@ -11,4 +11,4 @@ export default {
       component: DesignationFile
     }
   ]
-}
+};

@@ -2,18 +2,17 @@
 
 import Vue from "vue";
 import axios from "axios";
-import appConfig from "@/config/config"
-import { authHeader } from "../_helpers/auth-header"
-
+import appConfig from "@/config/config";
+import { authHeader } from "../_helpers/auth-header";
 
 // Full config:  https://github.com/axios/axios#request-config
 
-axios.defaults.baseURL = appConfig.apiBaseUrl
-axios.defaults.headers.common['Authorization'] = authHeader();
+axios.defaults.baseURL = appConfig.apiBaseUrl;
+axios.defaults.headers.common["Authorization"] = authHeader();
 // axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
 let config = {
   // baseURL: process.env.baseURL || process.env.apiUrl || ""
-//baseURL: appConfig.apiBaseUrl
+  //baseURL: appConfig.apiBaseUrl
   // timeout: 60 * 1000, // Timeout
   // withCredentials: true, // Check cross-site Access-Control
 };

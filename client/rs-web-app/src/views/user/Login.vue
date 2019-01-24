@@ -56,41 +56,43 @@
     </div>
 </template>
 <script>
-export default {
-    data() {
-        return {
-            user: {},
-            apiEndpoint: "api/users",
-            snackbar: {
-                text: '',
-                status: false,
-                y: 'right',
-                x: null,
-                mode: '',
-                timeout: 6000,
-            }
-        }
-    },
-    methods: {
-        login () {
-            this.$axios.post(`${this.apiEndpoint}/authenticate`, this.user)
-                .then(response => {
-                    localStorage.setItem('_u', JSON.stringify(response.data));
-                    this.$router.push("/")
-                })
-                .catch(err => {
-                    this.snackbar.status = true;
-                    this.snackbar.text = err.response.data.message;
-                })
-        }
-    }
-}
+import Toast from "@/project-modules/toast"
 
+let toast = new Toast();
+export default {
+  data() {
+    return {
+      user: {},
+      apiEndpoint: "api/users",
+      snackbar: {
+        text: "",
+        status: false,
+        y: "right",
+        x: null,
+        mode: "",
+        timeout: 6000
+      }
+    };
+  },
+  methods: {
+    login() {
+      this.$axios
+        .post(`${this.apiEndpoint}/authenticate`, this.user)
+        .then(response => {
+          localStorage.setItem("_u", JSON.stringify(response.data));
+          this.$router.push("/");
+        })
+        .catch(err => {
+          toast.show(err.response);
+        });
+    }
+  }
+};
 </script>
 <style>
-  .img-responsive {
-    max-width: 100%;
-    height: auto;
-    display: block;
-  }
+.img-responsive {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
 </style>

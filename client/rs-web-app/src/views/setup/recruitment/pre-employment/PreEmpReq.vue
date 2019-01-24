@@ -121,8 +121,8 @@
                             class="elevation-1">
 
                             <template slot="items" slot-scope="props">
-                                <td>{{ props.item.code }}</td>
-                                <td class="text-xs-left">{{ props.item.description }}</td>
+                                <td>{{ props.item.designationFileCode }}</td>
+                                <td class="text-xs-left">{{ props.item.designationFileDesc }}</td>
                                 <td>
                                     <v-btn icon
                                         @click.prevent="selectDesignation(props.item)">
@@ -201,178 +201,175 @@
     </div>
 </template>
 <script>
-import { mapActions, mapState } from "vuex"
-import Toast from "@/project-modules/toast"
-import codeRules from "@/rules/codeRules"
+import { mapActions, mapState } from "vuex";
+import Toast from "@/project-modules/toast";
+import codeRules from "@/rules/codeRules";
 
 let toast = new Toast();
 export default {
-    data() {
-        return {
-            title: "Pre Employment Requirements",
-            preEmpReq: {},
-            codeRules,
-            valid: false,
-            isSaving: false,
-            isUpdating: false,
-            isDeleting: false,
-            onEdit: false,
-            data: [],
-            isEmpty: false,
-            isBordered: false,
-            isStriped: false,
-            isNarrowed: false,
-            isHoverable: false,
-            isFocusable: false,
-            hasMobileCards: true,
-            deleteDialog: false,
-            selectedRate: {},
-            headers: [
-                {
-                    text: 'Code',
-                    align: 'left',
-                    sortable: false,
-                    value: 'code'
-                },
-                { text: 'Description', value: 'description', align: 'left' },
-                { text: 'Employee Status', value: 'empStatus', align: 'left' },
-                { text: 'Designation', value: 'designation', align: 'left' },
-                { text: '', value: 'actions' }
-            ],
-            employeeStatusHeaders: [
-                {
-                    text: 'Code',
-                    align: 'left',
-                    sortable: false,
-                    value: 'code'
-                },
-                { text: 'Description', value: 'description', align: 'left' },
-                { text: '', value: 'actions' }
-            ],
-            empStatusDialog: false,
-            designationHeaders: [
-                {
-                    text: 'Code',
-                    align: 'left',
-                    sortable: false,
-                    value: 'code'
-                },
-                { text: 'Description', value: 'description', align: 'left' },
-                { text: '', value: 'actions' }
-            ],
-            designationDialog: false,
-            apiEndpoint: "api/pre-emp-req"
-        }
-    },
-    methods: {
-        ...mapActions('employeeStatusFile', [
-            'getAllEmployeeStatusFiles',
-        ]),
-        ...mapActions('designationFile', [
-            'getAllDesignationFiles'
-        ]),
-        ...mapActions('preEmpReq', [
-            'getAllPreEmpReqData'
-        ]),
-        save() {
-            this.isSaving = true;
-            this.$axios.post(this.apiEndpoint, this.preEmpReq)
-                .then(response => {
-                    this.isSaving = false;
-                    let { message, hasError } = response.data;
+  data() {
+    return {
+      title: "Pre Employment Requirements",
+      preEmpReq: {},
+      codeRules,
+      valid: false,
+      isSaving: false,
+      isUpdating: false,
+      isDeleting: false,
+      onEdit: false,
+      data: [],
+      isEmpty: false,
+      isBordered: false,
+      isStriped: false,
+      isNarrowed: false,
+      isHoverable: false,
+      isFocusable: false,
+      hasMobileCards: true,
+      deleteDialog: false,
+      selectedRate: {},
+      headers: [
+        {
+          text: "Code",
+          align: "left",
+          sortable: false,
+          value: "code"
+        },
+        { text: "Description", value: "description", align: "left" },
+        { text: "Employee Status", value: "empStatus", align: "left" },
+        { text: "Designation", value: "designation", align: "left" },
+        { text: "", value: "actions" }
+      ],
+      employeeStatusHeaders: [
+        {
+          text: "Code",
+          align: "left",
+          sortable: false,
+          value: "code"
+        },
+        { text: "Description", value: "description", align: "left" },
+        { text: "", value: "actions" }
+      ],
+      empStatusDialog: false,
+      designationHeaders: [
+        {
+          text: "Code",
+          align: "left",
+          sortable: false,
+          value: "code"
+        },
+        { text: "Description", value: "description", align: "left" },
+        { text: "", value: "actions" }
+      ],
+      designationDialog: false,
+      apiEndpoint: "api/pre-emp-req"
+    };
+  },
+  methods: {
+    ...mapActions("employeeStatusFile", ["getAllEmployeeStatusFiles"]),
+    ...mapActions("designationFile", ["getAllDesignationFiles"]),
+    ...mapActions("preEmpReq", ["getAllPreEmpReqData"]),
+    save() {
+      this.isSaving = true;
+      this.$axios
+        .post(this.apiEndpoint, this.preEmpReq)
+        .then(response => {
+          this.isSaving = false;
+          let { message, hasError } = response.data;
 
-                    // Toast custom message
-                    toast.show(message, hasError);
-                    // Update List
-                    this.cancel();
-                })
-                .catch(err => {
-                    this.isSaving = false;
-                });
-        },
-        edit(item){
-            this.onEdit = true;
-            this.preEmpReq = item;
-        },
-        update() {
-            this.isUpdating = true
-            this.$axios.put(this.apiEndpoint, this.preEmpReq)
-                .then(response => {
-                    this.isUpdating = false;
-                    let { message, hasError } = response.data;
-
-                    // Toast custom message
-                    toast.show(message, hasError);
-                    this.cancel();
-                })
-                .catch(err => {
-                    this.isUpdating = false;
-                })
-        },
-        deleteInfo(item) {
-            this.deleteDialog = true;
-            this.selectedRate = item;
-        },
-        deleteConfirmed() {
-            this.isDeleting = true;
-            this.$axios.delete(`${this.apiEndpoint}/${this.selectedRate.id}`)
-                .then(response => {
-                    let { message, hasError } = response.data;
-
-                    // Toast custom message
-                    toast.show(message, hasError);
-
-                    this.cancel();
-                    this.isDeleting = false;
-                    this.deleteDialog = false;
-                })
-                .catch(err => {
-                    this.isDeleting = false;
-                })
-        },
-        closeDeleteDialog() {
-            this.deleteDialog = false;
-        },
-        cancel() {
-            this.onEdit = false;
-            this.preEmpReq = {}
-
-            this.getAllPreEmpReqData();
-        },
-        searchEmployeeStatus() {
-            this.empStatusDialog = true;
-            this.getAllEmployeeStatusFiles();
-        },
-        selectEmpStatus(item) {
-            this.preEmpReq.employmentStatusCode = item.code;
-
-            this.empStatusDialog = false;
-        },
-        searchDesignation() {
-            this.designationDialog = true;
-            this.getAllDesignationFiles();
-        },
-        selectDesignation(item) {
-            this.preEmpReq.designationCode = item.code;
-            this.designationDialog = false;
-        }
-    },
-    computed: {
-        ...mapState('employeeStatusFile', {
-            empStatusFileData: state => state.employeeStatusFiles,
-            isLoading: state => state.loading
-        }),
-        ...mapState('designationFile', {
-            designationFileData: state => state.designationFiles,
-            isLoading: state => state.loading
-        }),
-        ...mapState('preEmpReq', {
-            preEmpReqData: state => state.preEmpReqData,
-            isLoading: state => state.loading
+          // Toast custom message
+          toast.show(message, hasError);
+          // Update List
+          this.cancel();
         })
+        .catch(err => {
+          this.isSaving = false;
+        });
     },
-    created() {
-        this.getAllPreEmpReqData();
+    edit(item) {
+      this.onEdit = true;
+      this.preEmpReq = item;
+    },
+    update() {
+      this.isUpdating = true;
+      this.$axios
+        .put(this.apiEndpoint, this.preEmpReq)
+        .then(response => {
+          this.isUpdating = false;
+          let { message, hasError } = response.data;
+
+          // Toast custom message
+          toast.show(message, hasError);
+          this.cancel();
+        })
+        .catch(err => {
+          this.isUpdating = false;
+        });
+    },
+    deleteInfo(item) {
+      this.deleteDialog = true;
+      this.selectedRate = item;
+    },
+    deleteConfirmed() {
+      this.isDeleting = true;
+      this.$axios
+        .delete(`${this.apiEndpoint}/${this.selectedRate.id}`)
+        .then(response => {
+          let { message, hasError } = response.data;
+
+          // Toast custom message
+          toast.show(message, hasError);
+
+          this.cancel();
+          this.isDeleting = false;
+          this.deleteDialog = false;
+        })
+        .catch(err => {
+          this.isDeleting = false;
+        });
+    },
+    closeDeleteDialog() {
+      this.deleteDialog = false;
+    },
+    cancel() {
+      this.onEdit = false;
+      this.preEmpReq = {};
+
+      this.getAllPreEmpReqData();
+    },
+    searchEmployeeStatus() {
+      this.empStatusDialog = true;
+      this.getAllEmployeeStatusFiles();
+    },
+    selectEmpStatus(item) {
+      this.preEmpReq.employmentStatusCode = item.code;
+
+      this.empStatusDialog = false;
+    },
+    searchDesignation() {
+      this.designationDialog = true;
+      this.getAllDesignationFiles();
+    },
+    selectDesignation(item) {
+      this.preEmpReq.designationCode = item.designationFileCode;
+      this.designationDialog = false;
     }
-}
+  },
+  computed: {
+    ...mapState("employeeStatusFile", {
+      empStatusFileData: state => state.employeeStatusFiles,
+      isLoading: state => state.loading
+    }),
+    ...mapState("designationFile", {
+      designationFileData: state => state.designationFiles,
+      isLoading: state => state.loading
+    }),
+    ...mapState("preEmpReq", {
+      preEmpReqData: state => state.preEmpReqData,
+      isLoading: state => state.loading
+    })
+  },
+  created() {
+    this.getAllPreEmpReqData();
+  }
+};
 </script>

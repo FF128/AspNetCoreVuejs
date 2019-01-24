@@ -129,98 +129,97 @@
 </template>
 <script>
 let imageContent = {
-    imageName: '',
-    imageUrl: '',
-    imageFile: '',
-}
+  imageName: "",
+  imageUrl: "",
+  imageFile: ""
+};
 export default {
-    data() {
-        return {
-            title: "Company Information",
-            ci: {
-                logoForReports: null
-            },
-            isSaving: false,
-            emailRules: [
-                v => !!v || 'E-mail is required',
-                v => /.+@.+/.test(v) || 'E-mail must be valid'
-            ],
-            logoForReports: {
-                imageName: '',
-                imageUrl: '',
-                imageFile: ''
-            },
-            logoForSite: imageContent,
-            contentForSite: imageContent,
-            file: null
-        }
+  data() {
+    return {
+      title: "Company Information",
+      ci: {
+        logoForReports: null
+      },
+      isSaving: false,
+      emailRules: [
+        v => !!v || "E-mail is required",
+        v => /.+@.+/.test(v) || "E-mail must be valid"
+      ],
+      logoForReports: {
+        imageName: "",
+        imageUrl: "",
+        imageFile: ""
+      },
+      logoForSite: imageContent,
+      contentForSite: imageContent,
+      file: null
+    };
+  },
+  methods: {
+    save() {
+      this.$axios
+        .post("api/companyInfo", this.ci)
+        .then(response => {
+          console.log(response.data);
+        })
+        .catch(err => console.log(err));
     },
-    methods: {
-        save() {
-            this.$axios.post("api/companyInfo", this.ci)
-                .then(response => {
-                    console.log(response.data);
-                })
-                .catch(err => console.log(err));
-        },
-        onFilePicked (e) {
-			const files = e.target.files
-			if(files[0] !== undefined) {
-				this.logoForReports.imageName = files[0].name
-				if(this.logoForReports.imageName.lastIndexOf('.') <= 0) {
-					return
-				}
-				const fr = new FileReader ()
-				fr.readAsDataURL(files[0])
-				fr.addEventListener('load', () => {
-					this.logoForReports.imageUrl = fr.result
-					this.logoForReports.imageFile = files[0] // this is an image file that can be sent to server...
-				})
-			} else {
-				this.logoForReports.imageName = ''
-				this.logoForReports.imageFile = ''
-				this.logoForReports.imageUrl = ''
-			}
-        },
-        pickFile () {
-            this.$refs.image.click ()
-        },
-        processForm() {
-            var bodyFormData = new FormData();
-            bodyFormData.set('code', this.ci.code);
-            bodyFormData.set('address', this.ci.address);
-            bodyFormData.set('province', this.ci.province);
-            bodyFormData.set('city', this.ci.city);
-            bodyFormData.set('zipCode', this.ci.zipCode);
-            bodyFormData.set('telNum', this.ci.telNum);
-            bodyFormData.set('email', this.ci.email);
-            bodyFormData.set('TIN', this.ci.tin);
-            bodyFormData.set('SSS', this.ci.sss);
-            bodyFormData.set('pagibig', this.ci.pagibig);
-            bodyFormData.set('philhealth', this.ci.philhealth);
-            bodyFormData.set('birBranchCode', this.ci.birBranchCode);
-
-            bodyFormData.append('LogoForReportsFile', this.ci.logoForReports);
-            bodyFormData.append('LogoForSiteFile', this.ci.logoForSite);
-            bodyFormData.append('ContentForSiteFile', this.ci.contentForSite);
-
-            this.$axios({
-                    method: 'post',
-                    url: 'api/companyInfo',
-                    data: bodyFormData,
-                    config: { headers: {'Content-Type': 'multipart/form-data' }}
-                })
-                .then(function (response) {
-                    //handle success
-                    console.log(response);
-                })
-                .catch(function (response) {
-                    //handle error
-                    console.log(response);
-                });
+    onFilePicked(e) {
+      const files = e.target.files;
+      if (files[0] !== undefined) {
+        this.logoForReports.imageName = files[0].name;
+        if (this.logoForReports.imageName.lastIndexOf(".") <= 0) {
+          return;
         }
+        const fr = new FileReader();
+        fr.readAsDataURL(files[0]);
+        fr.addEventListener("load", () => {
+          this.logoForReports.imageUrl = fr.result;
+          this.logoForReports.imageFile = files[0]; // this is an image file that can be sent to server...
+        });
+      } else {
+        this.logoForReports.imageName = "";
+        this.logoForReports.imageFile = "";
+        this.logoForReports.imageUrl = "";
+      }
+    },
+    pickFile() {
+      this.$refs.image.click();
+    },
+    processForm() {
+      var bodyFormData = new FormData();
+      bodyFormData.set("code", this.ci.code);
+      bodyFormData.set("address", this.ci.address);
+      bodyFormData.set("province", this.ci.province);
+      bodyFormData.set("city", this.ci.city);
+      bodyFormData.set("zipCode", this.ci.zipCode);
+      bodyFormData.set("telNum", this.ci.telNum);
+      bodyFormData.set("email", this.ci.email);
+      bodyFormData.set("TIN", this.ci.tin);
+      bodyFormData.set("SSS", this.ci.sss);
+      bodyFormData.set("pagibig", this.ci.pagibig);
+      bodyFormData.set("philhealth", this.ci.philhealth);
+      bodyFormData.set("birBranchCode", this.ci.birBranchCode);
 
+      bodyFormData.append("LogoForReportsFile", this.ci.logoForReports);
+      bodyFormData.append("LogoForSiteFile", this.ci.logoForSite);
+      bodyFormData.append("ContentForSiteFile", this.ci.contentForSite);
+
+      this.$axios({
+        method: "post",
+        url: "api/companyInfo",
+        data: bodyFormData,
+        config: { headers: { "Content-Type": "multipart/form-data" } }
+      })
+        .then(function(response) {
+          //handle success
+          console.log(response);
+        })
+        .catch(function(response) {
+          //handle error
+          console.log(response);
+        });
     }
-}
+  }
+};
 </script>
-

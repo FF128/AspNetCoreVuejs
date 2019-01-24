@@ -1,7 +1,7 @@
 let Layout = () => import("../layouts/VuetifyLayout.vue");
 
-let JobReq = () => 
-    import("../views/setup/standard/employment-other-info/others/job-req/JobReq.vue")
+let JobReq = () =>
+  import("../views/setup/standard/employment-other-info/others/job-req/JobReq.vue");
 export default {
   path: "/",
   component: Layout,
@@ -11,4 +11,4 @@ export default {
       component: JobReq
     }
   ]
-}
+};

@@ -103,6 +103,8 @@ namespace WebAPI
             services.AddScoped<IJobGroupRepository, JobGroupRepository>();
             services.AddScoped<IJobCategoryRepository, JobCategoryRepository>();
             services.AddScoped<IEmailFormatRepository, EmailFormatRepository>();
+            services.AddScoped<IScreenDetailsRepository, ScreenDetailsRepository>();
+            services.AddScoped<IMultiCompanyDatabaseRepository, MultiCompanyDatabaseRepository>();
 
             #region JWT Service Configuration
             var appSettingsSection = Configuration.GetSection("AppSettings");
@@ -196,6 +198,9 @@ namespace WebAPI
             services.AddScoped<IJobGroupService, JobGroupService>();
             services.AddScoped<IJobCategoryService, JobCategoryService>();
             services.AddScoped<IEmailFormatService, EmailFormatService>();
+            services.AddScoped<IScreenDetailsService, ScreenDetailsService>();
+            services.AddScoped<IMultiCompanyDatabaseService, MultiCompanyDatabaseService>();
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

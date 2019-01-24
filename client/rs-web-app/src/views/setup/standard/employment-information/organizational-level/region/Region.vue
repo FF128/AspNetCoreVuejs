@@ -111,129 +111,130 @@
     </div>
 </template>
 <script>
-import { mapActions, mapState } from "vuex"
-import Toast from "@/project-modules/toast"
-import codeRules from "@/rules/codeRules"
+import { mapActions, mapState } from "vuex";
+import Toast from "@/project-modules/toast";
+import codeRules from "@/rules/codeRules";
 
 let toast = new Toast();
 export default {
-    data() {
-        return {
-            title: "Region",
-            region: {
-                minimumWage: 0
-            },
-            codeRules,
-            valid: false,
-            isSaving: false,
-            isUpdating: false,
-            isDeleting: false,
-            onEdit: false,
-            data: [],
-            isEmpty: false,
-            isBordered: false,
-            isStriped: false,
-            isNarrowed: false,
-            isHoverable: false,
-            isFocusable: false,
-            hasMobileCards: true,
-            deleteDialog: false,
-            selectedRegion: {},
-            headers: [
-                {
-                    text: 'Code',
-                    align: 'left',
-                    sortable: false,
-                    value: 'code'
-                },
-                { text: 'Description', value: 'description', align: 'left' },
-                { text: 'Minimum Wage', value: 'minimumWage', align: 'left' },
-                { text: '', value: 'actions' }
-            ],
-            apiEndpoint: "api/region"
-        }
-    },
-    methods: {
-        ...mapActions('region', [
-            'getAllRegions'
-        ]),
-        save() {
-            this.isSaving = true;
-            this.$axios.post(this.apiEndpoint, this.region)
-                .then(response => {
-                    this.isSaving = false;
-                    let { message, hasError } = response.data;
-
-                    // Toast custom message
-                    toast.show(message, hasError);
-                    // Update List
-                    this.cancel();
-                })
-                .catch(err => {
-                    this.isSaving = false;
-                });
+  data() {
+    return {
+      title: "Region",
+      region: {
+        minimumWage: 0
+      },
+      codeRules,
+      valid: false,
+      isSaving: false,
+      isUpdating: false,
+      isDeleting: false,
+      onEdit: false,
+      data: [],
+      isEmpty: false,
+      isBordered: false,
+      isStriped: false,
+      isNarrowed: false,
+      isHoverable: false,
+      isFocusable: false,
+      hasMobileCards: true,
+      deleteDialog: false,
+      selectedRegion: {},
+      headers: [
+        {
+          text: "Code",
+          align: "left",
+          sortable: false,
+          value: "code"
         },
-        edit(item){
-            this.onEdit = true;
-            this.region = item;
-        },
-        update() {
-            this.isUpdating = true
-            this.$axios.put(this.apiEndpoint, this.region)
-                .then(response => {
-                    this.isUpdating = false;
-                    
-                    let { message, hasError } = response.data;
+        { text: "Description", value: "description", align: "left" },
+        { text: "Minimum Wage", value: "minimumWage", align: "left" },
+        { text: "", value: "actions" }
+      ],
+      apiEndpoint: "api/region"
+    };
+  },
+  methods: {
+    ...mapActions("region", ["getAllRegions"]),
+    save() {
+      this.isSaving = true;
+      this.$axios
+        .post(this.apiEndpoint, this.region)
+        .then(response => {
+          this.isSaving = false;
+          let { message, hasError } = response.data;
 
-                    // Toast custom message
-                    toast.show(message, hasError);
-
-                    this.cancel();
-                })
-                .catch(err => {
-                    this.isUpdating = false;
-                })
-        },
-        deleteInfo(item) {
-            this.deleteDialog = true;
-            this.selectedRegion = item;
-        },
-        deleteConfirmed() {
-            this.isDeleting = true;
-            this.$axios.delete(`${this.apiEndpoint}/${this.selectedRegion.id}`)
-                .then(response => {
-                    let { message, hasError } = response.data;
-
-                    // Toast custom message
-                    toast.show(message, hasError);
-
-                    this.cancel();
-                    
-                    this.isDeleting = false;
-                    this.deleteDialog = false;
-                })
-                .catch(err => {
-                    this.isDeleting = false;
-                })
-        },
-        closeDeleteDialog() {
-            this.deleteDialog = false;
-        },
-        cancel() {
-            this.onEdit = false;
-            this.region = {}
-
-            this.getAllRegions();
-        }
-    },
-    computed: {
-        ...mapState('region', {
-            regionData: state => state.regions,
-            isLoading: state => state.loading
+          // Toast custom message
+          toast.show(message, hasError);
+          // Update List
+          this.cancel();
         })
+        .catch(err => {
+          this.isSaving = false;
+        });
     },
-    created() {
-        this.getAllRegions();
+    edit(item) {
+      this.onEdit = true;
+      this.region = item;
+    },
+    update() {
+      this.isUpdating = true;
+      this.$axios
+        .put(this.apiEndpoint, this.region)
+        .then(response => {
+          this.isUpdating = false;
+
+          let { message, hasError } = response.data;
+
+          // Toast custom message
+          toast.show(message, hasError);
+
+          this.cancel();
+        })
+        .catch(err => {
+          this.isUpdating = false;
+        });
+    },
+    deleteInfo(item) {
+      this.deleteDialog = true;
+      this.selectedRegion = item;
+    },
+    deleteConfirmed() {
+      this.isDeleting = true;
+      this.$axios
+        .delete(`${this.apiEndpoint}/${this.selectedRegion.id}`)
+        .then(response => {
+          let { message, hasError } = response.data;
+
+          // Toast custom message
+          toast.show(message, hasError);
+
+          this.cancel();
+
+          this.isDeleting = false;
+          this.deleteDialog = false;
+        })
+        .catch(err => {
+          this.isDeleting = false;
+        });
+    },
+    closeDeleteDialog() {
+      this.deleteDialog = false;
+    },
+    cancel() {
+      this.onEdit = false;
+      this.region = {};
+
+      this.getAllRegions();
     }
-}
+  },
+  computed: {
+    ...mapState("region", {
+      regionData: state => state.regions,
+      isLoading: state => state.loading
+    })
+  },
+  created() {
+    this.getAllRegions();
+  }
+};
 </script>

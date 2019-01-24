@@ -1,7 +1,7 @@
 let Layout = () => import("../layouts/VuetifyLayout.vue");
 
-let License = () => 
-    import("../views/setup/standard/employment-other-info/others/license/License.vue")
+let License = () =>
+  import("../views/setup/standard/employment-other-info/others/license/License.vue");
 export default {
   path: "/",
   component: Layout,
@@ -11,4 +11,4 @@ export default {
       component: License
     }
   ]
-}
+};

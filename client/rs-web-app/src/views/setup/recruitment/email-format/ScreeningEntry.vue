@@ -49,54 +49,54 @@
     </div>
 </template>
 <script>
-import { mapActions } from 'vuex'
-import 'quill/dist/quill.core.css'
-import 'quill/dist/quill.snow.css'
-import 'quill/dist/quill.bubble.css'
+import { mapActions } from "vuex";
+import "quill/dist/quill.core.css";
+import "quill/dist/quill.snow.css";
+import "quill/dist/quill.bubble.css";
 
-import { quillEditor } from 'vue-quill-editor'
+import { quillEditor } from "vue-quill-editor";
 
 export default {
   components: {
     quillEditor
   },
   data() {
-      return {
-        title: 'Email Format Setup',
-        emailFormat: {
-            transType: "ScreeningEntry"
-        },
-        isSaving: false,
-        apiEndpoint: 'api/email-format'
-      }
+    return {
+      title: "Email Format Setup",
+      emailFormat: {
+        transType: "ScreeningEntry"
+      },
+      isSaving: false,
+      apiEndpoint: "api/email-format"
+    };
   },
   methods: {
-      ...mapActions('emailFormat', {
-          saveEmailFormat: 'saveEmailFormat'
-      }),
-      save() {
-        this.saveEmailFormat(this.emailFormat);
-      },
-      getEmailFormat() {
-          this.$axios.get(`${this.apiEndpoint}/${this.emailFormat.transType}`)
-            .then(({ data }) => {
-                if(data) {
-                    this.emailFormat = data;
-                    return;
-                }
-                this.emailFormat = {
-                    transType: "ScreeningEntry"
-                }
-            })
-            .catch(({ response }) => {
-                let { message, hasError } = response.data;
-                toast.show(message, hasError);
-            })
-      }
+    ...mapActions("emailFormat", {
+      saveEmailFormat: "saveEmailFormat"
+    }),
+    save() {
+      this.saveEmailFormat(this.emailFormat);
+    },
+    getEmailFormat() {
+      this.$axios
+        .get(`${this.apiEndpoint}/${this.emailFormat.transType}`)
+        .then(({ data }) => {
+          if (data) {
+            this.emailFormat = data;
+            return;
+          }
+          this.emailFormat = {
+            transType: "ScreeningEntry"
+          };
+        })
+        .catch(({ response }) => {
+          let { message, hasError } = response.data;
+          toast.show(message, hasError);
+        });
+    }
   },
   created() {
-      this.getEmailFormat();
+    this.getEmailFormat();
   }
-    
-}
+};
 </script>

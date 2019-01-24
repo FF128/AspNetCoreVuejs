@@ -98,157 +98,156 @@
     </div>
 </template>
 <script>
-import { mapActions, mapState } from "vuex"
-import codeRules from "@/rules/codeRules"
-import Toast from "@/project-modules/toast"
+import { mapActions, mapState } from "vuex";
+import codeRules from "@/rules/codeRules";
+import Toast from "@/project-modules/toast";
 
 let toast = new Toast();
 
 export default {
-    data() {
-        return {
-            valid: false,
-            title: "Citizenship",
-            cit: {},
-            codeRules,
-            isSaving: false,
-            isUpdating: false,
-            isDeleting: false,
-            onEdit: false,
-            data: [],
-            isEmpty: false,
-            isBordered: false,
-            isStriped: false,
-            isNarrowed: false,
-            isHoverable: false,
-            isFocusable: false,
-            hasMobileCards: true,
-            deleteDialog: false,
-            selectedCit: {},
-            headers: [
-                {
-                    text: 'Code',
-                    align: 'left',
-                    sortable: false,
-                    value: 'code'
-                },
-                { text: 'Description', value: 'description', align: 'left' },
-                { text: '', value: 'actions' }
-            ],
-            apiEndpoint: "api/citizenship"
-        }
-    },
-    methods: {
-        ...mapActions('citizenship', [
-            'getAllCitizenship'
-        ]),
-        ...mapActions('user', [
-            'decodeToken'
-        ]),
-        save() {
-            this.isSaving = true;
-            this.$axios.post(this.apiEndpoint, this.cit)
-                .then(response => {
-                    this.isSaving = false;
-                    let { message, hasError } = response.data;
-
-                    // Toast custom message
-                    if(hasError) {
-                        toast.error(message)
-                    }else{
-                        toast.success(message)
-                    }
-                    // Update List
-                    this.getAllCitizenship();
-                    this.cit = {}
-                })
-                .catch(err => {
-                    this.isSaving = false;
-                });
+  data() {
+    return {
+      valid: false,
+      title: "Citizenship",
+      cit: {},
+      codeRules,
+      isSaving: false,
+      isUpdating: false,
+      isDeleting: false,
+      onEdit: false,
+      data: [],
+      isEmpty: false,
+      isBordered: false,
+      isStriped: false,
+      isNarrowed: false,
+      isHoverable: false,
+      isFocusable: false,
+      hasMobileCards: true,
+      deleteDialog: false,
+      selectedCit: {},
+      headers: [
+        {
+          text: "Code",
+          align: "left",
+          sortable: false,
+          value: "code"
         },
-        edit(item){
-            this.onEdit = true;
-            this.cit = item;
-        },
-        update() {
-            this.isUpdating = true
-            this.$axios.put(this.apiEndpoint, this.cit)
-                .then(response => {
-                    this.isUpdating = false;
-                    this.onEdit = false;
+        { text: "Description", value: "description", align: "left" },
+        { text: "", value: "actions" }
+      ],
+      apiEndpoint: "api/citizenship"
+    };
+  },
+  methods: {
+    ...mapActions("citizenship", ["getAllCitizenship"]),
+    ...mapActions("user", ["decodeToken"]),
+    save() {
+      this.isSaving = true;
+      this.$axios
+        .post(this.apiEndpoint, this.cit)
+        .then(response => {
+          this.isSaving = false;
+          let { message, hasError } = response.data;
 
-                    let { message, hasError } = response.data;
-
-                    if(hasError) {
-                        toast.error(message)
-                    }else{
-                        toast.success(message)
-                    }
-
-                    this.getAllCitizenship();
-
-                    this.cit = {}
-                })
-                .catch(err => {
-                    this.isUpdating = false;
-                })
-        },
-        deleteInfo(item) {
-            this.deleteDialog = true;
-            this.selectedCit = item;
-        },
-        deleteConfirmed() {
-            this.isDeleting = true;
-            this.$axios.delete(`${this.apiEndpoint}/${this.selectedCit.citiCode}`)
-                .then(response => {
-                    this.getAllCitizenship();
-
-                    let { message, hasError } = response.data;
-
-                    if(hasError) {
-                        toast.error(message)
-                    }else{
-                        toast.success(message)
-                    }
-
-                    this.isDeleting = false;
-                    this.deleteDialog = false;
-                })
-                .catch(err => {
-                    this.isDeleting = false;
-                })
-        },
-        closeDeleteDialog() {
-            this.deleteDialog = false;
-        },
-        cancel() {
-            this.onEdit = false;
-            this.cit = {}
-
-            this.getAllCitizenship();
-        }
-        // getCompanyCode() {
-        //     var user = getUserDetails();
-        //     var decodedToken = this.$jwt.decode(user.token);
-            
-        //     this.companyCode = decodedToken.CompanyCode;
-        // }
-    },
-    computed: {
-        ...mapState('citizenship', {
-            citData: state => state.cit,
-            isLoading: state => state.loading
-        }),
-        ...mapState('user', {
-            companyCode: state => state.companyCode
+          // Toast custom message
+          if (hasError) {
+            toast.error(message);
+          } else {
+            toast.success(message);
+          }
+          // Update List
+          this.getAllCitizenship();
+          this.cit = {};
         })
+        .catch(err => {
+          this.isSaving = false;
+        });
     },
-    created() {
-        // decode token and company code
-        //this.getCompanyCode();
-        this.decodeToken();
-        // get all citizenship
-        this.getAllCitizenship();
+    edit(item) {
+      this.onEdit = true;
+      this.cit = item;
+    },
+    update() {
+      this.isUpdating = true;
+      this.$axios
+        .put(this.apiEndpoint, this.cit)
+        .then(response => {
+          this.isUpdating = false;
+          this.onEdit = false;
+
+          let { message, hasError } = response.data;
+
+          if (hasError) {
+            toast.error(message);
+          } else {
+            toast.success(message);
+          }
+
+          this.getAllCitizenship();
+
+          this.cit = {};
+        })
+        .catch(err => {
+          this.isUpdating = false;
+        });
+    },
+    deleteInfo(item) {
+      this.deleteDialog = true;
+      this.selectedCit = item;
+    },
+    deleteConfirmed() {
+      this.isDeleting = true;
+      this.$axios
+        .delete(`${this.apiEndpoint}/${this.selectedCit.citiCode}`)
+        .then(response => {
+          this.getAllCitizenship();
+
+          let { message, hasError } = response.data;
+
+          if (hasError) {
+            toast.error(message);
+          } else {
+            toast.success(message);
+          }
+
+          this.isDeleting = false;
+          this.deleteDialog = false;
+        })
+        .catch(err => {
+          this.isDeleting = false;
+        });
+    },
+    closeDeleteDialog() {
+      this.deleteDialog = false;
+    },
+    cancel() {
+      this.onEdit = false;
+      this.cit = {};
+
+      this.getAllCitizenship();
     }
-}
+    // getCompanyCode() {
+    //     var user = getUserDetails();
+    //     var decodedToken = this.$jwt.decode(user.token);
+
+    //     this.companyCode = decodedToken.CompanyCode;
+    // }
+  },
+  computed: {
+    ...mapState("citizenship", {
+      citData: state => state.cit,
+      isLoading: state => state.loading
+    }),
+    ...mapState("user", {
+      companyCode: state => state.companyCode
+    })
+  },
+  created() {
+    // decode token and company code
+    //this.getCompanyCode();
+    this.decodeToken();
+    // get all citizenship
+    this.getAllCitizenship();
+  }
+};
 </script>

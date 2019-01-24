@@ -30,42 +30,44 @@
     </div>
 </template>
 <script>
-import Toast from "@/project-modules/toast"
+import Toast from "@/project-modules/toast";
 let toast = new Toast();
 export default {
-    data() {
-        return {
-            text: '',
-            onEdit: false,
-            apiEndpoint: 'api/applicants-entry/text'
-        }
-    },
-    methods: {
-        update() {
-            this.$axios.post(`${this.apiEndpoint}`, { textCertification: this.text })
-                .then(({ data }) => {
-                    let { message, hasError } = data;
-                    toast.show(message, hasError);
-                })
-                .catch(({ response }) => {
-                    let { message, hasError } = response.data;
+  data() {
+    return {
+      text: "",
+      onEdit: false,
+      apiEndpoint: "api/applicants-entry/text"
+    };
+  },
+  methods: {
+    update() {
+      this.$axios
+        .post(`${this.apiEndpoint}`, { textCertification: this.text })
+        .then(({ data }) => {
+          let { message, hasError } = data;
+          toast.show(message, hasError);
+        })
+        .catch(({ response }) => {
+          let { message, hasError } = response.data;
 
-                    toast.show(message, hasError);
-                })
-        },
-        getTextCertificate() {
-            this.$axios.get(`${this.apiEndpoint}`)
-                .then(({ data }) => {
-                    this.text = data.textCertification;
-                })
-                .catch(({ response }) => {
-                    let {message, hasError} = response.data;
-                    toast.show(message, hasError);
-                })
-        }
+          toast.show(message, hasError);
+        });
     },
-    created(){
-        this.getTextCertificate();
+    getTextCertificate() {
+      this.$axios
+        .get(`${this.apiEndpoint}`)
+        .then(({ data }) => {
+          this.text = data.textCertification;
+        })
+        .catch(({ response }) => {
+          let { message, hasError } = response.data;
+          toast.show(message, hasError);
+        });
     }
-}
+  },
+  created() {
+    this.getTextCertificate();
+  }
+};
 </script>

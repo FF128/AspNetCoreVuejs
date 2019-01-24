@@ -128,109 +128,110 @@
     </div>
 </template>
 <script>
-import Toast from "@/project-modules/toast"
-import { mapState, mapActions } from 'vuex';
+import Toast from "@/project-modules/toast";
+import { mapState, mapActions } from "vuex";
 
 let toast = new Toast();
 export default {
-    data() {
-        return {
-            genInfo: {},
-            onEdit: false,
-            isSaving: false,
-            isUpdating: false,
-            headers: [
-                {
-                    text: 'Active',
-                    align: 'left',
-                    sortable: false,
-                    value: 'active'
-                },
-                { text: 'Show Yes', value: 'showYes' },
-                { text: 'Show No', value: 'showNo' },
-                { text: 'Show None', value: 'showNone' },
-                { text: 'Show Why', value: 'showWhy' },
-                { text: 'Show Why Text', value: 'showWhyText' },
-                { text: 'Question', value: 'question' },
-                { text: '', value: 'actions'}
-            ],
-            selectedInfo: {},
-            deleteDialog: false,
-            apiEndpoint: "api/applicants-entry/gen"
-        }
-    },
-    methods: {
-        ...mapActions('appEntry',[
-            'getAllGenInfoData'
-        ]),
-        save() {
-            this.isSaving = true
-            this.$axios.post(this.apiEndpoint, this.genInfo)
-                .then(({ data }) => {
-                    let { message, hasError } = data;
-                    toast.show(message, hasError);
+  data() {
+    return {
+      genInfo: {},
+      onEdit: false,
+      isSaving: false,
+      isUpdating: false,
+      headers: [
+        {
+          text: "Active",
+          align: "left",
+          sortable: false,
+          value: "active"
+        },
+        { text: "Show Yes", value: "showYes" },
+        { text: "Show No", value: "showNo" },
+        { text: "Show None", value: "showNone" },
+        { text: "Show Why", value: "showWhy" },
+        { text: "Show Why Text", value: "showWhyText" },
+        { text: "Question", value: "question" },
+        { text: "", value: "actions" }
+      ],
+      selectedInfo: {},
+      deleteDialog: false,
+      apiEndpoint: "api/applicants-entry/gen"
+    };
+  },
+  methods: {
+    ...mapActions("appEntry", ["getAllGenInfoData"]),
+    save() {
+      this.isSaving = true;
+      this.$axios
+        .post(this.apiEndpoint, this.genInfo)
+        .then(({ data }) => {
+          let { message, hasError } = data;
+          toast.show(message, hasError);
 
-                    this.isSaving = false;
-                    this.cancel();
-                })
-                .catch(( { response }) => {
-                    let { message, hasError } = response.data;
-                    toast.show(message, hasError);
-                    this.isSaving = false;
-                });
-        },
-        edit(item) {
-            this.genInfo = item;
-
-            this.onEdit = true;
-        },
-        cancel() {
-            this.onEdit = false;
-            this.genInfo = {}
-            this.getAllGenInfoData();
-        },
-        update() {
-            this.isUpdating = false;
-            this.$axios.put(`${this.apiEndpoint}`, this.genInfo)
-                .then(({ data }) => {
-                    let { message, hasError } = data;
-                    toast.show(message, hasError);
-
-                    this.isUpdating = false;
-                    this.cancel();
-                })
-                .catch(({ response }) => {
-                    let { message, hasError } = response.data;
-                    toast.show(message, hasError);
-
-                    this.isUpdating = false;
-                });
-        },
-        deleteInfo(item) {
-            this.selectedInfo = item;
-            this.deleteDialog = true;
-        },
-        deleteConfirmed() {
-            this.$axios.delete(`${this.apiEndpoint}/${this.selectedInfo.id}`)
-                .then(({ data }) => {
-                    this.deleteDialog = false;
-                    let { message, hasError } = data;
-                    toast.show(message, hasError);
-                    this.cancel();
-                })
-                .catch(({ response }) => {
-                    let { message, hasError } = response.data;
-                    toast.show(message, hasError);
-                });
-        }
-    },
-    computed: {
-        ...mapState('appEntry', {
-            genInfoData: state => state.genInfoData
+          this.isSaving = false;
+          this.cancel();
         })
+        .catch(({ response }) => {
+          let { message, hasError } = response.data;
+          toast.show(message, hasError);
+          this.isSaving = false;
+        });
     },
-    created() {
-        this.getAllGenInfoData();
+    edit(item) {
+      this.genInfo = item;
+
+      this.onEdit = true;
+    },
+    cancel() {
+      this.onEdit = false;
+      this.genInfo = {};
+      this.getAllGenInfoData();
+    },
+    update() {
+      this.isUpdating = false;
+      this.$axios
+        .put(`${this.apiEndpoint}`, this.genInfo)
+        .then(({ data }) => {
+          let { message, hasError } = data;
+          toast.show(message, hasError);
+
+          this.isUpdating = false;
+          this.cancel();
+        })
+        .catch(({ response }) => {
+          let { message, hasError } = response.data;
+          toast.show(message, hasError);
+
+          this.isUpdating = false;
+        });
+    },
+    deleteInfo(item) {
+      this.selectedInfo = item;
+      this.deleteDialog = true;
+    },
+    deleteConfirmed() {
+      this.$axios
+        .delete(`${this.apiEndpoint}/${this.selectedInfo.id}`)
+        .then(({ data }) => {
+          this.deleteDialog = false;
+          let { message, hasError } = data;
+          toast.show(message, hasError);
+          this.cancel();
+        })
+        .catch(({ response }) => {
+          let { message, hasError } = response.data;
+          toast.show(message, hasError);
+        });
     }
-}
+  },
+  computed: {
+    ...mapState("appEntry", {
+      genInfoData: state => state.genInfoData
+    })
+  },
+  created() {
+    this.getAllGenInfoData();
+  }
+};
 </script>

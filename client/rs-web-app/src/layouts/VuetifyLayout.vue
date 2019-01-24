@@ -203,48 +203,43 @@
 </template>
 <script>
 export default {
-    data() {
-        return {
-            title: "Recruitment System",
-            aside: false,
-            clipped: true,
-            absolute: true,
-            admins: [
-                ['Management', 'people_outline'],
-                ['Settings', 'settings']
-            ],
-            cruds: [
-                ['Create', 'add'],
-                ['Read', 'insert_drive_file'],
-                ['Update', 'update'],
-                ['Delete', 'delete']
-            ],
-            drawer: true,
-            generalSetupItems: [
-                { title: 'Company Information' }
-            ],
-            personalInformationItems: [
-                { title: 'Citizenship' },
-                { title: 'Religion' }
-            ],
-            employmentInformationItems: [
-                { title: 'Employee Level' },
-                { title: 'Organizational Level'}
-            ]
-        }
-    },
-    methods: {
-        logout () {
-            localStorage.removeItem("_u");
-            this.$router.push("/login")
-        }
+  data() {
+    return {
+      title: "Recruitment System",
+      aside: false,
+      clipped: true,
+      absolute: true,
+      admins: [["Management", "people_outline"], ["Settings", "settings"]],
+      cruds: [
+        ["Create", "add"],
+        ["Read", "insert_drive_file"],
+        ["Update", "update"],
+        ["Delete", "delete"]
+      ],
+      drawer: true,
+      generalSetupItems: [{ title: "Company Information" }],
+      personalInformationItems: [
+        { title: "Citizenship" },
+        { title: "Religion" }
+      ],
+      employmentInformationItems: [
+        { title: "Employee Level" },
+        { title: "Organizational Level" }
+      ]
+    };
+  },
+  methods: {
+    logout() {
+      localStorage.removeItem("_u");
+      this.$router.push("/login");
     }
-}
+  }
+};
 </script>
 <style>
-  .img-responsive {
-    max-width: 100%;
-    height: auto;
-    display: block;
-  }
+.img-responsive {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
 </style>

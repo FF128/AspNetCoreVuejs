@@ -1,7 +1,7 @@
 let Layout = () => import("../layouts/VuetifyLayout.vue");
 
-let Step = () => 
-    import("../views/setup/standard/employment-information/employee-level/step/Step.vue");
+let Step = () =>
+  import("../views/setup/standard/employment-information/employee-level/step/Step.vue");
 export default {
   path: "/",
   component: Layout,
@@ -11,4 +11,4 @@ export default {
       component: Step
     }
   ]
-}
+};

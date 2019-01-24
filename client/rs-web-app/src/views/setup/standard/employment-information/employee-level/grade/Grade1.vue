@@ -98,112 +98,113 @@
     
 </template>
 <script>
-import { mapActions, mapState } from "vuex"
-import AppToast from "@/project-modules/appToast"
+import { mapActions, mapState } from "vuex";
+import AppToast from "@/project-modules/appToast";
 //import AppToast from "../../../..//project-modules/appToast";
 
 let appToast = new AppToast();
 
-let apiEnpoint = "api/grade"
+let apiEnpoint = "api/grade";
 
 export default {
-    data() {
-        return {
-            title: "Grade",
-            grade: {},
-            isSaving: false,
-            isUpdating: false,
-            isDeleting: false,
-            onEdit: false,
-            data: [],
-            isEmpty: false,
-            isBordered: false,
-            isStriped: false,
-            isNarrowed: false,
-            isHoverable: false,
-            isFocusable: false,
-            hasMobileCards: true,
-            deleteModal: false,
-            selectedGrade: {}
-        }
-    },
-    methods: {
-        ...mapActions('grade', [
-            'getAllGrades'
-        ]),
-        save() {
-            this.isSaving = true;
-            this.$axios.post(apiEnpoint, this.grade)
-                .then(response => {
-                    this.isSaving = false;
+  data() {
+    return {
+      title: "Grade",
+      grade: {},
+      isSaving: false,
+      isUpdating: false,
+      isDeleting: false,
+      onEdit: false,
+      data: [],
+      isEmpty: false,
+      isBordered: false,
+      isStriped: false,
+      isNarrowed: false,
+      isHoverable: false,
+      isFocusable: false,
+      hasMobileCards: true,
+      deleteModal: false,
+      selectedGrade: {}
+    };
+  },
+  methods: {
+    ...mapActions("grade", ["getAllGrades"]),
+    save() {
+      this.isSaving = true;
+      this.$axios
+        .post(apiEnpoint, this.grade)
+        .then(response => {
+          this.isSaving = false;
 
-                    appToast.success(`Successfully Added`);
-                    // Update List
-                    this.getAllGrades();
-                })
-                .catch(err => {
-                    this.isSaving = false;
-                    appToast.danger("Something went wrong!");
-                });
-        },
-        edit(item){
-            this.onEdit = true;
-            this.grade = item;
-        },
-        update() {
-            this.isUpdating = true
-            this.$axios.put(apiEnpoint, this.grade)
-                .then(response => {
-                    this.isUpdating = false;
-                    this.onEdit = false;
-                    appToast.success("Successfully Updated");
-
-                    this.getAllGrades();
-                })
-                .catch(err => {
-                    this.isUpdating = false;
-                    appToast.danger("Error");
-                })
-        },
-        deleteInfo(item) {
-            this.deleteModal = true;
-            this.selectedGrade = item;
-        },
-        deleteConfirmed(item) {
-            this.isDeleting = true;
-            this.$axios.delete(`${apiEnpoint}/${item.id}`)
-                .then(response => {
-                    this.getAllGrades();
-
-                    appToast.success(`Code: ${item.code} has been deleted`);
-
-                    this.isDeleting = false;
-                    this.deleteModal = false;
-                })
-                .catch(err => {
-                    appToast.danger("Error deleting")
-
-                    this.isDeleting = false;
-                })
-        },
-        closeDeleteModal() {
-            this.deleteModal = false;
-        },
-        cancel() {
-            this.onEdit = false;
-            this.grade = {}
-
-            this.getAllGrades();
-        }
-    },
-    computed: {
-        ...mapState('grade', {
-            gradeData: state => state.grades,
-            isLoading: state => state.loading
+          appToast.success(`Successfully Added`);
+          // Update List
+          this.getAllGrades();
         })
+        .catch(err => {
+          this.isSaving = false;
+          appToast.danger("Something went wrong!");
+        });
     },
-    created() {
-        this.getAllGrades();
+    edit(item) {
+      this.onEdit = true;
+      this.grade = item;
+    },
+    update() {
+      this.isUpdating = true;
+      this.$axios
+        .put(apiEnpoint, this.grade)
+        .then(response => {
+          this.isUpdating = false;
+          this.onEdit = false;
+          appToast.success("Successfully Updated");
+
+          this.getAllGrades();
+        })
+        .catch(err => {
+          this.isUpdating = false;
+          appToast.danger("Error");
+        });
+    },
+    deleteInfo(item) {
+      this.deleteModal = true;
+      this.selectedGrade = item;
+    },
+    deleteConfirmed(item) {
+      this.isDeleting = true;
+      this.$axios
+        .delete(`${apiEnpoint}/${item.id}`)
+        .then(response => {
+          this.getAllGrades();
+
+          appToast.success(`Code: ${item.code} has been deleted`);
+
+          this.isDeleting = false;
+          this.deleteModal = false;
+        })
+        .catch(err => {
+          appToast.danger("Error deleting");
+
+          this.isDeleting = false;
+        });
+    },
+    closeDeleteModal() {
+      this.deleteModal = false;
+    },
+    cancel() {
+      this.onEdit = false;
+      this.grade = {};
+
+      this.getAllGrades();
     }
-}
+  },
+  computed: {
+    ...mapState("grade", {
+      gradeData: state => state.grades,
+      isLoading: state => state.loading
+    })
+  },
+  created() {
+    this.getAllGrades();
+  }
+};
 </script>

@@ -1,7 +1,7 @@
 let Layout = () => import("../layouts/VuetifyLayout.vue");
 
-let Duties = () => 
-    import("../views/setup/standard/employment-other-info/others/duties-responsibilities/DutiesResponsibilities.vue")
+let Duties = () =>
+  import("../views/setup/standard/employment-other-info/others/duties-responsibilities/DutiesResponsibilities.vue");
 export default {
   path: "/",
   component: Layout,
@@ -11,4 +11,4 @@ export default {
       component: Duties
     }
   ]
-}
+};

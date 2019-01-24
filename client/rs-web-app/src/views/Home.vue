@@ -8,24 +8,20 @@
 </template>
 
 <script>
-import toast from "@/components/CustomToast"
+import toast from "@/components/CustomToast";
 
-
-  export default {
-    components: {
-    },
-    data() {
-      return {
-        snackbar: true,
-      }
-    },
-    created() {
-      
-    },
-    methods: {
-      show() {
-        toast.info('This is an info toast');
-      }
+export default {
+  components: {},
+  data() {
+    return {
+      snackbar: true
+    };
+  },
+  created() {},
+  methods: {
+    show() {
+      toast.info("This is an info toast");
     }
-  } 
+  }
+};
 </script>

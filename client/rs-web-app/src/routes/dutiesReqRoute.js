@@ -1,7 +1,7 @@
 let Layout = () => import("../layouts/VuetifyLayout.vue");
 
-let DutiesReq = () => 
-    import("../views/setup/recruitment/duties-requirements/DutiesRequirements");
+let DutiesReq = () =>
+  import("../views/setup/recruitment/duties-requirements/DutiesRequirements");
 export default {
   path: "/",
   component: Layout,
@@ -11,4 +11,4 @@ export default {
       component: DutiesReq
     }
   ]
-}
+};

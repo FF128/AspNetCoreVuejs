@@ -1,7 +1,7 @@
 let Layout = () => import("../layouts/VuetifyLayout.vue");
 
-let Branch = () => 
-    import("../views/setup/standard/employment-information/organizational-level/branch/Branch.vue");
+let Branch = () =>
+  import("../views/setup/standard/employment-information/organizational-level/branch/Branch.vue");
 export default {
   path: "/",
   component: Layout,
@@ -11,4 +11,4 @@ export default {
       component: Branch
     }
   ]
-}
+};

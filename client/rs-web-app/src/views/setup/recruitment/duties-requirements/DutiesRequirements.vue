@@ -194,77 +194,73 @@
  
 </template>
 <script>
-  import Toast from "@/project-modules/toast"
-  import { mapState, mapActions } from "vuex"
-  let toast = new Toast();
-  export default {
-    data () {
-      return {
-        title: 'Designation Duties and Requirements',
-        designation: {},
-        designationDutiesReqData: [],
-        selectedDesignation: '',
-        selectedDuties: [],
-        selectedJobReq: [],
-        onEdit: false,
-        isSaving: false,
-        isUpdating: false,
-        dutiesHeaders: [
-          { text: 'Code', value: 'dutiesResponsibilitiesCode'},
-          { text: 'Description', value: 'dutiesResponsibilitiesDesc' }
-        ],
-        jobReqHeaders: [
-          { text: 'Code', value: 'jobReqCode'},
-          { text: 'Description', value: 'jobReqDesc'} 
-        ],
-        designationHeaders: [
-          {
-              text: 'Code',
-              align: 'left',
-              sortable: false,
-              value: 'code'
-          },
-          { text: 'Description', value: 'description', align: 'left' },
-          { text: '', value: 'actions' }
-        ],
-        designationDialog: false,
-        designationDutiesReqHeaders: [
-          { text: 'Designation', value: 'designation', width: '2px' },
-          { text: 'Duties and Responsibilities', value :'dutiesAndRes', sortable: false },
-          { text: 'Job Requirements', value: 'jobReq', sortable: false },
-          { text: '', value: 'actions', sortable: false}
-        ],
-        deleteDialog: false,
-        selectedData: {},
-        apiEndpoint: 'api/desig-duties-req'
-      }
-      
+import Toast from "@/project-modules/toast";
+import { mapState, mapActions } from "vuex";
+let toast = new Toast();
+export default {
+  data() {
+    return {
+      title: "Designation Duties and Requirements",
+      designation: {},
+      designationDutiesReqData: [],
+      selectedDesignation: "",
+      selectedDuties: [],
+      selectedJobReq: [],
+      onEdit: false,
+      isSaving: false,
+      isUpdating: false,
+      dutiesHeaders: [
+        { text: "Code", value: "dutiesResponsibilitiesCode" },
+        { text: "Description", value: "dutiesResponsibilitiesDesc" }
+      ],
+      jobReqHeaders: [
+        { text: "Code", value: "jobReqCode" },
+        { text: "Description", value: "jobReqDesc" }
+      ],
+      designationHeaders: [
+        {
+          text: "Code",
+          align: "left",
+          sortable: false,
+          value: "code"
+        },
+        { text: "Description", value: "description", align: "left" },
+        { text: "", value: "actions" }
+      ],
+      designationDialog: false,
+      designationDutiesReqHeaders: [
+        { text: "Designation", value: "designation", width: "2px" },
+        {
+          text: "Duties and Responsibilities",
+          value: "dutiesAndRes",
+          sortable: false
+        },
+        { text: "Job Requirements", value: "jobReq", sortable: false },
+        { text: "", value: "actions", sortable: false }
+      ],
+      deleteDialog: false,
+      selectedData: {},
+      apiEndpoint: "api/desig-duties-req"
+    };
+  },
+  methods: {
+    ...mapActions("dutiesReq", ["getAllDutiesReqData"]),
+    ...mapActions("designationFile", ["getAllDesignationFiles"]),
+    ...mapActions("duties", ["getAllDuties"]),
+    ...mapActions("jobReq", ["getAllJobReqData"]),
+    searchDesignation() {
+      this.designationDialog = true;
+      this.getAllDesignationFiles();
     },
-    methods: {
-      ...mapActions('dutiesReq',[
-        'getAllDutiesReqData'
-      ]),
-      ...mapActions('designationFile', [
-        'getAllDesignationFiles'
-      ]),
-      ...mapActions('duties', [
-        'getAllDuties'
-      ]),
-      ...mapActions('jobReq', [
-        'getAllJobReqData'
-      ]),
-      searchDesignation() {
-        this.designationDialog = true;
-        this.getAllDesignationFiles();
-      },
-      selectDesignation(item) {
-        this.selectedDesignation = item.designationFileDesc;
-        this.designation.code = item.designationFileCode;
-        this.designationDialog = false;
-      },
-      save() {
-        this.isSaving = true;
-        this.$axios.post(this.apiEndpoint, {
+    selectDesignation(item) {
+      this.selectedDesignation = item.designationFileDesc;
+      this.designation.code = item.designationFileCode;
+      this.designationDialog = false;
+    },
+    save() {
+      this.isSaving = true;
+      this.$axios
+        .post(this.apiEndpoint, {
           designationCode: this.designation.code,
           designationDutiesResponsibilities: this.selectedDuties,
           designationDutiesJobReqs: this.selectedJobReq
@@ -273,24 +269,25 @@
           this.isSaving = false;
           let { message, hasError } = data;
           this.cancel();
-          toast.show(message, hasError)
+          toast.show(message, hasError);
         })
-        .catch(({response }) => {
+        .catch(({ response }) => {
           this.isSaving = false;
           let { message, hasError } = response.data;
           toast.show(message, hasError);
-        })
-      },
-      edit(item) {
-        this.selectedDuties = item.dutiesAndResponsibilities;
-        this.selectedJobReq = item.jobReqs;
-        this.designation.code = item.designationCode;
-        this.selectedDesignation = item.description;
-        this.onEdit = true;
-      },
-      update() {
-        this.isUpdating = true;
-        this.$axios.put(this.apiEndpoint, {
+        });
+    },
+    edit(item) {
+      this.selectedDuties = item.dutiesAndResponsibilities;
+      this.selectedJobReq = item.jobReqs;
+      this.designation.code = item.designationCode;
+      this.selectedDesignation = item.description;
+      this.onEdit = true;
+    },
+    update() {
+      this.isUpdating = true;
+      this.$axios
+        .put(this.apiEndpoint, {
           designationCode: this.designation.code,
           designationDutiesResponsibilities: this.selectedDuties,
           designationDutiesJobReqs: this.selectedJobReq
@@ -299,61 +296,62 @@
           this.isUpdating = false;
           let { message, hasError } = data;
           this.cancel();
-          toast.show(message, hasError)
+          toast.show(message, hasError);
         })
-        .catch(({response }) => {
+        .catch(({ response }) => {
           this.isUpdating = false;
           let { message, hasError } = response.data;
           toast.show(message, hasError);
+        });
+    },
+    deleteInfo(item) {
+      this.deleteDialog = true;
+      this.selectedData = item;
+    },
+    deleteConfirmed() {
+      this.$axios
+        .delete(`${this.apiEndpoint}/${this.selectedData.designationCode}`)
+        .then(({ data }) => {
+          this.deleteDialog = false;
+          let { message, hasError } = data;
+          this.getAllDutiesReqData();
+          toast.show(message, hasError);
         })
-      },
-      deleteInfo(item) {
-        this.deleteDialog = true;
-        this.selectedData = item;
-      },
-      deleteConfirmed() {
-        this.$axios.delete(`${this.apiEndpoint}/${this.selectedData.designationCode}`)
-          .then(({ data }) => {
-            this.deleteDialog = false;
-            let { message, hasError} = data;
-            this.getAllDutiesReqData();
-            toast.show(message, hasError);
-          })
-          .catch(( { response }) => {
-            let { message, hasError} = response.data;
-            toast.show(message, hasError);
+        .catch(({ response }) => {
+          let { message, hasError } = response.data;
+          toast.show(message, hasError);
 
-            this.deleteDialog = false;
-          })
-      },
-      cancel() {
-        this.getAllDutiesReqData();
-        this.onEdit = false;
-
-        this.selectedDuties =[]
-        this.selectedJobReq =[]
-        this.selectedDesignation = ""
-      }
+          this.deleteDialog = false;
+        });
     },
-    computed: {
-      ...mapState('dutiesReq', {
-        dutiesReqData: state => state.dutiesReqData
-      }),
-      ...mapState('designationFile', {
-          designationFileData: state => state.designationFiles,
-          isLoading: state => state.loading
-      }),
-      ...mapState('duties', {
-        duties: state => state.duties
-      }),
-      ...mapState('jobReq', {
-        jobReqData: state => state.jobReqData
-      })
-    },
-    created() {
-      this.getAllDuties();
-      this.getAllJobReqData();
+    cancel() {
       this.getAllDutiesReqData();
+      this.onEdit = false;
+
+      this.selectedDuties = [];
+      this.selectedJobReq = [];
+      this.selectedDesignation = "";
     }
+  },
+  computed: {
+    ...mapState("dutiesReq", {
+      dutiesReqData: state => state.dutiesReqData
+    }),
+    ...mapState("designationFile", {
+      designationFileData: state => state.designationFiles,
+      isLoading: state => state.loading
+    }),
+    ...mapState("duties", {
+      duties: state => state.duties
+    }),
+    ...mapState("jobReq", {
+      jobReqData: state => state.jobReqData
+    })
+  },
+  created() {
+    this.getAllDuties();
+    this.getAllJobReqData();
+    this.getAllDutiesReqData();
   }
+};
 </script>

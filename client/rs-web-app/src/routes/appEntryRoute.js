@@ -1,7 +1,7 @@
 let Layout = () => import("../layouts/VuetifyLayout.vue");
 
-let AppEntry = () => 
-    import("../views/setup/recruitment/applicants-entry/ApplicantsEntry");
+let AppEntry = () =>
+  import("../views/setup/recruitment/applicants-entry/ApplicantsEntry");
 export default {
   path: "/",
   component: Layout,
@@ -11,4 +11,4 @@ export default {
       component: AppEntry
     }
   ]
-}
+};

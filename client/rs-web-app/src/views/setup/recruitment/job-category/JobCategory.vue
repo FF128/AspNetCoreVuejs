@@ -180,178 +180,173 @@
 </template>
 <script>
 import { mapActions, mapState } from "vuex";
-import codeRules from "@/rules/codeRules"
-import Toast from "@/project-modules/toast"
+import codeRules from "@/rules/codeRules";
+import Toast from "@/project-modules/toast";
 
 let toast = new Toast();
 export default {
-    data() {
-        return {
-            title: 'Job Category',
-            jobCat: { },
-            selectedJobCat: {},
-            selectedJobGroup: '',
-            jobGroupDialog: false,
-            onEdit: false,
-            isSaving: false,
-            isUpdating: false,
-            valid: false,
-            codeRules,
-            deleteDialog: false,
-            selectedDesignation: [],
-            jobGroupHeaders: [
-                {
-                    text: 'Code',
-                    align: 'left',
-                    sortable: false,
-                    value: 'code'
-                },
-                { text: 'Description', value: 'description', align: 'left' },
-                { text: '', value: 'actions' }
-            ],
-            designationFileHeaders: [
-                {
-                    text: 'Code',
-                    align: 'left',
-                    sortable: false,
-                    value: 'code'
-                },
-                { text: 'Description', value: 'description', align: 'left' }
-            ],
-            jobCategoryHeaders: [
-                {
-                    text: 'Job Group',
-                    align: 'left',
-                    sortable: false,
-                    value: 'jobGroup'
-                },
-                { text: 'Code', value: 'code', align: 'left' },
-                { text: 'Description', value: 'description', align: 'left' },
-                { text: 'Designation', value: 'designation', align: 'left' },
-                { text: '', value: 'actions' }
-            ],
-            apiEndpoint: 'api/job-cat'
-        }
+  data() {
+    return {
+      title: "Job Category",
+      jobCat: {},
+      selectedJobCat: {},
+      selectedJobGroup: "",
+      jobGroupDialog: false,
+      onEdit: false,
+      isSaving: false,
+      isUpdating: false,
+      valid: false,
+      codeRules,
+      deleteDialog: false,
+      selectedDesignation: [],
+      jobGroupHeaders: [
+        {
+          text: "Code",
+          align: "left",
+          sortable: false,
+          value: "code"
+        },
+        { text: "Description", value: "description", align: "left" },
+        { text: "", value: "actions" }
+      ],
+      designationFileHeaders: [
+        {
+          text: "Code",
+          align: "left",
+          sortable: false,
+          value: "code"
+        },
+        { text: "Description", value: "description", align: "left" }
+      ],
+      jobCategoryHeaders: [
+        {
+          text: "Job Group",
+          align: "left",
+          sortable: false,
+          value: "jobGroup"
+        },
+        { text: "Code", value: "code", align: "left" },
+        { text: "Description", value: "description", align: "left" },
+        { text: "Designation", value: "designation", align: "left" },
+        { text: "", value: "actions" }
+      ],
+      apiEndpoint: "api/job-cat"
+    };
+  },
+  methods: {
+    ...mapActions("jobCategory", ["getAllJobCategories"]),
+    ...mapActions("jobGroup", ["getAllJobGroups"]),
+    ...mapActions("designationFile", ["getAllDesignationFiles"]),
+    searchJobGroup() {
+      this.getAllJobGroups();
+
+      this.jobGroupDialog = true;
     },
-    methods: {
-        ...mapActions('jobCategory', [
-            'getAllJobCategories'
-        ]),
-        ...mapActions('jobGroup', [
-            'getAllJobGroups'
-        ]),
-        ...mapActions('designationFile', [
-            'getAllDesignationFiles'
-        ]),
-        searchJobGroup() {
-            this.getAllJobGroups();
-
-            this.jobGroupDialog = true;
-        },
-        selectJobGroup(item) {
-            this.selectedJobGroup = item.jobGroupDesc;
-            this.jobCat.jobGroupCode = item.jobGroupCode;
-            this.jobGroupDialog = false;
-        },
-        save() {
-            this.isSaving = true;
-            this.$axios.post(this.apiEndpoint, {
-                jobCatCode: this.jobCat.jobCatCode,
-                jobCatDesc: this.jobCat.jobCatDesc,
-                jobGroupCode: this.jobCat.jobGroupCode,
-                jobCategoryDetails: this.selectedDesignation
-            })
-            .then(({ data }) => {
-                this.isSaving = false;
-                let { message, hasError } = data;
-                this.cancel();
-                toast.show(message, hasError)
-            })
-            .catch(({response }) => {
-                this.isSaving = false;
-                let { message, hasError } = response.data;
-                toast.show(message, hasError);
-            })
-        },
-        edit(item) {
-            this.selectedDesignation = item.designationFiles;
-            this.jobCat = {
-                jobCatCode: item.jobCatCode,
-                jobCatDesc: item.jobCatDesc,
-                jobGroupCode: item.jobGroupCode
-            }
-            this.selectedJobGroup = item.jobGroupDesc;
-            this.onEdit = true;
-        },
-         update() {
-            this.isUpdating = true;
-            this.$axios.put(this.apiEndpoint, {
-                jobCatCode: this.jobCat.jobCatCode,
-                jobCatDesc: this.jobCat.jobCatDesc,
-                jobGroupCode: this.jobCat.jobGroupCode,
-                jobCategoryDetails: this.selectedDesignation
-            })
-            .then(({ data }) => {
-                this.isUpdating = false;
-                let { message, hasError } = data;
-                this.cancel();
-                toast.show(message, hasError)
-            })
-            .catch(({response }) => {
-                this.isUpdating = false;
-                let { message, hasError } = response.data;
-                toast.show(message, hasError);
-            })
-        },
-        deleteInfo(item) {
-            this.deleteDialog = true;
-            this.selectedJobCat = item;
-        },
-        deleteConfirmed() {
-            this.isDeleting = true;
-            this.$axios.delete(`${this.apiEndpoint}/${this.selectedJobCat.jobCatCode}`)
-                .then(response => {
-                    let { message, hasError } = response.data;
-
-                    // Toast custom message
-                    toast.show(message, hasError);
-
-                    this.cancel();
-                    this.isDeleting = false;
-                    this.deleteDialog = false;
-                })
-                .catch(err => {
-                    this.isDeleting = false;
-                })
-        },
-        cancel() {
-            this.getAllJobCategories();
-            this.onEdit = false;
-            this.jobCat = {}
-            this.selectedDesignation =[]
-            this.selectedJobGroup = ""
-        }
+    selectJobGroup(item) {
+      this.selectedJobGroup = item.jobGroupDesc;
+      this.jobCat.jobGroupCode = item.jobGroupCode;
+      this.jobGroupDialog = false;
     },
-    computed: {
-        ...mapState('jobCategory', {
-            jobCategories: state => state.jobCategories,
-            isLoading: state => state.loading
-        }),
-        ...mapState('jobGroup', {
-            jobGroupData: state => state.jobGroups,
-            isLoading: state => state.loading
-        }),
-        ...mapState('designationFile', {
-            designationFileData: state => state.designationFiles,
-            isLoading: state => state.loading
+    save() {
+      this.isSaving = true;
+      this.$axios
+        .post(this.apiEndpoint, {
+          jobCatCode: this.jobCat.jobCatCode,
+          jobCatDesc: this.jobCat.jobCatDesc,
+          jobGroupCode: this.jobCat.jobGroupCode,
+          jobCategoryDetails: this.selectedDesignation
         })
+        .then(({ data }) => {
+          this.isSaving = false;
+          let { message, hasError } = data;
+          this.cancel();
+          toast.show(message, hasError);
+        })
+        .catch(({ response }) => {
+          this.isSaving = false;
+          let { message, hasError } = response.data;
+          toast.show(message, hasError);
+        });
     },
-    created() {
-        this.getAllJobCategories();
+    edit(item) {
+      this.selectedDesignation = item.designationFiles;
+      this.jobCat = {
+        jobCatCode: item.jobCatCode,
+        jobCatDesc: item.jobCatDesc,
+        jobGroupCode: item.jobGroupCode
+      };
+      this.selectedJobGroup = item.jobGroupDesc;
+      this.onEdit = true;
+    },
+    update() {
+      this.isUpdating = true;
+      this.$axios
+        .put(this.apiEndpoint, {
+          jobCatCode: this.jobCat.jobCatCode,
+          jobCatDesc: this.jobCat.jobCatDesc,
+          jobGroupCode: this.jobCat.jobGroupCode,
+          jobCategoryDetails: this.selectedDesignation
+        })
+        .then(({ data }) => {
+          this.isUpdating = false;
+          let { message, hasError } = data;
+          this.cancel();
+          toast.show(message, hasError);
+        })
+        .catch(({ response }) => {
+          this.isUpdating = false;
+          let { message, hasError } = response.data;
+          toast.show(message, hasError);
+        });
+    },
+    deleteInfo(item) {
+      this.deleteDialog = true;
+      this.selectedJobCat = item;
+    },
+    deleteConfirmed() {
+      this.isDeleting = true;
+      this.$axios
+        .delete(`${this.apiEndpoint}/${this.selectedJobCat.jobCatCode}`)
+        .then(response => {
+          let { message, hasError } = response.data;
 
-        this.getAllDesignationFiles();
-       
+          // Toast custom message
+          toast.show(message, hasError);
+
+          this.cancel();
+          this.isDeleting = false;
+          this.deleteDialog = false;
+        })
+        .catch(err => {
+          this.isDeleting = false;
+        });
+    },
+    cancel() {
+      this.getAllJobCategories();
+      this.onEdit = false;
+      this.jobCat = {};
+      this.selectedDesignation = [];
+      this.selectedJobGroup = "";
     }
-}
-</script>
+  },
+  computed: {
+    ...mapState("jobCategory", {
+      jobCategories: state => state.jobCategories,
+      isLoading: state => state.loading
+    }),
+    ...mapState("jobGroup", {
+      jobGroupData: state => state.jobGroups,
+      isLoading: state => state.loading
+    }),
+    ...mapState("designationFile", {
+      designationFileData: state => state.designationFiles,
+      isLoading: state => state.loading
+    })
+  },
+  created() {
+    this.getAllJobCategories();
 
+    this.getAllDesignationFiles();
+  }
+};
+</script>

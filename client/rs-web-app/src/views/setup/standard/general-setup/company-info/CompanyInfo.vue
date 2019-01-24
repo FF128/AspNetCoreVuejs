@@ -240,222 +240,216 @@
     </v-form>
 </template>
 <script>
-import { mapActions, mapState } from "vuex"
-import Toast from "@/project-modules/toast"
-import codeRules from "@/rules/codeRules"
+import { mapActions, mapState } from "vuex";
+import Toast from "@/project-modules/toast";
+import codeRules from "@/rules/codeRules";
 
 let toast = new Toast();
 export default {
-    data() {
-        return {
-            title: "Company Information",
-            ci: {},
-            isSaving: false,
-            emailRules: [
-                v => !!v || 'E-mail is required',
-                v => /.+@.+/.test(v) || 'E-mail must be valid'
-            ],
-            logoForReports: {
-                imageName: '',
-                imageUrl: '',
-                imageFile: ''
-            },
-            logoForSite: {
-                imageName: '',
-                imageUrl: '',
-                imageFile: ''
-            },
-            contentForSite: {
-                imageName: '',
-                imageUrl: '',
-                imageFile: ''
-            },
-            files: null,
-            apiEndpoint: "api/companyInfo"
-        }
-    },
-    methods: {
-        ...mapActions('user', [
-            'decodeToken'
-        ]),
-        save() {
-            this.$axios.post("api/companyInfo", this.ci)
-                .then(response => {
-                    let { message, hasError } = response.data;
+  data() {
+    return {
+      title: "Company Information",
+      ci: {},
+      isSaving: false,
+      emailRules: [
+        v => !!v || "E-mail is required",
+        v => /.+@.+/.test(v) || "E-mail must be valid"
+      ],
+      logoForReports: {
+        imageName: "",
+        imageUrl: "",
+        imageFile: ""
+      },
+      logoForSite: {
+        imageName: "",
+        imageUrl: "",
+        imageFile: ""
+      },
+      contentForSite: {
+        imageName: "",
+        imageUrl: "",
+        imageFile: ""
+      },
+      files: null,
+      apiEndpoint: "api/companyInfo"
+    };
+  },
+  methods: {
+    ...mapActions("user", ["decodeToken"]),
+    save() {
+      this.$axios
+        .post("api/companyInfo", this.ci)
+        .then(response => {
+          let { message, hasError } = response.data;
 
-                    // Toast custom message
-                    toast.show(message, hasError);
-                })
-                .catch(err => console.log(err));
-        },
-        logoForSiteChanged() {
-            let files = this.$refs.logoForSite.files
-            
-            this.logoForSite.imageName = files[0].name
-            const fr = new FileReader ()
-            fr.readAsDataURL(files[0])
-            fr.addEventListener('load', () => {
-                
-                this.logoForSite.imageUrl = fr.result
-                this.logoForSite.imageFile = files[0] // this is an image file that can be sent to server...
-            })
-            this.ci.logoForSite = files[0];
-        },
-        logoForReportsChanged () {
-            let files = this.$refs.logoForReports.files
-            this.logoForReports.imageName = files[0].name
-            const fr = new FileReader ()
-            fr.readAsDataURL(files[0])
-            fr.addEventListener('load', () => {
-                
-                this.logoForReports.imageUrl = fr.result
-                this.logoForReports.imageFile = files[0] // this is an image file that can be sent to server...
-            })
-            this.ci.logoForReports = files[0]
-        },
-        contentForSiteChanged () {
-            let files = this.$refs.contentForSite.files
-            this.contentForSite.imageName = files[0].name
-            const fr = new FileReader ()
-            fr.readAsDataURL(files[0])
-            fr.addEventListener('load', () => {
-                
-                this.contentForSite.imageUrl = fr.result
-                this.contentForSite.imageFile = files[0] // this is an image file that can be sent to server...
-            })
-            this.ci.contentForSite = files[0]
-        },
-        processForm() {
-            this.isSaving = true;
-            var bodyFormData = new FormData();
-            bodyFormData.set('Code', this.ci.code);
-            bodyFormData.set('Description', this.ci.description);
-            bodyFormData.set('Address', this.ci.address);
-            bodyFormData.set('Province', this.ci.province);
-            bodyFormData.set('City', this.ci.city);
-            bodyFormData.set('ZipCode', this.ci.zipCode);
-            bodyFormData.set('TelNum', this.ci.telNum);
-            bodyFormData.set('Email', this.ci.email);
-            bodyFormData.set('TIN', this.ci.tin);
-            bodyFormData.set('SSS', this.ci.sss);
-            bodyFormData.set('Pagibig', this.ci.pagibig);
-            bodyFormData.set('Philhealth', this.ci.philhealth);
-            bodyFormData.set('BirBranchCode', this.ci.birBranchCode);
-            bodyFormData.set('TKSFlag', this.ci.tksFlag);
-            bodyFormData.set('PayrollFlag', this.ci.payrollFlag);
-            bodyFormData.set('HRISFlag', this.ci.hrisFlag);
-            bodyFormData.set('EmpOnlineFlag', this.ci.empOnlineFlag);
-            bodyFormData.set('TKSDB', this.ci.tksdb);
-            bodyFormData.set('PayrollDB', this.ci.payrollDB);
-            bodyFormData.set('HRISDB', this.ci.hrisdb);
-            bodyFormData.set('OnlineDB', this.ci.onlineDB);
-
-            // bodyFormData.append('LogoForReports',null);
-            // bodyFormData.append('LogoForSite', null);
-            // bodyFormData.append('ContentForSite', null);
-
-            bodyFormData.append('LogoForReportsFile', this.ci.logoForReports);
-            bodyFormData.append('LogoForSiteFile', this.ci.logoForSite);
-            bodyFormData.append('ContentForSiteFile', this.ci.contentForSite);
-            let self = this;
-            this.$axios({
-                    method: 'POST',
-                    url: this.apiEndpoint,
-                    data: bodyFormData,
-                    config: { headers: {'Content-Type': 'multipart/form-data' }}
-                })
-                .then(function (response) {
-                    //handle success
-                    let { message, hasError } = response.data;
-
-                    // Toast custom message
-                    toast.show(message, hasError);
-                    self.isSaving = false;
-                    self.getCompanyInfoByCode();
-                })
-                .catch(function (err) {
-                    //handle error
-                    let { message, hasError } = err.response.data;
-
-                    // Toast custom message
-                    toast.show(message, hasError);
-
-                    self.isSaving = false;
-                });
-        },
-        getCompanyInfoByCode() {
-            this.$axios.get(`${this.apiEndpoint}/company-code/${this.companyCode}`)
-                .then(response => {
-                    this.ci = response.data;
-                })
-                .catch(err => {
-                    
-                })
-        }
-        // onLogoForReportsPicked (e) {
-		// 	const files = e.target.files
-		// 	if(files[0] !== undefined) {
-        //         console.log('reports')
-		// 		this.logoForReports.imageName = files[0].name
-		// 		if(this.logoForReports.imageName.lastIndexOf('.') <= 0) {
-		// 			return
-		// 		}
-		// 		const fr = new FileReader ()
-		// 		fr.readAsDataURL(files[0])
-		// 		fr.addEventListener('load', () => {
-		// 			this.logoForReports.imageUrl = fr.result
-		// 			this.logoForReports.imageFile = files[0] // this is an image file that can be sent to server...
-		// 		})
-		// 	} else {
-		// 		this.logoForReports.imageName = ''
-		// 		this.logoForReports.imageFile = ''
-		// 		this.logoForReports.imageUrl = ''
-		// 	}
-        // },
-        // onLogoForSitePicked (e) {
-		// 	const files = e.target.files
-		// 	if(files[0] !== undefined) {
-        //         console.log('site')
-		// 		this.imageName = files[0].name
-		// 		if(this.imageName.lastIndexOf('.') <= 0) {
-		// 			return
-		// 		}
-		// 		const fr = new FileReader ()
-		// 		fr.readAsDataURL(files[0])
-		// 		fr.addEventListener('load', () => {
-		// 			this.imageUrl = fr.result
-		// 			this.imageFile = files[0] // this is an image file that can be sent to server...
-		// 		})
-		// 	} else {
-		// 		this.imageName = ''
-		// 		this.imageFile = ''
-		// 		this.imageUrl = ''
-		// 	}
-        // },
-        // pickFile () {
-        //     this.$refs.image.click()
-        // },
-        // pickFileForSite() {
-        //     this.$refs.image.click()
-        // }
-
-    },
-    computed: {
-        ...mapState('user', {
-            companyCode: state => state.companyCode
+          // Toast custom message
+          toast.show(message, hasError);
         })
+        .catch(err => console.log(err));
     },
-    created() {
-        this.decodeToken();
-        this.getCompanyInfoByCode();
+    logoForSiteChanged() {
+      let files = this.$refs.logoForSite.files;
+
+      this.logoForSite.imageName = files[0].name;
+      const fr = new FileReader();
+      fr.readAsDataURL(files[0]);
+      fr.addEventListener("load", () => {
+        this.logoForSite.imageUrl = fr.result;
+        this.logoForSite.imageFile = files[0]; // this is an image file that can be sent to server...
+      });
+      this.ci.logoForSite = files[0];
+    },
+    logoForReportsChanged() {
+      let files = this.$refs.logoForReports.files;
+      this.logoForReports.imageName = files[0].name;
+      const fr = new FileReader();
+      fr.readAsDataURL(files[0]);
+      fr.addEventListener("load", () => {
+        this.logoForReports.imageUrl = fr.result;
+        this.logoForReports.imageFile = files[0]; // this is an image file that can be sent to server...
+      });
+      this.ci.logoForReports = files[0];
+    },
+    contentForSiteChanged() {
+      let files = this.$refs.contentForSite.files;
+      this.contentForSite.imageName = files[0].name;
+      const fr = new FileReader();
+      fr.readAsDataURL(files[0]);
+      fr.addEventListener("load", () => {
+        this.contentForSite.imageUrl = fr.result;
+        this.contentForSite.imageFile = files[0]; // this is an image file that can be sent to server...
+      });
+      this.ci.contentForSite = files[0];
+    },
+    processForm() {
+      this.isSaving = true;
+      var bodyFormData = new FormData();
+      bodyFormData.set("Code", this.ci.code);
+      bodyFormData.set("Description", this.ci.description);
+      bodyFormData.set("Address", this.ci.address);
+      bodyFormData.set("Province", this.ci.province);
+      bodyFormData.set("City", this.ci.city);
+      bodyFormData.set("ZipCode", this.ci.zipCode);
+      bodyFormData.set("TelNum", this.ci.telNum);
+      bodyFormData.set("Email", this.ci.email);
+      bodyFormData.set("TIN", this.ci.tin);
+      bodyFormData.set("SSS", this.ci.sss);
+      bodyFormData.set("Pagibig", this.ci.pagibig);
+      bodyFormData.set("Philhealth", this.ci.philhealth);
+      bodyFormData.set("BirBranchCode", this.ci.birBranchCode);
+      bodyFormData.set("TKSFlag", this.ci.tksFlag);
+      bodyFormData.set("PayrollFlag", this.ci.payrollFlag);
+      bodyFormData.set("HRISFlag", this.ci.hrisFlag);
+      bodyFormData.set("EmpOnlineFlag", this.ci.empOnlineFlag);
+      bodyFormData.set("TKSDB", this.ci.tksdb);
+      bodyFormData.set("PayrollDB", this.ci.payrollDB);
+      bodyFormData.set("HRISDB", this.ci.hrisdb);
+      bodyFormData.set("OnlineDB", this.ci.onlineDB);
+
+      // bodyFormData.append('LogoForReports',null);
+      // bodyFormData.append('LogoForSite', null);
+      // bodyFormData.append('ContentForSite', null);
+
+      bodyFormData.append("LogoForReportsFile", this.ci.logoForReports);
+      bodyFormData.append("LogoForSiteFile", this.ci.logoForSite);
+      bodyFormData.append("ContentForSiteFile", this.ci.contentForSite);
+      let self = this;
+      this.$axios({
+        method: "POST",
+        url: this.apiEndpoint,
+        data: bodyFormData,
+        config: { headers: { "Content-Type": "multipart/form-data" } }
+      })
+        .then(function(response) {
+          //handle success
+          let { message, hasError } = response.data;
+
+          // Toast custom message
+          toast.show(message, hasError);
+          self.isSaving = false;
+          self.getCompanyInfoByCode();
+        })
+        .catch(function(err) {
+          //handle error
+          let { message, hasError } = err.response.data;
+
+          // Toast custom message
+          toast.show(message, hasError);
+
+          self.isSaving = false;
+        });
+    },
+    getCompanyInfoByCode() {
+      this.$axios
+        .get(`${this.apiEndpoint}/company-code/${this.companyCode}`)
+        .then(response => {
+          this.ci = response.data;
+        })
+        .catch(err => {});
     }
-}
+    // onLogoForReportsPicked (e) {
+    // 	const files = e.target.files
+    // 	if(files[0] !== undefined) {
+    //         console.log('reports')
+    // 		this.logoForReports.imageName = files[0].name
+    // 		if(this.logoForReports.imageName.lastIndexOf('.') <= 0) {
+    // 			return
+    // 		}
+    // 		const fr = new FileReader ()
+    // 		fr.readAsDataURL(files[0])
+    // 		fr.addEventListener('load', () => {
+    // 			this.logoForReports.imageUrl = fr.result
+    // 			this.logoForReports.imageFile = files[0] // this is an image file that can be sent to server...
+    // 		})
+    // 	} else {
+    // 		this.logoForReports.imageName = ''
+    // 		this.logoForReports.imageFile = ''
+    // 		this.logoForReports.imageUrl = ''
+    // 	}
+    // },
+    // onLogoForSitePicked (e) {
+    // 	const files = e.target.files
+    // 	if(files[0] !== undefined) {
+    //         console.log('site')
+    // 		this.imageName = files[0].name
+    // 		if(this.imageName.lastIndexOf('.') <= 0) {
+    // 			return
+    // 		}
+    // 		const fr = new FileReader ()
+    // 		fr.readAsDataURL(files[0])
+    // 		fr.addEventListener('load', () => {
+    // 			this.imageUrl = fr.result
+    // 			this.imageFile = files[0] // this is an image file that can be sent to server...
+    // 		})
+    // 	} else {
+    // 		this.imageName = ''
+    // 		this.imageFile = ''
+    // 		this.imageUrl = ''
+    // 	}
+    // },
+    // pickFile () {
+    //     this.$refs.image.click()
+    // },
+    // pickFileForSite() {
+    //     this.$refs.image.click()
+    // }
+  },
+  computed: {
+    ...mapState("user", {
+      companyCode: state => state.companyCode
+    })
+  },
+  created() {
+    this.decodeToken();
+    this.getCompanyInfoByCode();
+  }
+};
 </script>
 
 <style>
-  .img-responsive {
-    max-width: 100%;
-    height: auto;
-    display: block;
-  }
+.img-responsive {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
 </style>

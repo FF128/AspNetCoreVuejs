@@ -166,161 +166,160 @@
     </div>
 </template>
 <script>
-import { mapActions, mapState } from "vuex"
-import Toast from "@/project-modules/toast"
-import codeRules from "@/rules/codeRules"
+import { mapActions, mapState } from "vuex";
+import Toast from "@/project-modules/toast";
+import codeRules from "@/rules/codeRules";
 
 let toast = new Toast();
 export default {
-    data() {
-        return {
-            title: "Pay House",
-            ph: {},
-            codeRules,
-            valid: true,
-            isSaving: false,
-            isUpdating: false,
-            isDeleting: false,
-            onEdit: false,
-            deleteDialog: false,
-            selectedPayHouse: {},
-            headers: [
-                {
-                    text: 'Code',
-                    align: 'left',
-                    sortable: false,
-                    value: 'branchCode'
-                },
-                { text: 'Description', value: 'branchDesc', align: 'left' },
-                { text: 'Head Code', value: 'headCode', align: 'left'},
-                { text: '', value: 'actions' }
-            ],
-            jobLevelHeaders: [
-                {
-                    text: 'Code',
-                    align: 'left',
-                    sortable: false,
-                    value: 'code'
-                },
-                { text: 'Description', value: 'description', align: 'left' },
-                { text: 'Grade', value: 'gradeDescription', align: 'left'},
-                { text: 'Step', value: 'stepDescription', align: 'left'},
-                { text: 'Minimum Salary', value: 'minimumSalary', align: 'left'},
-                { text: 'Maximum Salary', value: 'maximumSalary', align: 'left'},
-                { text: '', value: 'actions' }
-            ],
-            jobLevelDialog: false,
-            apiEndpoint: "api/pay-house"
-        }
-    },
-    methods: {
-        ...mapActions('jobLevel', [
-            'getAllJobLevels'
-        ]),
-        ...mapActions('payHouse', [
-            'getAllPayHouseData'
-        ]),
-        save() {
-            this.isSaving = true;
-            this.$axios.post(this.apiEndpoint, this.ph)
-                .then(response => {
-                    this.isSaving = false;
-
-                    let { message, hasError } = response.data;
-
-                    // Toast custom message
-                    if(hasError) {
-                        toast.error(message)
-                    }else{
-                        toast.success(message)
-                    }
-                    // Update List
-                    this.cancel();
-                })
-                .catch(err => {
-                    this.isSaving = false;
-                });
+  data() {
+    return {
+      title: "Pay House",
+      ph: {},
+      codeRules,
+      valid: true,
+      isSaving: false,
+      isUpdating: false,
+      isDeleting: false,
+      onEdit: false,
+      deleteDialog: false,
+      selectedPayHouse: {},
+      headers: [
+        {
+          text: "Code",
+          align: "left",
+          sortable: false,
+          value: "branchCode"
         },
-        edit(item){
-            this.onEdit = true;
-            this.ph = item;
+        { text: "Description", value: "branchDesc", align: "left" },
+        { text: "Head Code", value: "headCode", align: "left" },
+        { text: "", value: "actions" }
+      ],
+      jobLevelHeaders: [
+        {
+          text: "Code",
+          align: "left",
+          sortable: false,
+          value: "code"
         },
-        update() {
-            this.isUpdating = true
-            this.$axios.put(this.apiEndpoint, this.ph)
-                .then(response => {
-                    this.isUpdating = false;
-                    let { message, hasError } = response.data;
+        { text: "Description", value: "description", align: "left" },
+        { text: "Grade", value: "gradeDescription", align: "left" },
+        { text: "Step", value: "stepDescription", align: "left" },
+        { text: "Minimum Salary", value: "minimumSalary", align: "left" },
+        { text: "Maximum Salary", value: "maximumSalary", align: "left" },
+        { text: "", value: "actions" }
+      ],
+      jobLevelDialog: false,
+      apiEndpoint: "api/pay-house"
+    };
+  },
+  methods: {
+    ...mapActions("jobLevel", ["getAllJobLevels"]),
+    ...mapActions("payHouse", ["getAllPayHouseData"]),
+    save() {
+      this.isSaving = true;
+      this.$axios
+        .post(this.apiEndpoint, this.ph)
+        .then(response => {
+          this.isSaving = false;
 
-                    // Toast custom message
-                    if(hasError) {
-                        toast.error(message)
-                    }else{
-                        toast.success(message)
-                    }
+          let { message, hasError } = response.data;
 
-                    this.cancel();
-                })
-                .catch(err => {
-                    this.isUpdating = false;
-                })
-        },
-        deleteInfo(item) {
-            this.deleteDialog = true;
-            this.selectedPayHouse = item;
-        },
-        deleteConfirmed() {
-            this.isDeleting = true;
-            this.$axios.delete(`${this.apiEndpoint}/${this.selectedPayHouse.id}`)
-                .then(response => {
-                    let { message, hasError } = response.data;
-
-                    // Toast custom message
-                    if(hasError) {
-                        toast.error(message)
-                    }else{
-                        toast.success(message)
-                    }
-                    this.cancel();
-
-                    this.isDeleting = false;
-                    this.deleteDialog = false;
-                })
-                .catch(err => {
-                    this.isDeleting = false;
-                })
-        },
-        closeDeleteDialog() {
-            this.deleteDialog = false;
-        },
-        cancel() {
-            this.onEdit = false;
-            this.ph = {}
-
-            this.getAllPayHouseData();
-        },
-        searchJobLevelCode() {
-            this.jobLevelDialog = true;
-
-            this.getAllJobLevels();
-        },
-        selectJobLevel(item) {
-            this.branch.jobLevelCode = item.code;
-
-            this.jobLevelDialog = false;
-        }
-    },
-    computed: {
-        ...mapState('jobLevel', {
-            jobLevelData: state => state.jobLevels
-        }),
-        ...mapState('payHouse', {
-            payHouseData: state => state.payHouseData,
-            isLoading: state => state.loading
+          // Toast custom message
+          if (hasError) {
+            toast.error(message);
+          } else {
+            toast.success(message);
+          }
+          // Update List
+          this.cancel();
         })
+        .catch(err => {
+          this.isSaving = false;
+        });
     },
-    created() {
-        this.getAllPayHouseData();
+    edit(item) {
+      this.onEdit = true;
+      this.ph = item;
+    },
+    update() {
+      this.isUpdating = true;
+      this.$axios
+        .put(this.apiEndpoint, this.ph)
+        .then(response => {
+          this.isUpdating = false;
+          let { message, hasError } = response.data;
+
+          // Toast custom message
+          if (hasError) {
+            toast.error(message);
+          } else {
+            toast.success(message);
+          }
+
+          this.cancel();
+        })
+        .catch(err => {
+          this.isUpdating = false;
+        });
+    },
+    deleteInfo(item) {
+      this.deleteDialog = true;
+      this.selectedPayHouse = item;
+    },
+    deleteConfirmed() {
+      this.isDeleting = true;
+      this.$axios
+        .delete(`${this.apiEndpoint}/${this.selectedPayHouse.id}`)
+        .then(response => {
+          let { message, hasError } = response.data;
+
+          // Toast custom message
+          if (hasError) {
+            toast.error(message);
+          } else {
+            toast.success(message);
+          }
+          this.cancel();
+
+          this.isDeleting = false;
+          this.deleteDialog = false;
+        })
+        .catch(err => {
+          this.isDeleting = false;
+        });
+    },
+    closeDeleteDialog() {
+      this.deleteDialog = false;
+    },
+    cancel() {
+      this.onEdit = false;
+      this.ph = {};
+
+      this.getAllPayHouseData();
+    },
+    searchJobLevelCode() {
+      this.jobLevelDialog = true;
+
+      this.getAllJobLevels();
+    },
+    selectJobLevel(item) {
+      this.branch.jobLevelCode = item.code;
+
+      this.jobLevelDialog = false;
     }
-}
+  },
+  computed: {
+    ...mapState("jobLevel", {
+      jobLevelData: state => state.jobLevels
+    }),
+    ...mapState("payHouse", {
+      payHouseData: state => state.payHouseData,
+      isLoading: state => state.loading
+    })
+  },
+  created() {
+    this.getAllPayHouseData();
+  }
+};
 </script>

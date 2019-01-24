@@ -218,180 +218,177 @@
     </div>
 </template>
 <script>
-import { mapActions, mapState } from "vuex"
-import Toast from "@/project-modules/toast"
-import codeRules from "@/rules/codeRules"
+import { mapActions, mapState } from "vuex";
+import Toast from "@/project-modules/toast";
+import codeRules from "@/rules/codeRules";
 
 let toast = new Toast();
 export default {
-    data() {
-        return {
-            title: "Job Level",
-            jobLevel: {},
-            codeRules,
-            valid: false,
-            isSaving: false,
-            isUpdating: false,
-            isDeleting: false,
-            onEdit: false,
-            deleteDialog: false,
-            stepDialog: false,
-            gradeDialog: false,
-            selectedJobLevel: {},
-            headers: [
-                {
-                    text: 'Code',
-                    align: 'left',
-                    sortable: false,
-                    value: 'code'
-                },
-                { text: 'Description', value: 'description', align: 'left' },
-                { text: 'Grade', value: 'gradeDescription', align: 'left'},
-                { text: 'Step', value: 'stepDescription', align: 'left'},
-                { text: 'Minimum Salary', value: 'minimumSalary', align: 'left'},
-                { text: 'Maximum Salary', value: 'maximumSalary', align: 'left'},
-                { text: '', value: 'actions' }
-            ],
-            gradeHeaders: [
-                {
-                    text: 'Code',
-                    align: 'left',
-                    sortable: false,
-                    value: 'code'
-                },
-                { text: 'Description', value: 'description', align: 'left' },
-                { text: '', value: 'actions' }
-            ],
-            apiEndpoint: "api/job-level"
-        }
-    },
-    methods: {
-        ...mapActions('jobLevel', [
-            'getAllJobLevels'
-        ]),
-        ...mapActions('step', [
-            'getAllSteps'
-        ]),
-        ...mapActions('grade', [
-            'getAllGrades'
-        ]),
-        save() {
-            this.isSaving = true;
-            this.$axios.post(this.apiEndpoint, this.jobLevel)
-                .then(response => {
-                    this.isSaving = false;
-
-                    let { message, hasError } = response.data;
-
-                    // Toast custom message
-                    if(hasError) {
-                        toast.error(message)
-                    }else{
-                        toast.success(message)
-                    }
-
-                    // Update List
-                    this.cancel();
-                })
-                .catch(err => {
-                    this.isSaving = false;
-                });
+  data() {
+    return {
+      title: "Job Level",
+      jobLevel: {},
+      codeRules,
+      valid: false,
+      isSaving: false,
+      isUpdating: false,
+      isDeleting: false,
+      onEdit: false,
+      deleteDialog: false,
+      stepDialog: false,
+      gradeDialog: false,
+      selectedJobLevel: {},
+      headers: [
+        {
+          text: "Code",
+          align: "left",
+          sortable: false,
+          value: "code"
         },
-        edit(item){
-            this.onEdit = true;
-            this.jobLevel = item;
+        { text: "Description", value: "description", align: "left" },
+        { text: "Grade", value: "gradeDescription", align: "left" },
+        { text: "Step", value: "stepDescription", align: "left" },
+        { text: "Minimum Salary", value: "minimumSalary", align: "left" },
+        { text: "Maximum Salary", value: "maximumSalary", align: "left" },
+        { text: "", value: "actions" }
+      ],
+      gradeHeaders: [
+        {
+          text: "Code",
+          align: "left",
+          sortable: false,
+          value: "code"
         },
-        update() {
-            this.isUpdating = true
-            this.$axios.put(this.apiEndpoint, this.jobLevel)
-                .then(response => {
-                    this.isUpdating = false;
-                    
-                    let { message, hasError } = response.data;
+        { text: "Description", value: "description", align: "left" },
+        { text: "", value: "actions" }
+      ],
+      apiEndpoint: "api/job-level"
+    };
+  },
+  methods: {
+    ...mapActions("jobLevel", ["getAllJobLevels"]),
+    ...mapActions("step", ["getAllSteps"]),
+    ...mapActions("grade", ["getAllGrades"]),
+    save() {
+      this.isSaving = true;
+      this.$axios
+        .post(this.apiEndpoint, this.jobLevel)
+        .then(response => {
+          this.isSaving = false;
 
-                    // Toast custom message
-                    if(hasError) {
-                        toast.error(message)
-                    }else{
-                        toast.success(message)
-                    }
+          let { message, hasError } = response.data;
 
-                    this.cancel();
-                })
-                .catch(err => {
-                    this.isUpdating = false;
-                })
-        },
-        deleteInfo(item) {
-            this.cancel();
-            this.deleteDialog = true;
-            this.selectedJobLevel = item;
-        },
-        deleteConfirmed() {
-            this.isDeleting = true;
-            this.$axios.delete(`${this.apiEndpoint}/${this.selectedJobLevel.id}`)
-                .then(response => {
-                    let { message, hasError } = response.data;
+          // Toast custom message
+          if (hasError) {
+            toast.error(message);
+          } else {
+            toast.success(message);
+          }
 
-                    // Toast custom message
-                    if(hasError) {
-                        toast.error(message)
-                    }else{
-                        toast.success(message)
-                    }
-
-                    this.cancel();
-                    
-                    this.isDeleting = false;
-                    this.deleteDialog = false;
-                })
-                .catch(err => {
-                    this.isDeleting = false;
-                })
-        },
-        closeDeleteDialog() {
-            this.deleteDialog = false;
-        },
-        cancel() {
-            this.onEdit = false;
-            this.jobLevel = {}
-
-            this.getAllJobLevels();
-        },
-        searchStepCode() {
-            this.stepDialog = true;
-
-            this.getAllSteps();
-        },
-        searchGradeCode() {
-            this.gradeDialog = true;
-
-            this.getAllGrades();
-        },
-        selectStep(item) {
-            this.jobLevel.stepCode = item.code;
-
-            this.stepDialog = false;
-        },
-        selectGrade(item) {
-            this.jobLevel.gradeCode = item.code;
-
-            this.gradeDialog = false;
-        }
-    },
-    computed: {
-        ...mapState('jobLevel', {
-            jobLevelData: state => state.jobLevels
-        }),
-        ...mapState('step', {
-            stepData: state => state.steps
-        }),
-        ...mapState('grade', {
-            gradeData: state => state.grades
+          // Update List
+          this.cancel();
         })
+        .catch(err => {
+          this.isSaving = false;
+        });
     },
-    created() {
-        this.getAllJobLevels();
+    edit(item) {
+      this.onEdit = true;
+      this.jobLevel = item;
+    },
+    update() {
+      this.isUpdating = true;
+      this.$axios
+        .put(this.apiEndpoint, this.jobLevel)
+        .then(response => {
+          this.isUpdating = false;
+
+          let { message, hasError } = response.data;
+
+          // Toast custom message
+          if (hasError) {
+            toast.error(message);
+          } else {
+            toast.success(message);
+          }
+
+          this.cancel();
+        })
+        .catch(err => {
+          this.isUpdating = false;
+        });
+    },
+    deleteInfo(item) {
+      this.cancel();
+      this.deleteDialog = true;
+      this.selectedJobLevel = item;
+    },
+    deleteConfirmed() {
+      this.isDeleting = true;
+      this.$axios
+        .delete(`${this.apiEndpoint}/${this.selectedJobLevel.id}`)
+        .then(response => {
+          let { message, hasError } = response.data;
+
+          // Toast custom message
+          if (hasError) {
+            toast.error(message);
+          } else {
+            toast.success(message);
+          }
+
+          this.cancel();
+
+          this.isDeleting = false;
+          this.deleteDialog = false;
+        })
+        .catch(err => {
+          this.isDeleting = false;
+        });
+    },
+    closeDeleteDialog() {
+      this.deleteDialog = false;
+    },
+    cancel() {
+      this.onEdit = false;
+      this.jobLevel = {};
+
+      this.getAllJobLevels();
+    },
+    searchStepCode() {
+      this.stepDialog = true;
+
+      this.getAllSteps();
+    },
+    searchGradeCode() {
+      this.gradeDialog = true;
+
+      this.getAllGrades();
+    },
+    selectStep(item) {
+      this.jobLevel.stepCode = item.code;
+
+      this.stepDialog = false;
+    },
+    selectGrade(item) {
+      this.jobLevel.gradeCode = item.code;
+
+      this.gradeDialog = false;
     }
-}
+  },
+  computed: {
+    ...mapState("jobLevel", {
+      jobLevelData: state => state.jobLevels
+    }),
+    ...mapState("step", {
+      stepData: state => state.steps
+    }),
+    ...mapState("grade", {
+      gradeData: state => state.grades
+    })
+  },
+  created() {
+    this.getAllJobLevels();
+  }
+};
 </script>

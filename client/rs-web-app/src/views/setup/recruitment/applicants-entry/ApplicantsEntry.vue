@@ -29,27 +29,26 @@
     </div>
 </template>
 <script>
-import GeneralInfo from "./GeneralInfo"
-import TextCertificate from "./TextCertificate"
-import EssayQuestions from "./EssayQuestions"
-import AttachmentsRequired from "./AttachmentsRequired"
-import SourceInfo from "./SourceInfo"
+import GeneralInfo from "./GeneralInfo";
+import TextCertificate from "./TextCertificate";
+import EssayQuestions from "./EssayQuestions";
+import AttachmentsRequired from "./AttachmentsRequired";
+import SourceInfo from "./SourceInfo";
 export default {
-    components: {
-        GeneralInfo,
-        TextCertificate,
-        EssayQuestions,
-        AttachmentsRequired,
-        SourceInfo
-    },
-    data() {
-        return {
-            title: 'Applicants Entry Setup',
-            focusable: true,
-            genInfo: true,
-            panel: [true, false, false, false, false]
-        }
-    }
-}
+  components: {
+    GeneralInfo,
+    TextCertificate,
+    EssayQuestions,
+    AttachmentsRequired,
+    SourceInfo
+  },
+  data() {
+    return {
+      title: "Applicants Entry Setup",
+      focusable: true,
+      genInfo: true,
+      panel: [true, false, false, false, false]
+    };
+  }
+};
 </script>
-
