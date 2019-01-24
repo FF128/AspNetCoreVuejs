@@ -130,42 +130,40 @@
         <v-toolbar-title class="white--text"></v-toolbar-title>
 
         <v-spacer></v-spacer>
-        <!-- <v-toolbar-items>
-            <v-btn flat @click.prevent="logout">
-                Logout
-            </v-btn>
-        </v-toolbar-items> -->
-        <!-- <v-btn icon>
-          <v-icon>search</v-icon>
-        </v-btn>
-
-        <v-btn icon>
-          <v-icon>apps</v-icon>
-        </v-btn>
-
-        <v-btn icon>
-          <v-icon>refresh</v-icon>
-        </v-btn> -->
-        <v-toolbar-items>
-            <v-btn flat @click.prevent="logout">
-                Setup
-            </v-btn>
-        </v-toolbar-items>
-        <v-toolbar-items>
-            <v-btn flat @click.prevent="logout">
-                Transactions
-            </v-btn>
-        </v-toolbar-items>
-        <v-toolbar-items>
-            <v-btn flat @click.prevent="logout">
-                Reports
-            </v-btn>
-        </v-toolbar-items>
-        <v-toolbar-items>
-            <v-btn flat @click.prevent="logout">
-                Admin
-            </v-btn>
-        </v-toolbar-items>
+    
+          <v-toolbar-items class="hidden-sm-and-down">
+            <v-menu bottom offset-y
+                v-for="(item,key) in menu"
+                v-bind:key="key">
+              <v-btn
+                flat
+                slot="activator"
+              >
+                {{ item.title }}
+                <v-icon>{{item.icon}}</v-icon>
+              </v-btn>
+              <v-list v-if="item.submenu">
+                <v-list-tile
+                  @click="logout"
+                  v-for="(sub,key) in item.submenu"
+                  :key="key"
+                >
+                  <v-list-tile-title>{{sub}}</v-list-tile-title>
+                </v-list-tile>
+              </v-list>
+            </v-menu>
+          </v-toolbar-items>
+          <v-menu class="hidden-md-and-up">
+            <v-toolbar-side-icon slot="activator"><v-icon>expand_more</v-icon></v-toolbar-side-icon>
+            <v-list>
+              <v-list-tile v-for="(item, key) in menu" :key="key">
+                <v-list-tile-content>
+                  <v-list-tile-title>{{ item.title }}</v-list-tile-title>
+                </v-list-tile-content>
+              </v-list-tile>   
+            </v-list>
+          </v-menu>
+          <!-- Logout Settings -->
           <v-menu bottom offset-y>
             <v-btn
               slot="activator"
@@ -225,6 +223,12 @@ export default {
       employmentInformationItems: [
         { title: "Employee Level" },
         { title: "Organizational Level" }
+      ],
+       menu: [
+        { icon: 'arrow_drop_down', title: 'Setup', submenu: ['Standard', 'Recruitment'] },
+        { icon: '', title: 'Transactions' },
+        { icon: '', title: 'Reports', submenu: ['Standard', 'Recruitment']  },
+        { icon: '', title: 'Admin', submenu: ['Standard', 'Recruitment']  }
       ]
     };
   },

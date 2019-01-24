@@ -12,36 +12,48 @@
                     </v-flex>
                     <v-flex xs12 sm12 md12>
                         <quill-editor v-model="emailFormat.message"></quill-editor>
-                        <p> These are the following fields that you can use for the Email.  To use these field Input this with curly brackets eg. <b>{ApplicantName}</b></p>
-                    </v-flex>
-                    <v-flex xs12 sm12 md12>
-                        <p>Applicant Name: <b>{ApplicantName}</b></p>
-                    </v-flex>
-                    <v-flex xs12 sm12 md12>
-                        <p>Designation: <b>{Designation}</b></p>
-                    </v-flex>
-                    <v-flex xs12 sm12 md12>
-                        <p>Screening Comment: <b>{ScreeningComment}</b></p>
-                    </v-flex>
-                    <v-flex xs12 sm12 md12>
-                        <p>Screening Ratings: <b>{ScreeningRatings}</b></p>
-                    </v-flex>
-                    <v-flex xs12 sm12 md12>
-                        <v-btn color="success"
-                            @click.prevent="save"
-                            :loading="isSaving">
-                            Save
-                        </v-btn>
                     </v-flex>
                     <v-divider></v-divider>
-                    <h3>Preview</h3>
-                    <v-flex xs12>
-                        <div contenteditable="false" 
-                            class="ql-editor" 
-                            v-html="emailFormat.message">
-                            {{emailFormat.message}}
-                        </div>
-                    </v-flex>
+                    <v-card>
+                        <v-container>
+                            <p> These are the following fields that you can use for the Email.  To use these field Input this with curly brackets eg. <b>{ApplicantName}</b></p>
+
+                            <v-flex xs12 sm12 md12>
+                                <p>Applicant Name: <b>{ApplicantName}</b></p>
+                            </v-flex>
+                            <v-flex xs12 sm12 md12>
+                                <p>Designation: <b>{Designation}</b></p>
+                            </v-flex>
+                            <v-flex xs12 sm12 md12>
+                                <p>Screening Comment: <b>{ScreeningComment}</b></p>
+                            </v-flex>
+                            <v-flex xs12 sm12 md12>
+                                <p>Screening Ratings: <b>{ScreeningRatings}</b></p>
+                            </v-flex>
+                            <v-flex xs12 sm12 md12>
+                                <v-btn color="success"
+                                    @click.prevent="save"
+                                    :loading="isSaving">
+                                    Save
+                                </v-btn>
+                            </v-flex>
+                        </v-container>
+                    </v-card>
+                   
+                    <v-divider></v-divider>
+                    <v-card>
+                        <v-container>
+                            <h3>Preview</h3>
+                            <v-flex xs12>
+                                <div contenteditable="false" 
+                                    class="ql-editor" 
+                                    v-html="emailFormat.message">
+                                    {{emailFormat.message}}
+                                </div>
+                            </v-flex>
+                        </v-container>
+                    </v-card>
+                    <br/>
                 </v-form>
             </v-layout>
         </v-container>

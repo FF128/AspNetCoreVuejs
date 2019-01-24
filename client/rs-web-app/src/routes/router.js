@@ -104,6 +104,8 @@ import jobCategoryRoute from "./jobCategoryRoute";
 import emailFormatRoute from "./emailFormat";
 import screenDetailsRoute from "./screenDetailsRoute"
 import multiCompanyRoute from "./multiCompanyRoute"
+import smsFormatRoute from "./smsFormatRoute"
+import evalEmailFormatRoute from "./evalEmailFormatRoute"
 
 const router = new Router({
   mode: "history",
@@ -169,7 +171,9 @@ const router = new Router({
     jobCategoryRoute,
     emailFormatRoute,
     screenDetailsRoute,
-    multiCompanyRoute
+    multiCompanyRoute,
+    smsFormatRoute,
+    evalEmailFormatRoute
   ]
 });
 

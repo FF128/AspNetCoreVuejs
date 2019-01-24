@@ -105,6 +105,8 @@ namespace WebAPI
             services.AddScoped<IEmailFormatRepository, EmailFormatRepository>();
             services.AddScoped<IScreenDetailsRepository, ScreenDetailsRepository>();
             services.AddScoped<IMultiCompanyDatabaseRepository, MultiCompanyDatabaseRepository>();
+            services.AddScoped<ISMSFormatRepository, SMSFormatRepository>();
+            services.AddScoped<IEvalEmailFormatRepository, EvalEmailFormatRepository>();
 
             #region JWT Service Configuration
             var appSettingsSection = Configuration.GetSection("AppSettings");
@@ -200,6 +202,8 @@ namespace WebAPI
             services.AddScoped<IEmailFormatService, EmailFormatService>();
             services.AddScoped<IScreenDetailsService, ScreenDetailsService>();
             services.AddScoped<IMultiCompanyDatabaseService, MultiCompanyDatabaseService>();
+            services.AddScoped<ISMSFormatService, SMSFormatService>();
+            services.AddScoped<IEvalEmailFormatService, EvalEmailFormatService>();
 
         }
 

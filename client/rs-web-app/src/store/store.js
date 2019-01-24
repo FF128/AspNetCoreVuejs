@@ -46,6 +46,9 @@ import jobCategory from "./modules/jobCategory";
 import emailFormat from "./modules/emailFormat";
 import screenDetails from "./modules/screeningDetails"
 import multiCompany from "./modules/multiCompany"
+import smsFormat from "./modules/smsFormat"
+import evalEmailFormat from "./modules/evalEmailFormat"
+import routing from "./modules/routing"
 
 Vue.use(Vuex);
 
@@ -54,6 +57,7 @@ export default new Vuex.Store({
   mutations: {},
   actions: {},
   modules: {
+    routing,
     citizenship,
     religion,
     employeeStatusFile,
@@ -98,6 +102,8 @@ export default new Vuex.Store({
     jobCategory,
     emailFormat,
     screenDetails,
-    multiCompany
+    multiCompany,
+    smsFormat,
+    evalEmailFormat
   }
 });

@@ -6,12 +6,12 @@
                     <v-flex xs12 sm12 md12>
                         <v-text-field
                             label="Subject"
-                            v-model="emailFormat.subject">
+                            v-model="smsFormat.subject">
 
                         </v-text-field>
                     </v-flex>
                     <v-flex xs12 sm12 md12>
-                        <quill-editor v-model="emailFormat.message"
+                        <quill-editor v-model="smsFormat.message"
                             :options="editorOption"></quill-editor>
                     </v-flex>
                     <v-divider></v-divider>
@@ -29,6 +29,12 @@
                                 <p>Evaluator: <b>{Evaluator}</b></p>
                             </v-flex>
                             <v-flex xs12 sm12 md12>
+                                <p>Company Name: <b>{CompanyName}</b></p>
+                            </v-flex>
+                            <v-flex xs12 sm12 md12>
+                                <p>CompanyAddress: <b>{CompanyAddress}</b></p>
+                            </v-flex>
+                            <v-flex xs12 sm12 md12>
                                 <v-btn color="success"
                                     @click.prevent="save"
                                     :loading="isSaving">
@@ -38,14 +44,14 @@
                         </v-container>
                     </v-card>
                     <v-divider></v-divider>
-                   <v-card>
+                    <v-card>
                         <v-container>
                             <h3>Preview</h3>
                             <v-flex xs12>
                                 <div contenteditable="false" 
                                     class="ql-editor" 
-                                    v-html="emailFormat.message">
-                                    {{emailFormat.message}}
+                                    v-html="smsFormat.message">
+                                    {{smsFormat.message}}
                                 </div>
                             </v-flex>
                         </v-container>
@@ -74,8 +80,8 @@ export default {
   },
   data() {
     return {
-      title: "Email Format Setup",
-      emailFormat: {
+      title: "SMS Format Setup",
+      smsFormat: {
         transType: "Hired"
       },
       isSaving: false,
@@ -85,25 +91,25 @@ export default {
         //     toolbar: false
         //   }
       },
-      apiEndpoint: "api/email-format"
+      apiEndpoint: "api/sms-format"
     };
   },
   methods: {
-    ...mapActions("emailFormat", {
-      saveEmailFormat: "saveEmailFormat"
+    ...mapActions("smsFormat", {
+      saveSMSFormat: "saveSMSFormat"
     }),
     save() {
-      this.saveEmailFormat(this.emailFormat);
+      this.saveSMSFormat(this.smsFormat);
     },
-    getEmailFormat() {
+    getSMSFormat() {
       this.$axios
-        .get(`${this.apiEndpoint}/${this.emailFormat.transType}`)
+        .get(`${this.apiEndpoint}/${this.smsFormat.transType}`)
         .then(({ data }) => {
           if (data) {
-            this.emailFormat = data;
+            this.smsFormat = data;
             return;
           }
-          this.emailFormat = {
+          this.smsFormat = {
             transType: "Hired"
           };
         })
@@ -114,7 +120,7 @@ export default {
     }
   },
   created() {
-    this.getEmailFormat();
+    this.getSMSFormat();
   }
 };
 </script>
