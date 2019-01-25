@@ -13,6 +13,7 @@ import Vuetify, {
   VToolbar
 } from "vuetify/lib";
 import "vuetify/src/stylus/app.styl";
+import colors from "vuetify/lib/util/colors";
 
 Vue.use(Vuetify, {
   components: {
@@ -28,5 +29,8 @@ Vue.use(Vuetify, {
     VDataTable,
     VToolbar
   },
-  iconfont: "md"
+  iconfont: "md",
+  theme: {
+    primary: colors.green.darken1
+  }
 });

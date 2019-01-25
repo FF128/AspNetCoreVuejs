@@ -81,7 +81,7 @@ namespace WebAPI.Services
                     DesignationCode = item.DesignationCode, DutiesRes = strDuties, JobReq = strJobLevel,
                     DutiesAndResponsibilities = dutiesAndResponsibilities,
                     JobReqs = jobReqList,
-                    Description = (await designationFileRepo.GetByCode(item.DesignationCode)).DesignationFileDesc
+                    Description = (await designationFileRepo.GetByCode(item.DesignationCode))?.DesignationFileDesc
                 });
 
                 // Instantiate new List

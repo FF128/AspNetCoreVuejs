@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using WebAPI.Helpers;
 using WebAPI.Models;
 using WebAPI.RepositoryInterfaces;
 using WebAPI.ServiceInterfaces;
@@ -32,7 +33,7 @@ namespace WebAPI.Controllers
                 return Ok(await repo.GetAll());                
             }catch(Exception ex)
             {
-                return Ok(ex.InnerException);
+                return Ok(CustomMessageHandler.Error(ex.Message));
             }
         }
 
@@ -52,7 +53,7 @@ namespace WebAPI.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                return BadRequest(CustomMessageHandler.Error(ex.Message));
             }
 
         }
@@ -83,7 +84,7 @@ namespace WebAPI.Controllers
                 return Ok(result);
             }catch(Exception ex)
             {
-                return BadRequest(ex.Message);
+                return BadRequest(CustomMessageHandler.Error(ex.Message));
             }
            
         }
@@ -98,7 +99,7 @@ namespace WebAPI.Controllers
             }
             catch(Exception ex)
             {
-                return BadRequest(ex.Message);
+                return BadRequest(CustomMessageHandler.Error(ex.Message));
             }
             
         }
@@ -113,18 +114,8 @@ namespace WebAPI.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                return BadRequest(CustomMessageHandler.Error(ex.Message));
             }
-
-        }
-        //string GetCompanyCodeClaim()
-        //{
-        //    return User.FindFirst("CompanyCode")?.Value;
-        //}
-
-        string GetCompanyCodeClaim()
-        {
-            return User.FindFirst("CompanyCode")?.Value;
 
         }
     }

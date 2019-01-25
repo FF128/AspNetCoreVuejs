@@ -166,15 +166,13 @@ export default {
       this.$axios
         .post(this.apiEndpoint, this.genInfo)
         .then(({ data }) => {
-          let { message, hasError } = data;
-          toast.show(message, hasError);
+          toast.show(data);
 
           this.isSaving = false;
           this.cancel();
         })
         .catch(({ response }) => {
-          let { message, hasError } = response.data;
-          toast.show(message, hasError);
+          toast.show(response.data);
           this.isSaving = false;
         });
     },
@@ -193,15 +191,12 @@ export default {
       this.$axios
         .put(`${this.apiEndpoint}`, this.genInfo)
         .then(({ data }) => {
-          let { message, hasError } = data;
-          toast.show(message, hasError);
-
+          toast.show(data);
           this.isUpdating = false;
           this.cancel();
         })
         .catch(({ response }) => {
-          let { message, hasError } = response.data;
-          toast.show(message, hasError);
+         toast.show(response.data);
 
           this.isUpdating = false;
         });
@@ -215,13 +210,11 @@ export default {
         .delete(`${this.apiEndpoint}/${this.selectedInfo.id}`)
         .then(({ data }) => {
           this.deleteDialog = false;
-          let { message, hasError } = data;
-          toast.show(message, hasError);
+         toast.show(data);
           this.cancel();
         })
         .catch(({ response }) => {
-          let { message, hasError } = response.data;
-          toast.show(message, hasError);
+          toast.show(response.data);
         });
     }
   },

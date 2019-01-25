@@ -24,13 +24,16 @@
                     <v-btn
                         color="success"
                         @click.prevent="save"
-                        v-if="!onEdit && valid">
+                        :loading="isSaving"
+                        v-if="!onEdit"
+                        :disabled="!valid">
                         Save
                     </v-btn>
                     <div v-if="onEdit && valid">
                         <v-btn
                             color="success"
-                            @click.prevent="update">
+                            @click.prevent="update"
+                            :loading="isUpdating">
                             Update
                         </v-btn>
                         <v-btn

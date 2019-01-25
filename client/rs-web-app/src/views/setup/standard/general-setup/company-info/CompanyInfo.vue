@@ -362,19 +362,13 @@ export default {
       })
         .then(function(response) {
           //handle success
-          let { message, hasError } = response.data;
-
-          // Toast custom message
-          toast.show(message, hasError);
+          toast.show(response.data); 
           self.isSaving = false;
           self.getCompanyInfoByCode();
         })
         .catch(function(err) {
           //handle error
-          let { message, hasError } = err.response.data;
-
-          // Toast custom message
-          toast.show(message, hasError);
+          toast.show(response.data);
 
           self.isSaving = false;
         });
@@ -385,54 +379,10 @@ export default {
         .then(response => {
           this.ci = response.data;
         })
-        .catch(err => {});
+        .catch(({response}) => {
+            toast.show(response.data);
+        });
     }
-    // onLogoForReportsPicked (e) {
-    // 	const files = e.target.files
-    // 	if(files[0] !== undefined) {
-    //         console.log('reports')
-    // 		this.logoForReports.imageName = files[0].name
-    // 		if(this.logoForReports.imageName.lastIndexOf('.') <= 0) {
-    // 			return
-    // 		}
-    // 		const fr = new FileReader ()
-    // 		fr.readAsDataURL(files[0])
-    // 		fr.addEventListener('load', () => {
-    // 			this.logoForReports.imageUrl = fr.result
-    // 			this.logoForReports.imageFile = files[0] // this is an image file that can be sent to server...
-    // 		})
-    // 	} else {
-    // 		this.logoForReports.imageName = ''
-    // 		this.logoForReports.imageFile = ''
-    // 		this.logoForReports.imageUrl = ''
-    // 	}
-    // },
-    // onLogoForSitePicked (e) {
-    // 	const files = e.target.files
-    // 	if(files[0] !== undefined) {
-    //         console.log('site')
-    // 		this.imageName = files[0].name
-    // 		if(this.imageName.lastIndexOf('.') <= 0) {
-    // 			return
-    // 		}
-    // 		const fr = new FileReader ()
-    // 		fr.readAsDataURL(files[0])
-    // 		fr.addEventListener('load', () => {
-    // 			this.imageUrl = fr.result
-    // 			this.imageFile = files[0] // this is an image file that can be sent to server...
-    // 		})
-    // 	} else {
-    // 		this.imageName = ''
-    // 		this.imageFile = ''
-    // 		this.imageUrl = ''
-    // 	}
-    // },
-    // pickFile () {
-    //     this.$refs.image.click()
-    // },
-    // pickFileForSite() {
-    //     this.$refs.image.click()
-    // }
   },
   computed: {
     ...mapState("user", {

@@ -6,7 +6,7 @@ let authService = new AuthService();
 Vue.use(Router);
 
 // Default Layout
-let Layout = () => import("../layouts/VuetifyLayout.vue");
+// let Layout = () => import("../layouts/VuetifyLayout.vue");
 // About
 let Home = () => import("../views/Home.vue");
 // Login Component
@@ -15,14 +15,8 @@ let Login = () => import("../views/user/Login.vue");
 let CompanyInfo = () =>
   import("../views/setup/standard/general-setup/company-info/CompanyInfo.vue");
 let companyInfoRoute = {
-  path: "/",
-  component: Layout,
-  children: [
-    {
-      path: "company-info",
-      component: CompanyInfo
-    }
-  ]
+  path: "/company-info",
+  component: CompanyInfo
 };
 // End Company info
 
@@ -33,14 +27,8 @@ const Citizenship = resolve =>
   ], resolve);
 //let Citizenship = () => import("../views/setup/standard/personal-information/citizenship/Citizenship.vue");
 let citizenshipRoute = {
-  path: "/",
-  component: Layout,
-  children: [
-    {
-      path: "citizenship",
-      component: Citizenship
-    }
-  ]
+  path: "/citizenship",
+  component: Citizenship
 };
 // End Citizenship
 
@@ -50,14 +38,8 @@ let Religion = resolve =>
     "../views/setup/standard/personal-information/religion/Religion.vue"
   ], resolve);
 let religionRoute = {
-  path: "/",
-  component: Layout,
-  children: [
-    {
-      path: "religion",
-      component: Religion
-    }
-  ]
+  path: "/religion",
+  component: Religion
 };
 // End Religion
 import redirectionRoute from "./redirectionRoute";
@@ -113,14 +95,7 @@ const router = new Router({
   routes: [
     {
       path: "/",
-      component: Layout,
-      children: [
-        {
-          component: Home,
-          name: "Home",
-          path: ""
-        }
-      ]
+      component: Home
     },
     {
       path: "/login",

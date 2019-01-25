@@ -1,7 +1,11 @@
-let Layout = () => import("../layouts/VuetifyLayout.vue");
+// let Layout = () => import("../layouts/VuetifyLayout.vue");
 
 // let School = () =>
 //     import("../views/setup/recruitment/screening-type/ScreenType.vue")
+let ScreenDetailsMain = resolve =>
+  require([
+    "../views/setup/recruitment/screening-details/ScreenDetailsMain.vue"
+  ], resolve);
 let ScreenDetails = resolve =>
   require([
     "../views/setup/recruitment/screening-details/ScreeningDetails.vue"
@@ -11,15 +15,15 @@ let ScreenDetailsSub = resolve =>
     "../views/setup/recruitment/screening-details/ScreenDetailsSub.vue"
   ], resolve);
 export default {
-  path: "/",
-  component: Layout,
+  path: "/screen-details",
+  component: ScreenDetailsMain,
   children: [
     {
-      path: "screen-details",
-      component: ScreenDetails,
+      path: "",
+      component: ScreenDetails
     },
     {
-      path: "screen-details/fill-up/:code/:id",
+      path: "fill-up/:code/:id",
       component: ScreenDetailsSub
     }
   ]

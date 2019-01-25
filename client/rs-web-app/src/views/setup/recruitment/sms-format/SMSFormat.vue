@@ -1,5 +1,5 @@
 <template>
-    <vuetify-layout-default>
+    <div>
         <v-container>
             <h1>{{title}}</h1>
         </v-container>
@@ -10,7 +10,7 @@
             :value="true"
             fixed
             shift
-            dark>
+            app>
             <v-btn dark flat value="hired" 
                 @click.prevent="$router.push('/sms-format')">
                 <span>Hired</span>
@@ -30,7 +30,7 @@
             </v-btn>
 
         </v-bottom-nav>
-    </vuetify-layout-default>
+    </div>
 </template>
 <script>
 import VuetifyLayoutDefault from "@/layouts/VuetifyLayoutDefault";

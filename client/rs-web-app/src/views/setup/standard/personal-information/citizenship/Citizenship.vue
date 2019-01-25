@@ -147,20 +147,15 @@ export default {
         .post(this.apiEndpoint, this.cit)
         .then(response => {
           this.isSaving = false;
-          let { message, hasError } = response.data;
-
           // Toast custom message
-          if (hasError) {
-            toast.error(message);
-          } else {
-            toast.success(message);
-          }
+          toast.show(response.data);
           // Update List
           this.getAllCitizenship();
           this.cit = {};
         })
-        .catch(err => {
+        .catch(({response}) => {
           this.isSaving = false;
+          toast.show(response.data);
         });
     },
     edit(item) {
@@ -175,19 +170,14 @@ export default {
           this.isUpdating = false;
           this.onEdit = false;
 
-          let { message, hasError } = response.data;
-
-          if (hasError) {
-            toast.error(message);
-          } else {
-            toast.success(message);
-          }
+          toast.show(response.data);
 
           this.getAllCitizenship();
 
           this.cit = {};
         })
-        .catch(err => {
+        .catch(({response}) => {
+          toast.show(response.data);
           this.isUpdating = false;
         });
     },
@@ -201,19 +191,13 @@ export default {
         .delete(`${this.apiEndpoint}/${this.selectedCit.citiCode}`)
         .then(response => {
           this.getAllCitizenship();
-
-          let { message, hasError } = response.data;
-
-          if (hasError) {
-            toast.error(message);
-          } else {
-            toast.success(message);
-          }
+          toast.show(response.data);
 
           this.isDeleting = false;
           this.deleteDialog = false;
         })
-        .catch(err => {
+        .catch(({response}) => {
+          toast.show(response.data);
           this.isDeleting = false;
         });
     },
@@ -226,12 +210,6 @@ export default {
 
       this.getAllCitizenship();
     }
-    // getCompanyCode() {
-    //     var user = getUserDetails();
-    //     var decodedToken = this.$jwt.decode(user.token);
-
-    //     this.companyCode = decodedToken.CompanyCode;
-    // }
   },
   computed: {
     ...mapState("citizenship", {

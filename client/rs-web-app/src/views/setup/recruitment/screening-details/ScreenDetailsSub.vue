@@ -122,8 +122,8 @@ export default {
                     this.getScreenDetailSub(this.screenDetail.id);
                     
                 })
-                .catch(err => {
-                    
+                .catch(({response}) => {
+                    toast.show(response.data);
                 })
         },
         getScreenDetailSub(screenDetailId) {
@@ -132,8 +132,8 @@ export default {
                     this.screenDetailsSubItem = response.data;
                     this.defaultCount = response.data.length + 1;
                 })
-                .catch(err => {
-
+                .catch((response) => {
+                    toast.show(response.data);
                 });
         },
         addRow() {
@@ -166,12 +166,10 @@ export default {
                 screenDetailsSubs: this.screenDetailsSubItem
             })
             .then(({data}) =>{
-                let { message, hasError } = data;
-                toast.show(message, hasError);
+                toast.show(data);
             })
             .catch(({response}) =>{
-                let { message, hasError } = response.data;
-                toast.show(message, hasError);
+                toast.show(response.data);
             })
         }
     },

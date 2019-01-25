@@ -35,13 +35,16 @@
                     <v-btn
                         color="success"
                         @click.prevent="save"
-                        v-if="!onEdit && valid">
+                        :loading="isSaving"
+                        v-if="!onEdit"
+                        :disabled="!valid">
                         Save
                     </v-btn>
                     <div v-if="onEdit && valid">
                         <v-btn
                             color="success"
-                            @click.prevent="update">
+                            @click.prevent="update"
+                            :loading="isUpdating">
                             Update
                         </v-btn>
                         <v-btn
@@ -205,19 +208,12 @@ export default {
         .post(this.apiEndpoint, this.designationFile)
         .then(response => {
           this.isSaving = false;
-
-          let { message, hasError } = response.data;
-
-          // Toast custom message
-          if (hasError) {
-            toast.error(message);
-          } else {
-            toast.success(message);
-          }
+          toast.show(response.data);
           // Update List
           this.cancel();
         })
-        .catch(err => {
+        .catch(({response}) => {
+          toast.show(response.data);
           this.isSaving = false;
         });
     },
@@ -232,18 +228,11 @@ export default {
         .then(response => {
           this.isUpdating = false;
           this.onEdit = false;
-
-          let { message, hasError } = response.data;
-
-          // Toast custom message
-          if (hasError) {
-            toast.error(message);
-          } else {
-            toast.success(message);
-          }
+          toast.show(response.data);
           this.cancel();
         })
-        .catch(err => {
+        .catch(({response}) => {
+          toast.show(response.data);
           this.isUpdating = false;
         });
     },
@@ -256,21 +245,14 @@ export default {
       this.$axios
         .delete(`${this.apiEndpoint}/${this.selectedDesignationFile.id}`)
         .then(response => {
-          let { message, hasError } = response.data;
-
-          // Toast custom message
-          if (hasError) {
-            toast.error(message);
-          } else {
-            toast.success(message);
-          }
-
+          toast.show(response.data);
           this.cancel();
 
           this.isDeleting = false;
           this.deleteDialog = false;
         })
-        .catch(err => {
+        .catch(({response}) => {
+          toast.show(response.data);
           this.isDeleting = false;
         });
     },

@@ -10,19 +10,11 @@
                     <v-toolbar dark color="primary">
                         <v-toolbar-title>Login</v-toolbar-title>
                         <v-spacer></v-spacer>
-                        <!-- <v-tooltip bottom>
-                        <v-btn
-                            icon
-                            large
-                            slot="activator"
-                        > -->
                         <v-icon>vpn_key</v-icon>
-                        <!-- </v-btn>
-                        </v-tooltip> -->
                     </v-toolbar>
                     <v-card-text>
                         <v-form>
-                            <v-text-field prepend-icon="email" name="login" label="Email" type="text" v-model="user.username"></v-text-field>
+                            <v-text-field prepend-icon="person" name="login" label="Username" type="text" v-model="user.username"></v-text-field>
                             <v-text-field prepend-icon="lock" name="password" label="Password" id="password" type="password" v-model="user.password"></v-text-field>
                         </v-form>
                     </v-card-text>
@@ -80,7 +72,8 @@ export default {
         .post(`${this.apiEndpoint}/authenticate`, this.user)
         .then(response => {
           localStorage.setItem("_u", JSON.stringify(response.data));
-          this.$router.push("/");
+        //   this.$router.push("/");
+            window.location.href = "/"
         })
         .catch(err => {
           toast.show(err.response);

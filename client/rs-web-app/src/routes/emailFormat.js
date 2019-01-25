@@ -1,4 +1,4 @@
-let Layout = () => import("../layouts/VuetifyLayout.vue");
+// let Layout = () => import("../layouts/VuetifyLayout.vue");
 
 let EmailFormat = () =>
   import("../views/setup/recruitment/email-format/EmailFormat.vue");

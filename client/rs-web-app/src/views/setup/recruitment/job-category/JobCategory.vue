@@ -258,14 +258,12 @@ export default {
         })
         .then(({ data }) => {
           this.isSaving = false;
-          let { message, hasError } = data;
           this.cancel();
-          toast.show(message, hasError);
+          toast.show(data);
         })
         .catch(({ response }) => {
           this.isSaving = false;
-          let { message, hasError } = response.data;
-          toast.show(message, hasError);
+          toast.show(response.data);
         });
     },
     edit(item) {
@@ -289,14 +287,12 @@ export default {
         })
         .then(({ data }) => {
           this.isUpdating = false;
-          let { message, hasError } = data;
           this.cancel();
-          toast.show(message, hasError);
+          toast.show(data);
         })
         .catch(({ response }) => {
           this.isUpdating = false;
-          let { message, hasError } = response.data;
-          toast.show(message, hasError);
+          toast.show(response.data);
         });
     },
     deleteInfo(item) {
@@ -308,16 +304,14 @@ export default {
       this.$axios
         .delete(`${this.apiEndpoint}/${this.selectedJobCat.jobCatCode}`)
         .then(response => {
-          let { message, hasError } = response.data;
-
-          // Toast custom message
-          toast.show(message, hasError);
+          toast.show(response.data);
 
           this.cancel();
           this.isDeleting = false;
           this.deleteDialog = false;
         })
-        .catch(err => {
+        .catch(({response}) => {
+          toast.show(response.data);
           this.isDeleting = false;
         });
     },

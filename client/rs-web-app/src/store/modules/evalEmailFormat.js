@@ -11,12 +11,10 @@ const mutations = {
     axios
       .post(API_ENDPOINT, payload)
       .then(({ data }) => {
-        let { message, hasError } = data;
-        toast.show(message, hasError);
+        toast.show(data);
       })
       .catch(({ response }) => {
-        let { message, hasError } = response.data;
-        toast.show(message, hasError);
+        toast.show(response.data);
       });
   }
 };

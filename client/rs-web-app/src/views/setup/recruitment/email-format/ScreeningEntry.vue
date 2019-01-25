@@ -102,8 +102,7 @@ export default {
           };
         })
         .catch(({ response }) => {
-          let { message, hasError } = response.data;
-          toast.show(message, hasError);
+         toast.show(response.data);
         });
     }
   },

@@ -23,6 +23,14 @@ class Toast {
       this.success(msg);
     }
   }
+  show(data) {
+    let { message, hasError } = data;
+    if (hasError) {
+      this.error(message);
+    } else {
+      this.success(message);
+    }
+  }
 
   // info(msg) {
   //     return vue.$toast.open({

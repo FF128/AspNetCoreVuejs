@@ -1,126 +1,21 @@
 <template>
   <div>
-    <v-app>
+    <v-app id="inspire">
       <v-navigation-drawer
+        class="green lighten-5"
         v-model="drawer"
-        :clipped="clipped"
+        fixed
         app>
-        <v-list dense>
-          <v-list-tile @click="$router.push('/')">
-            <v-list-tile-action>
-              <v-icon>home</v-icon>
-            </v-list-tile-action>
-            <v-list-tile-title>Home</v-list-tile-title>
-          </v-list-tile>
-          <v-list-tile @click="$router.push('/citizenship')">
-            <v-list-tile-action>
-              <v-icon>home</v-icon>
-            </v-list-tile-action>
-            <v-list-tile-title>Citizenship</v-list-tile-title>
-          </v-list-tile>
-          <v-list-tile @click="$router.push('/designation-duties-requirements')">
-            <v-list-tile-action>
-              <v-icon>home</v-icon>
-            </v-list-tile-action>
-            <v-list-tile-title>Designation</v-list-tile-title>
-          </v-list-tile>
-          <v-list-group
-            prepend-icon="account_circle"
-            value="true"
-          >
-            <v-list-tile slot="activator">
-              <v-list-tile-title>Setup</v-list-tile-title>
-            </v-list-tile>
-
-            <v-list-group
-              no-action
-              sub-group
-              value="true"
-            >
-              <v-list-tile slot="activator">
-                  <v-list-tile-title>Standard</v-list-tile-title>
-              </v-list-tile>
-              <v-menu open-on-hover offset-x>
-                  <v-list-tile slot="activator">
-                      <v-list-tile-title>General Setup</v-list-tile-title>
-                  </v-list-tile>
-                  <v-list>
-                      <v-list-tile
-                      v-for="(item, index) in generalSetupItems"
-                      :key="index"
-                      @click=""
-                      >
-                      <v-list-tile-title>{{ item.title }}</v-list-tile-title>
-                      </v-list-tile>
-                  </v-list>
-              </v-menu>
-              <v-menu open-on-hover offset-x>
-                  <v-list-tile slot="activator">
-                      <v-list-tile-title>Personal Information</v-list-tile-title>
-                  </v-list-tile>
-                  <v-list>
-                      <v-list-tile
-                      v-for="(item, index) in personalInformationItems"
-                      :key="index"
-                      @click=""
-                      >
-                      <v-list-tile-title>{{ item.title }}</v-list-tile-title>
-                      </v-list-tile>
-                  </v-list>
-              </v-menu>
-              <v-menu open-on-hover offset-x>
-                  <v-list-tile slot="activator">
-                      <v-list-tile-title>Employment Information</v-list-tile-title>
-                  </v-list-tile>
-                  <v-list>
-                      <!-- <v-list-tile
-                      v-for="(item, index) in employmentInformationItems"
-                      :key="index"
-                      @click=""
-                      >
-                          <v-list-tile-title>{{ item.title }}</v-list-tile-title>
-                      </v-list-tile> --> 
-                      <v-menu open-on-hover offset-x>
-                          <v-list-tile slot="activator">
-                              <v-list-tile-title>Employee Level</v-list-tile-title>
-                          </v-list-tile>
-                          <v-list>
-                              <v-list-tile>
-                                  <v-list-tile-title>Employee Status File</v-list-tile-title>
-                              </v-list-tile>
-                          </v-list>
-                      </v-menu>
-                  </v-list>
-              </v-menu>
-            </v-list-group>
-
-            <v-list-group
-              sub-group
-              no-action
-            >
-              <v-list-tile slot="activator">
-                <v-list-tile-title>Actions</v-list-tile-title>
-              </v-list-tile>
-
-              <v-list-tile
-                v-for="(crud, i) in cruds"
-                :key="i"
-                @click=""
-              >
-                <v-list-tile-title v-text="crud[0]"></v-list-tile-title>
-                <v-list-tile-action>
-                  <v-icon v-text="crud[1]"></v-icon>
-                </v-list-tile-action>
-              </v-list-tile>
-            </v-list-group>
-          </v-list-group>
-        </v-list>
+        <!-- <img src="@/assets/banner.png" class="img-responsive"/> -->
+        
+        <standard-side-menu v-if="activeRoute == 'STD'"></standard-side-menu>
+        <recruitment-side-menu v-if="activeRoute == 'REC'"></recruitment-side-menu>
       </v-navigation-drawer>
       <!-- Toolbar -->
       <v-toolbar 
         dark 
         color="primary"
-        :clipped-left="true"
+        fixed
         app
         >
         <v-toolbar-side-icon @click.stop="drawer = !drawer">
@@ -130,42 +25,40 @@
         <v-toolbar-title class="white--text"></v-toolbar-title>
 
         <v-spacer></v-spacer>
-        <!-- <v-toolbar-items>
-            <v-btn flat @click.prevent="logout">
-                Logout
-            </v-btn>
-        </v-toolbar-items> -->
-        <!-- <v-btn icon>
-          <v-icon>search</v-icon>
-        </v-btn>
-
-        <v-btn icon>
-          <v-icon>apps</v-icon>
-        </v-btn>
-
-        <v-btn icon>
-          <v-icon>refresh</v-icon>
-        </v-btn> -->
-        <v-toolbar-items>
-            <v-btn flat @click.prevent="logout">
-                Setup
-            </v-btn>
-        </v-toolbar-items>
-        <v-toolbar-items>
-            <v-btn flat @click.prevent="logout">
-                Transactions
-            </v-btn>
-        </v-toolbar-items>
-        <v-toolbar-items>
-            <v-btn flat @click.prevent="logout">
-                Reports
-            </v-btn>
-        </v-toolbar-items>
-        <v-toolbar-items>
-            <v-btn flat @click.prevent="logout">
-                Admin
-            </v-btn>
-        </v-toolbar-items>
+    
+          <v-toolbar-items class="hidden-sm-and-down">
+            <v-menu bottom offset-y
+                v-for="(item,key) in menu"
+                v-bind:key="key">
+              <v-btn
+                flat
+                slot="activator"
+              >
+                {{ item.title }}
+                <v-icon>{{item.icon}}</v-icon>
+              </v-btn>
+              <v-list v-if="item.submenu">
+                <v-list-tile
+                  @click="changeRoute(sub.routeName)"
+                  v-for="(sub,key) in item.submenu"
+                  :key="key"
+                >
+                  <v-list-tile-title>{{sub.title}}</v-list-tile-title>
+                </v-list-tile>
+              </v-list>
+            </v-menu>
+          </v-toolbar-items>
+          <v-menu class="hidden-md-and-up">
+            <v-toolbar-side-icon slot="activator"><v-icon>expand_more</v-icon></v-toolbar-side-icon>
+            <v-list>
+              <v-list-tile v-for="(item, key) in menu" :key="key">
+                <v-list-tile-content>
+                  <v-list-tile-title>{{ item.title }}</v-list-tile-title>
+                </v-list-tile-content>
+              </v-list-tile>   
+            </v-list>
+          </v-menu>
+          <!-- Logout Settings -->
           <v-menu bottom offset-y>
             <v-btn
               slot="activator"
@@ -196,13 +89,25 @@
         <img src="@/assets/banner.png" class="img-responsive"/>
         <slot/>
       </v-content>
-      <v-footer app>© 2019 - 128 Tech Consulting Inc.</v-footer>
+      <v-footer app inset>© 2019 - 128 Tech Consulting Inc.</v-footer>
     </v-app>
   </div>
   
 </template>
 <script>
+import { mapState } from 'vuex';
+import { mapActions } from 'vuex';
+let StandardSideMenu = resolve =>
+  require(["@/layouts/StandardSideMenu"], resolve);
+
+let RecruitmentSideMenu = resolve =>
+  require(["@/layouts/RecruitmentSideMenu"], resolve);
+  
 export default {
+  components: {
+    StandardSideMenu,
+    RecruitmentSideMenu
+  },
   data() {
     return {
       title: "Recruitment System",
@@ -225,14 +130,42 @@ export default {
       employmentInformationItems: [
         { title: "Employee Level" },
         { title: "Organizational Level" }
+      ],
+       menu: [
+        { 
+          icon: 'arrow_drop_down',
+          title: 'Setup', 
+          submenu: [
+            {
+              title: 'Standard',
+              routeName: 'STD'
+            },
+            {
+              title: 'Recruitment',
+              routeName: 'REC'
+            }
+          ] 
+        },
+        { icon: '', title: 'Transactions' },
+        { icon: '', title: 'Reports' },
+        { icon: '', title: 'Admin'  }
       ]
     };
   },
   methods: {
+    ...mapActions('routing', [
+      'changeRoute'
+    ]),
     logout() {
       localStorage.removeItem("_u");
-      this.$router.push("/login");
+      // this.$router.push("/login");
+      this.$router.go("/login");
     }
+  },
+  computed: {
+    ...mapState('routing', {
+      activeRoute: state => state.activeRoute
+    })
   }
 };
 </script>

@@ -1,4 +1,4 @@
-let Layout = () => import("../layouts/VuetifyLayout.vue");
+// let Layout = () => import("../layouts/VuetifyLayout.vue");
 
 // let School = () =>
 //     import("../views/setup/recruitment/screening-type/ScreenType.vue")
@@ -7,12 +7,6 @@ let ScreenType = resolve =>
     "../views/setup/recruitment/screening-type/ScreenType.vue"
   ], resolve);
 export default {
-  path: "/",
-  component: Layout,
-  children: [
-    {
-      path: "screen-type",
-      component: ScreenType
-    }
-  ]
+  path: "/screen-type",
+  component: ScreenType
 };

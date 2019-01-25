@@ -1,5 +1,5 @@
 const state = {
-    activeRoute: ''
+    activeRoute: 'STD'
 }
 
 const getters = {

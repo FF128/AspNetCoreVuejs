@@ -145,14 +145,12 @@ export default {
         .post(this.apiEndpoint, this.ratings)
         .then(response => {
           this.isSaving = false;
-          let { message, hasError } = response.data;
-
-          // Toast custom message
-          toast.show(message, hasError);
+          toast.show(response.data);
           // Update List
           this.cancel();
         })
-        .catch(err => {
+        .catch(({response}) => {
+          toast.show(response.data);
           this.isSaving = false;
         });
     },
@@ -166,13 +164,11 @@ export default {
         .put(this.apiEndpoint, this.ratings)
         .then(response => {
           this.isUpdating = false;
-          let { message, hasError } = response.data;
-
-          // Toast custom message
-          toast.show(message, hasError);
+          toast.show(response.data);
           this.cancel();
         })
-        .catch(err => {
+        .catch(({response}) => {
+          toast.show(response.data);
           this.isUpdating = false;
         });
     },

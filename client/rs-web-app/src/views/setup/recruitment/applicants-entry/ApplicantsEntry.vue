@@ -34,7 +34,12 @@ import TextCertificate from "./TextCertificate";
 import EssayQuestions from "./EssayQuestions";
 import AttachmentsRequired from "./AttachmentsRequired";
 import SourceInfo from "./SourceInfo";
+import { mapActions } from 'vuex';
 export default {
+  metaInfo: {
+    title: 'Recruitment System', // set a title
+    titleTemplate: `Applicants Entry Setup ←  %s`, // title is now "My Example App - Yay!"
+  },
   components: {
     GeneralInfo,
     TextCertificate,
@@ -49,6 +54,14 @@ export default {
       genInfo: true,
       panel: [true, false, false, false, false]
     };
+  },
+  methods: {
+      ...mapActions('routing', [
+          'changeRoute'
+      ])
+  },
+  created() {
+      this.changeRoute(this.$route.meta.module);
   }
 };
 </script>

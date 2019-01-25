@@ -267,14 +267,12 @@ export default {
         })
         .then(({ data }) => {
           this.isSaving = false;
-          let { message, hasError } = data;
           this.cancel();
-          toast.show(message, hasError);
+          toast.show(data);
         })
         .catch(({ response }) => {
           this.isSaving = false;
-          let { message, hasError } = response.data;
-          toast.show(message, hasError);
+          toast.show(response.data);
         });
     },
     edit(item) {
@@ -294,9 +292,8 @@ export default {
         })
         .then(({ data }) => {
           this.isUpdating = false;
-          let { message, hasError } = data;
           this.cancel();
-          toast.show(message, hasError);
+          toast.show(data);
         })
         .catch(({ response }) => {
           this.isUpdating = false;
@@ -313,13 +310,11 @@ export default {
         .delete(`${this.apiEndpoint}/${this.selectedData.designationCode}`)
         .then(({ data }) => {
           this.deleteDialog = false;
-          let { message, hasError } = data;
           this.getAllDutiesReqData();
-          toast.show(message, hasError);
+          toast.show(data);
         })
         .catch(({ response }) => {
-          let { message, hasError } = response.data;
-          toast.show(message, hasError);
+          toast.show(response.data);
 
           this.deleteDialog = false;
         });

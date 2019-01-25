@@ -1,5 +1,7 @@
 import axios from "axios";
+import Toast from "@/project-modules/toast"
 
+let toast = new Toast();
 const API_ENDPOINT = "api/desig-duties-req";
 
 const state = {
@@ -18,10 +20,11 @@ const mutations = {
         state.dutiesReqData = response.data;
         state.loading = false;
       })
-      .catch(err => {
+      .catch(({response}) => {
         // console.log(err.response.status)
         // if(err.response.status === 401){
         //     alert("Unauthorized")
+        toast.show(response.data);
         // }
         state.loading = false;
       });

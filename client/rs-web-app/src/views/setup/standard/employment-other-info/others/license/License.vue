@@ -145,14 +145,11 @@ export default {
         .post(this.apiEndpoint, this.license)
         .then(response => {
           this.isSaving = false;
-          let { message, hasError } = response.data;
-
-          // Toast custom message
-          toast.show(message, hasError);
-          // Update List
+          toast.show(response.data);
           this.cancel();
         })
-        .catch(err => {
+        .catch(({response}) => {
+          toast.show(response.data);
           this.isSaving = false;
         });
     },
@@ -166,13 +163,11 @@ export default {
         .put(this.apiEndpoint, this.license)
         .then(response => {
           this.isUpdating = false;
-          let { message, hasError } = response.data;
-
-          // Toast custom message
-          toast.show(message, hasError);
+          toast.show(response.data);
           this.cancel();
         })
-        .catch(err => {
+        .catch(({response}) => {
+          toast.show(response.data);
           this.isUpdating = false;
         });
     },
@@ -185,16 +180,14 @@ export default {
       this.$axios
         .delete(`${this.apiEndpoint}/${this.selectedLic.id}`)
         .then(response => {
-          let { message, hasError } = response.data;
-
-          // Toast custom message
-          toast.show(message, hasError);
+          toast.show(response.data);
 
           this.cancel();
           this.isDeleting = false;
           this.deleteDialog = false;
         })
-        .catch(err => {
+        .catch(({response}) => {
+          toast.show(response.data); 
           this.isDeleting = false;
         });
     },

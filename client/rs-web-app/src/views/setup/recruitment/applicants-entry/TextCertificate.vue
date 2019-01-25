@@ -45,13 +45,10 @@ export default {
       this.$axios
         .post(`${this.apiEndpoint}`, { textCertification: this.text })
         .then(({ data }) => {
-          let { message, hasError } = data;
-          toast.show(message, hasError);
+          toast.show(data);
         })
         .catch(({ response }) => {
-          let { message, hasError } = response.data;
-
-          toast.show(message, hasError);
+          toast.show(response.data);
         });
     },
     getTextCertificate() {
@@ -61,8 +58,7 @@ export default {
           this.text = data.textCertification;
         })
         .catch(({ response }) => {
-          let { message, hasError } = response.data;
-          toast.show(message, hasError);
+          toast.show(response.data);
         });
     }
   },
