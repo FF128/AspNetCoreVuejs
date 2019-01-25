@@ -218,6 +218,7 @@ namespace WebAPI
             {
                 app.UseHsts();
             }
+            //app.UseMiddleware<StackifyMiddleware.RequestTracerMiddleware>();
 
             app.UseCors(options => options.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin());
             app.UseAuthentication();

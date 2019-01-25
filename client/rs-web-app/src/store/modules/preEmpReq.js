@@ -1,4 +1,6 @@
 import axios from "axios";
+import Toast from "@/project-modules/toast"
+let toast = new Toast();
 
 const API_ENDPOINT = "api/pre-emp-req";
 
@@ -18,11 +20,8 @@ const mutations = {
         state.preEmpReqData = response.data;
         state.loading = false;
       })
-      .catch(err => {
-        // console.log(err.response.status)
-        // if(err.response.status === 401){
-        //     alert("Unauthorized")
-        // }
+      .catch(({response}) => {
+        toast.show(response.data);
         state.loading = false;
       });
   }

@@ -7,7 +7,15 @@
         fixed
         app>
         <!-- <img src="@/assets/banner.png" class="img-responsive"/> -->
-        
+        <v-card color="green lighten-5" height="65">
+          <v-card-title primary-title>
+            <v-badge right>
+              <h2>Recruitment System</h2>
+            </v-badge>
+            
+            
+          </v-card-title>
+        </v-card>
         <standard-side-menu v-if="activeRoute == 'STD'"></standard-side-menu>
         <recruitment-side-menu v-if="activeRoute == 'REC'"></recruitment-side-menu>
       </v-navigation-drawer>
@@ -26,7 +34,7 @@
 
         <v-spacer></v-spacer>
     
-          <v-toolbar-items class="hidden-sm-and-down">
+        <v-toolbar-items class="hidden-sm-and-down">
             <v-menu bottom offset-y
                 v-for="(item,key) in menu"
                 v-bind:key="key">
@@ -48,12 +56,74 @@
               </v-list>
             </v-menu>
           </v-toolbar-items>
-          <v-menu class="hidden-md-and-up">
-            <v-toolbar-side-icon slot="activator"><v-icon>expand_more</v-icon></v-toolbar-side-icon>
+          
+          <v-menu class="hidden-md-and-up" bottom offset-y>
+            <v-toolbar-side-icon slot="activator">
+              <v-icon>settings</v-icon>
+            </v-toolbar-side-icon>
             <v-list>
-              <v-list-tile v-for="(item, key) in menu" :key="key">
+              <v-list-tile>
                 <v-list-tile-content>
-                  <v-list-tile-title>{{ item.title }}</v-list-tile-title>
+                  <v-list-tile-title>Standard</v-list-tile-title>
+                </v-list-tile-content>
+              </v-list-tile>
+              <v-list-tile>
+                <v-list-tile-content>
+                  <v-list-tile-title>Recruitment</v-list-tile-title>
+                </v-list-tile-content>
+              </v-list-tile>   
+            </v-list>
+          </v-menu>
+
+          <v-menu class="hidden-md-and-up" bottom offset-y>
+            <v-toolbar-side-icon slot="activator">
+              <v-icon>description</v-icon>
+            </v-toolbar-side-icon>
+            <v-list>
+              <v-list-tile>
+                <v-list-tile-content>
+                  <v-list-tile-title>Standard</v-list-tile-title>
+                </v-list-tile-content>
+              </v-list-tile>
+              <v-list-tile>
+                <v-list-tile-content>
+                  <v-list-tile-title>Recruitment</v-list-tile-title>
+                </v-list-tile-content>
+              </v-list-tile>   
+            </v-list>
+          </v-menu>
+
+          <v-menu class="hidden-md-and-up" bottom offset-y>
+            <v-toolbar-side-icon slot="activator">
+              <v-icon>dvr</v-icon>
+            </v-toolbar-side-icon>
+            <v-list>
+              <v-list-tile>
+                <v-list-tile-content>
+                  <v-list-tile-title>Standard</v-list-tile-title>
+                </v-list-tile-content>
+              </v-list-tile>
+              <v-list-tile>
+                <v-list-tile-content>
+                  <v-list-tile-title>Recruitment</v-list-tile-title>
+                </v-list-tile-content>
+              </v-list-tile>   
+            </v-list>
+          </v-menu>
+
+          <v-menu class="hidden-md-and-up" bottom offset-y>
+            <v-toolbar-side-icon slot="activator">
+              <v-icon>people</v-icon>
+            </v-toolbar-side-icon>
+            <v-list>
+              <v-list-tile>
+                <v-list-tile-content>
+                  <v-list-tile-title>Standard</v-list-tile-title>
+                </v-list-tile-content>
+              </v-list-tile>
+              <v-list-tile>
+                <v-list-tile-content>
+                  <v-list-tile-title>Recruitment</v-list-tile-title>
                 </v-list-tile-content>
               </v-list-tile>   
             </v-list>

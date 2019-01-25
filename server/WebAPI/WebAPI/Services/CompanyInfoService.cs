@@ -16,15 +16,18 @@ namespace WebAPI.Services
     public class CompanyInfoService : ICompanyInfoService
     {
         private readonly ICompanyInformationRepository repo;
+        private readonly IAuditTrailService<CompanyInformation> auditTrailService;
         private readonly IHttpContextAccessor httpContextAccessor;
         private readonly IMapper mapper;
         public CompanyInfoService(ICompanyInformationRepository repo,
             IMapper mapper,
-            IHttpContextAccessor httpContextAccessor)
+            IHttpContextAccessor httpContextAccessor,
+            IAuditTrailService<CompanyInformation> auditTrailService)
         {
             this.repo = repo;
             this.mapper = mapper;
             this.httpContextAccessor = httpContextAccessor;
+            this.auditTrailService = auditTrailService;
         }
         private byte[] ConvertFileToByte(IFormFile file)
         {
@@ -64,7 +67,7 @@ namespace WebAPI.Services
                 {
                     var compDto = mapper.Map<CompanyInfoDto>(info);
                     await repo.Insert(compDto);
-
+                    await auditTrailService.Save(new CompanyInformation(), info, "ADD");
                     return CustomMessageHandler.RecordAdded();
                 }
             }else
@@ -91,6 +94,9 @@ namespace WebAPI.Services
                     var compDto = mapper.Map<CompanyInfoDto>(info);
                     await repo.Update(compDto);
 
+                    var comp = mapper.Map<CompanyInformation>(companyInfo);
+
+                    await auditTrailService.Save(comp, info, "UPDATE");
                     return CustomMessageHandler.RecordUpdated();
                 }
             }
