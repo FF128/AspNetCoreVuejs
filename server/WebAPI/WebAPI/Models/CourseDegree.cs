@@ -12,5 +12,6 @@ namespace WebAPI.Models
         public int Id { get; set; }
         public string CourseDegreeCode { get; set; }
         public string CourseDegreeDesc { get; set; }
+        public string CompanyCode { get; set; }
     }
 }

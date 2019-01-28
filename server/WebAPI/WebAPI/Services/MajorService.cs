@@ -13,11 +13,14 @@ namespace WebAPI.Services
     {
         private readonly IMajorRepository repo;
         private readonly IAuditTrailService<Major> auditTrailService;
+        private readonly ICompanyInformationRepository compInfoRepo;
         public MajorService(IMajorRepository repo,
-             IAuditTrailService<Major> auditTrailService)
+             IAuditTrailService<Major> auditTrailService,
+             ICompanyInformationRepository compInfoRepo)
         {
             this.repo = repo;
             this.auditTrailService = auditTrailService;
+            this.compInfoRepo = compInfoRepo;
         }
 
         public async Task<CustomMessage> Delete(int id)
@@ -43,6 +46,8 @@ namespace WebAPI.Services
 
             if ((await repo.GetByCode(maj.MajorCode)) == null)
             {
+                maj.CompanyCode = compInfoRepo.GetCompanyCode();
+
                 await repo.Insert(maj);
 
                 await auditTrailService.Save(new Major(), maj, "ADD");

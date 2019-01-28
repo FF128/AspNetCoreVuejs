@@ -13,5 +13,6 @@ namespace WebAPI.Models
         public string RegionCode { get; set; }
         public string RegionDesc { get; set; }
         public decimal MinimumWage { get; set; }
+        public string CompanyCode { get; set; }
     }
 }

@@ -12,5 +12,6 @@ namespace WebAPI.Models
         public int Id { get; set; }
         public string LicenseCode { get; set; }
         public string LicenseDesc { get; set; }
+        public string CompanyCode { get; set; }
     }
 }

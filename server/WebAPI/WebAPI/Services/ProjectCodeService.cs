@@ -13,11 +13,14 @@ namespace WebAPI.Services
     {
         private readonly IProjectCodeRepository repo;
         private readonly IAuditTrailService<ProjectCodeModel> auditTrailService;
+        private readonly ICompanyInformationRepository compInfoRepo;
         public ProjectCodeService(IProjectCodeRepository repo,
-             IAuditTrailService<ProjectCodeModel> auditTrailService)
+             IAuditTrailService<ProjectCodeModel> auditTrailService,
+             ICompanyInformationRepository compInfoRepo)
         {
             this.repo = repo;
             this.auditTrailService = auditTrailService;
+            this.compInfoRepo = compInfoRepo;
         }
 
         public async Task<CustomMessage> Delete(int id)
@@ -43,6 +46,7 @@ namespace WebAPI.Services
 
             if ((await repo.GetByCode(proj.ProjectCode)) == null)
             {
+                proj.CompanyCode = compInfoRepo.GetCompanyCode();
                 await repo.Insert(proj);
 
                 await auditTrailService.Save(new ProjectCodeModel(), proj, "ADD");

@@ -62,12 +62,12 @@
               <v-icon>settings</v-icon>
             </v-toolbar-side-icon>
             <v-list>
-              <v-list-tile>
+              <v-list-tile @click="changeRoute('STD')">
                 <v-list-tile-content>
                   <v-list-tile-title>Standard</v-list-tile-title>
                 </v-list-tile-content>
               </v-list-tile>
-              <v-list-tile>
+              <v-list-tile @click="changeRoute('REC')">
                 <v-list-tile-content>
                   <v-list-tile-title>Recruitment</v-list-tile-title>
                 </v-list-tile-content>
@@ -75,59 +75,33 @@
             </v-list>
           </v-menu>
 
-          <v-menu class="hidden-md-and-up" bottom offset-y>
-            <v-toolbar-side-icon slot="activator">
-              <v-icon>description</v-icon>
+          <v-toolbar-items class="hidden-md-and-up">
+            <v-toolbar-side-icon>
+              <v-tooltip bottom>
+                <v-icon slot="activator">description</v-icon>
+                <span>Transactions</span>
+              </v-tooltip>
             </v-toolbar-side-icon>
-            <v-list>
-              <v-list-tile>
-                <v-list-tile-content>
-                  <v-list-tile-title>Standard</v-list-tile-title>
-                </v-list-tile-content>
-              </v-list-tile>
-              <v-list-tile>
-                <v-list-tile-content>
-                  <v-list-tile-title>Recruitment</v-list-tile-title>
-                </v-list-tile-content>
-              </v-list-tile>   
-            </v-list>
-          </v-menu>
+          </v-toolbar-items>
+            
+          <v-toolbar-items class="hidden-md-and-up">
+            <v-toolbar-side-icon>
+              <v-tooltip bottom>
+                <v-icon slot="activator">dvr</v-icon>
+                <span>Reports</span>
+              </v-tooltip>
+            </v-toolbar-side-icon>
+          </v-toolbar-items>
 
-          <v-menu class="hidden-md-and-up" bottom offset-y>
-            <v-toolbar-side-icon slot="activator">
-              <v-icon>dvr</v-icon>
+          <v-toolbar-items class="hidden-md-and-up">
+            <v-toolbar-side-icon>
+              <v-tooltip bottom>
+                <v-icon slot="activator">people</v-icon>
+                <span>Admin</span>
+              </v-tooltip>
             </v-toolbar-side-icon>
-            <v-list>
-              <v-list-tile>
-                <v-list-tile-content>
-                  <v-list-tile-title>Standard</v-list-tile-title>
-                </v-list-tile-content>
-              </v-list-tile>
-              <v-list-tile>
-                <v-list-tile-content>
-                  <v-list-tile-title>Recruitment</v-list-tile-title>
-                </v-list-tile-content>
-              </v-list-tile>   
-            </v-list>
-          </v-menu>
+          </v-toolbar-items>
 
-          <v-menu class="hidden-md-and-up" bottom offset-y>
-            <v-toolbar-side-icon slot="activator">
-              <v-icon>people</v-icon>
-            </v-toolbar-side-icon>
-            <v-list>
-              <v-list-tile>
-                <v-list-tile-content>
-                  <v-list-tile-title>Standard</v-list-tile-title>
-                </v-list-tile-content>
-              </v-list-tile>
-              <v-list-tile>
-                <v-list-tile-content>
-                  <v-list-tile-title>Recruitment</v-list-tile-title>
-                </v-list-tile-content>
-              </v-list-tile>   
-            </v-list>
-          </v-menu>
           <!-- Logout Settings -->
           <v-menu bottom offset-y>
             <v-btn

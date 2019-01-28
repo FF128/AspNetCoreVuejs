@@ -6,9 +6,11 @@
     :timeout="timeout"
     :color="color"
     v-model="active"
-
+    :multi-line="true"
     :right="true"
-    :top="true"
+    :top="false"
+    :bottom="true"
+    dismissable
     class="application"
     @click="dismiss">
 
@@ -34,7 +36,7 @@ export default {
       text: "",
       icon: "",
       color: "info",
-      timeout: 3000,
+      timeout: 6000,
       dismissible: true
     };
   },

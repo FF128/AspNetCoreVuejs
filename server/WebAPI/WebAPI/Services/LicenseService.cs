@@ -13,11 +13,14 @@ namespace WebAPI.Services
     {
         private readonly ILicenseRepository repo;
         private readonly IAuditTrailService<License> auditTrailService;
+        private readonly ICompanyInformationRepository compInfoRepo;
         public LicenseService(ILicenseRepository repo,
-             IAuditTrailService<License> auditTrailService)
+             IAuditTrailService<License> auditTrailService,
+             ICompanyInformationRepository compInfoRepo)
         {
             this.repo = repo;
             this.auditTrailService = auditTrailService;
+            this.compInfoRepo = compInfoRepo;
         }
 
         public async Task<CustomMessage> Delete(int id)
@@ -43,6 +46,7 @@ namespace WebAPI.Services
 
             if ((await repo.GetByCode(lic.LicenseCode)) == null)
             {
+                lic.CompanyCode = compInfoRepo.GetCompanyCode();
                 await repo.Insert(lic);
 
                 await auditTrailService.Save(new License(), lic, "ADD");

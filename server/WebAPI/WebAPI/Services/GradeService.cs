@@ -13,11 +13,14 @@ namespace WebAPI.Services
     {
         private readonly IGradeRepository repo;
         private readonly IAuditTrailService<Grade> auditTrailService;
+        private readonly ICompanyInformationRepository compInfoRepo;
         public GradeService(IGradeRepository repo,
-             IAuditTrailService<Grade> auditTrailService)
+             IAuditTrailService<Grade> auditTrailService,
+             ICompanyInformationRepository compInfoRepo)
         {
             this.repo = repo;
             this.auditTrailService = auditTrailService;
+            this.compInfoRepo = compInfoRepo;
         }
 
         public async Task<CustomMessage> Delete(int id)
@@ -43,6 +46,7 @@ namespace WebAPI.Services
 
             if ((await repo.GetByCode(Grade.Code)) == null)
             {
+                Grade.CompanyCode = compInfoRepo.GetCompanyCode();
                 await repo.Insert(Grade);
 
                 await auditTrailService.Save(new Grade(), Grade, "ADD");

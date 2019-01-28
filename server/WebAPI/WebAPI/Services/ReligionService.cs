@@ -13,11 +13,14 @@ namespace WebAPI.Services
     {
         private readonly IReligionRepository repo;
         private readonly IAuditTrailService<Religion> auditTrailService;
+        private readonly ICompanyInformationRepository compInfoRepo;
         public ReligionService(IReligionRepository repo,
-            IAuditTrailService<Religion> auditTrailService)
+            IAuditTrailService<Religion> auditTrailService,
+            ICompanyInformationRepository compInfoRepo)
         {
             this.repo = repo;
             this.auditTrailService = auditTrailService;
+            this.compInfoRepo = compInfoRepo;
         }
 
         public async Task<CustomMessage> Delete(int id)
@@ -39,6 +42,7 @@ namespace WebAPI.Services
         {
             if ((await repo.GetByCode(rel.Code)) == null)
             {
+                rel.CompanyCode = compInfoRepo.GetCompanyCode();
                 await repo.Insert(rel);
 
                 //Audit Trail

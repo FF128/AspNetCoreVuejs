@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
+using FluentValidation;
+using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -17,10 +19,12 @@ using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using WebAPI.Data;
 using WebAPI.Helpers;
+using WebAPI.Models;
 using WebAPI.Repositories;
 using WebAPI.RepositoryInterfaces;
 using WebAPI.ServiceInterfaces;
 using WebAPI.Services;
+using WebAPI.Validators;
 
 namespace WebAPI
 {
@@ -45,7 +49,39 @@ namespace WebAPI
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+
+            // Validators
+            //services.AddSingleton<IValidator<Citizenship>, CitizenshipValidator>();
+            //services.AddSingleton<IValidator<Religion>, ReligionValidator>();
+            //services.AddSingleton<IValidator<LevelsOfEmployee>, EmployeeLevelValidator>();
+            //services.AddSingleton<IValidator<EmployeeStatusFile>, EmployeeStatusFileValidator>();
+            //services.AddSingleton<IValidator<JobLevel>, JobLevelValidator>();
+            //services.AddSingleton<IValidator<Grade>, GradeValidator>();
+            //services.AddSingleton<IValidator<Step>, StepValidator>();
+            //services.AddSingleton<IValidator<DesignationFile>, DesignationFileValidator>();
+            //services.AddSingleton<IValidator<Area>, AreaValidator>();
+
+            services.AddMvc()
+                .SetCompatibilityVersion(CompatibilityVersion.Version_2_1)
+                .AddFluentValidation(fv => {
+                    fv.RegisterValidatorsFromAssemblyContaining<CitizenshipValidator>();
+                });
+            services.Configure<ApiBehaviorOptions>(options =>
+            {
+                options.InvalidModelStateResponseFactory = (context) =>
+                {
+                    var errors = context.ModelState.Values.SelectMany(x => x.Errors.Select(p => p.ErrorMessage)).ToList();
+                    
+                    //var result = new
+                    //{
+                    //    Code = "00009",
+                    //    Message = "Validation errors",
+                    //    Errors = errors
+                    //}; 
+
+                    return new BadRequestObjectResult(CustomMessageHandler.Custom("Validation Errors", errors.ToArray(), true));
+                };
+            });
             services.AddAutoMapper();
 
             services.AddCors();

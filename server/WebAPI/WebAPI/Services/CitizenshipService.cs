@@ -15,6 +15,7 @@ namespace WebAPI.Services
 {
     public class CitizenshipService : ICitizenshipService
     {
+        private const string TABLE_NAME = "tbl_fsCitizenship";
         private readonly ICitizenshipRepository repo;
         private readonly IAuditTrailRepository auditTrailRepo;
         private readonly ICompanyInformationRepository comInfoRepo;
@@ -61,6 +62,8 @@ namespace WebAPI.Services
 
         public async Task<CustomMessage> Insert(Citizenship cit)
         {
+            // Get Company Code
+            cit.CompanyCode = comInfoRepo.GetCompanyCode();
             if (String.IsNullOrEmpty(cit.CitiCode) || String.IsNullOrWhiteSpace(cit.CitiCode))
             {
                 return CustomMessageHandler.Error("Code: field is required");
@@ -71,7 +74,11 @@ namespace WebAPI.Services
             if (citData == null)
             {
                 var companyInfo = await comInfoRepo.GetByCompanyCode(comInfoRepo.GetCompanyCode());
-                
+                if(companyInfo == null)
+                {
+                    return CustomMessageHandler.Error("Company Information doesn't exist");
+                }
+
                 if(!(await comInfoRepo.CheckDBIfExists(companyInfo.PayrollDB)))
                 {
                     return CustomMessageHandler.Error("Payroll Database doesn't exist!");
@@ -87,12 +94,12 @@ namespace WebAPI.Services
                 else
                 {
                     // PAYROLL 
-                    var result = await comInfoRepo.CheckTableIfExists(companyInfo.PayrollDB, "tbl_fsCitizenship");
+                    var result = await comInfoRepo.CheckTableIfExists(companyInfo.PayrollDB, TABLE_NAME);
                     if (result && companyInfo.PayrollFlag)
                     {
                         // Check from payroll database
                         var results = await repo.GetByCodeFromPayroll(cit.CitiCode, companyInfo.PayrollDB);
-                        if(results != null)
+                        if(results == null)
                         {
                             // SAVE TO PAYROLL DB
                             await repo.InsertToPayrollFileSetUp(new CitizenshipInsertToFileSetUpDto
@@ -107,25 +114,26 @@ namespace WebAPI.Services
                     }
 
                     // TIME KEEPING
-                    var tksResult = await comInfoRepo.CheckTableIfExists(companyInfo.TKSDB, "tbl_fsCitizenship");
+                    var tksResult = await comInfoRepo.CheckTableIfExists(companyInfo.TKSDB, TABLE_NAME);
                     if (tksResult && companyInfo.TKSFlag)
                     {
+                        //var results = await repo.GetByCodeFromPayroll(cit.CitiCode, companyInfo.PayrollDB);
 
-                        // SAVE TO TKS DB
-                        await repo.InsertToPayrollFileSetUp(new CitizenshipInsertToFileSetUpDto
-                        {
-                            CitiCode = cit.CitiCode,
-                            CitiDesc = cit.CitiDesc,
-                            DBName = companyInfo.TKSDB,
-                            CreatedBy = "" // Current User
-                        });
+                        //// SAVE TO TKS DB
+                        //await repo.InsertToPayrollFileSetUp(new CitizenshipInsertToFileSetUpDto
+                        //{
+                        //    CitiCode = cit.CitiCode,
+                        //    CitiDesc = cit.CitiDesc,
+                        //    DBName = companyInfo.TKSDB,
+                        //    CreatedBy = "" // Current User
+                        //});
                     }
                     // HRIS
-                    var hrisResult = await comInfoRepo.CheckTableIfExists(companyInfo.HRISDB, "tbl_fsCitizenship");
+                    var hrisResult = await comInfoRepo.CheckTableIfExists(companyInfo.HRISDB, TABLE_NAME);
                     if (hrisResult && companyInfo.HRISFlag)
                     {
                         var results = await repo.GetByCodeFromHRIS(cit.CitiCode, companyInfo.HRISDB);
-                        if(results != null)
+                        if(results == null)
                         {
                             // SAVE TO HRIS DB
                             await repo.InsertToHRISFileSetUp(new CitizenshipInsertToFileSetUpDto

@@ -13,11 +13,14 @@ namespace WebAPI.Services
     {
         private readonly ISkillsRepository repo;
         private readonly IAuditTrailService<Skills> auditTrailService;
+        private readonly ICompanyInformationRepository compInfoRepo;
         public SkillsService(ISkillsRepository repo,
-             IAuditTrailService<Skills> auditTrailService)
+             IAuditTrailService<Skills> auditTrailService,
+             ICompanyInformationRepository compInfoRepo)
         {
             this.repo = repo;
             this.auditTrailService = auditTrailService;
+            this.compInfoRepo = compInfoRepo;
         }
 
         public async Task<CustomMessage> Delete(int id)
@@ -43,6 +46,7 @@ namespace WebAPI.Services
 
             if ((await repo.GetByCode(skill.SkillsCode)) == null)
             {
+                skill.CompanyCode = compInfoRepo.GetCompanyCode();
                 await repo.Insert(skill);
 
                 await auditTrailService.Save(new Skills(), skill, "ADD");

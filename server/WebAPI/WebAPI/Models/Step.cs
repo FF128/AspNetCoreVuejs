@@ -10,5 +10,6 @@ namespace WebAPI.Models
     public class Step: BaseModelCodeDescription
     {
         public int Id { get; set; }
+        public string CompanyCode { get; set; }
     }
 }

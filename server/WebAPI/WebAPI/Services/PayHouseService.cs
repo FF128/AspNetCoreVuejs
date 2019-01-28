@@ -13,11 +13,14 @@ namespace WebAPI.Services
     {
         private readonly IPayHouseRepository repo;
         private readonly IAuditTrailService<PayHouse> auditTrailService;
+        private readonly ICompanyInformationRepository compInfoRepo;
         public PayHouseService(IPayHouseRepository repo,
-             IAuditTrailService<PayHouse> auditTrailService)
+             IAuditTrailService<PayHouse> auditTrailService,
+             ICompanyInformationRepository compInfoRepo)
         {
             this.repo = repo;
             this.auditTrailService = auditTrailService;
+            this.compInfoRepo = compInfoRepo;
         }
 
         public async Task<CustomMessage> Delete(int id)
@@ -43,6 +46,7 @@ namespace WebAPI.Services
 
             if ((await repo.GetByCode(ph.PayHouseCode)) == null)
             {
+                ph.CompanyCode = compInfoRepo.GetCompanyCode();
                 await repo.Insert(ph);
 
                 await auditTrailService.Save(new PayHouse(), ph, "ADD");

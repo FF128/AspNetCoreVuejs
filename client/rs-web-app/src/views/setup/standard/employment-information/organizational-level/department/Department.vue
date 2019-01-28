@@ -99,7 +99,7 @@
                 <v-card-title class="headline">Confirmation</v-card-title>
 
                 <v-card-text>
-                    Do you want to delete this Code: {{ selectedDep.branchCode }}?
+                    Do you want to delete this Code: {{ selectedDep.departmentCode }}?
                 </v-card-text>
 
                 <v-card-actions>

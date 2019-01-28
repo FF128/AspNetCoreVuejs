@@ -13,11 +13,14 @@ namespace WebAPI.Services
     {
         private readonly ILanguageRepository repo;
         private readonly IAuditTrailService<Language> auditTrailService;
+        private readonly ICompanyInformationRepository compInfoRepo;
         public LanguageService(ILanguageRepository repo,
-             IAuditTrailService<Language> auditTrailService)
+             IAuditTrailService<Language> auditTrailService,
+             ICompanyInformationRepository compInfoRepo)
         {
             this.repo = repo;
             this.auditTrailService = auditTrailService;
+            this.compInfoRepo = compInfoRepo;
         }
 
         public async Task<CustomMessage> Delete(int id)
@@ -43,6 +46,7 @@ namespace WebAPI.Services
 
             if ((await repo.GetByCode(lang.LanguageCode)) == null)
             {
+                lang.CompanyCode = compInfoRepo.GetCompanyCode();
                 await repo.Insert(lang);
 
                 await auditTrailService.Save(new Language(), lang, "ADD");

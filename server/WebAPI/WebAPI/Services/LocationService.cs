@@ -13,11 +13,14 @@ namespace WebAPI.Services
     {
         private readonly ILocationRepository repo;
         private readonly IAuditTrailService<Location> auditTrailService;
+        private readonly ICompanyInformationRepository compInfoRepo;
         public LocationService(ILocationRepository repo,
-             IAuditTrailService<Location> auditTrailService)
+             IAuditTrailService<Location> auditTrailService,
+             ICompanyInformationRepository compInfoRepo)
         {
             this.repo = repo;
             this.auditTrailService = auditTrailService;
+            this.compInfoRepo = compInfoRepo;
         }
 
         public async Task<CustomMessage> Delete(int id)
@@ -34,18 +37,19 @@ namespace WebAPI.Services
             return CustomMessageHandler.Error("Data doesn't exist");
         }
 
-        public async Task<CustomMessage> Insert(Location dep)
+        public async Task<CustomMessage> Insert(Location loc)
         {
-            if (String.IsNullOrEmpty(dep.LocationCode) || String.IsNullOrWhiteSpace(dep.LocationDesc))
+            if (String.IsNullOrEmpty(loc.LocationCode) || String.IsNullOrWhiteSpace(loc.LocationDesc))
             {
                 return CustomMessageHandler.Error("Code: field is required");
             }
 
-            if ((await repo.GetByCode(dep.LocationCode)) == null)
+            if ((await repo.GetByCode(loc.LocationCode)) == null)
             {
-                await repo.Insert(dep);
+                loc.CompanyCode = compInfoRepo.GetCompanyCode();
+                await repo.Insert(loc);
 
-                await auditTrailService.Save(new Location(), dep, "ADD");
+                await auditTrailService.Save(new Location(), loc, "ADD");
 
                 return CustomMessageHandler.RecordAdded();
 
@@ -53,15 +57,15 @@ namespace WebAPI.Services
             return CustomMessageHandler.Error("Code is already used");
         }
 
-        public async Task<CustomMessage> Update(Location dep)
+        public async Task<CustomMessage> Update(Location loc)
         {
-            var locData = await repo.GetByCode(dep.LocationCode);
+            var locData = await repo.GetByCode(loc.LocationCode);
             if (locData != null)
             {
-                await repo.Update(dep);
+                await repo.Update(loc);
 
                 //Audit Trail
-                await auditTrailService.Save(locData, dep, "EDIT");
+                await auditTrailService.Save(locData, loc, "EDIT");
 
                 return CustomMessageHandler.RecordUpdated();
 

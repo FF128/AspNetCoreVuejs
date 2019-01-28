@@ -156,6 +156,7 @@ export default {
         .catch(({response}) => {
           this.isSaving = false;
           toast.show(response.data);
+          //toast.validate(response.data);
         });
     },
     edit(item) {

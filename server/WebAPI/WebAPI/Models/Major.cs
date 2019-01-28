@@ -12,5 +12,6 @@ namespace WebAPI.Models
         public int Id { get; set; }
         public string MajorCode { get; set; }
         public string MajorDesc { get; set; }
+        public string CompanyCode { get; set; }
     }
 }

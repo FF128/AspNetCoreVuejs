@@ -13,11 +13,14 @@ namespace WebAPI.Services
     {
         private readonly ICourseDegreeRepository repo;
         private readonly IAuditTrailService<CourseDegree> auditTrailService;
+        private readonly ICompanyInformationRepository compInfoRepo;
         public CourseDegreeService(ICourseDegreeRepository repo,
-             IAuditTrailService<CourseDegree> auditTrailService)
+             IAuditTrailService<CourseDegree> auditTrailService,
+             ICompanyInformationRepository compInfoRepo)
         {
             this.repo = repo;
             this.auditTrailService = auditTrailService;
+            this.compInfoRepo = compInfoRepo;
         }
 
         public async Task<CustomMessage> Delete(int id)
@@ -43,6 +46,7 @@ namespace WebAPI.Services
 
             if ((await repo.GetByCode(cd.CourseDegreeCode)) == null)
             {
+                cd.CompanyCode = compInfoRepo.GetCompanyCode();
                 await repo.Insert(cd);
 
                 await auditTrailService.Save(new CourseDegree(), cd, "ADD");

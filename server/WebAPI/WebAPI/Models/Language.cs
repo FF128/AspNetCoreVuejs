@@ -12,5 +12,6 @@ namespace WebAPI.Models
         public int Id { get; set; }
         public string LanguageCode { get; set; }
         public string LanguageDesc { get; set; }
+        public string CompanyCode { get; set; }
     }
 }

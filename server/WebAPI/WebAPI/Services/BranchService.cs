@@ -13,11 +13,14 @@ namespace WebAPI.Services
     {
         private readonly IBranchRepository repo;
         private readonly IAuditTrailService<Branch> auditTrailService;
+        private readonly ICompanyInformationRepository compInfoRepo;
         public BranchService(IBranchRepository repo,
-             IAuditTrailService<Branch> auditTrailService)
+             IAuditTrailService<Branch> auditTrailService,
+             ICompanyInformationRepository compInfoRepo)
         {
             this.repo = repo;
             this.auditTrailService = auditTrailService;
+            this.compInfoRepo = compInfoRepo;
         }
 
         public async Task<CustomMessage> Delete(int id)
@@ -43,6 +46,7 @@ namespace WebAPI.Services
 
             if ((await repo.GetByCode(branch.BranchCode)) == null)
             {
+                branch.CompanyCode = compInfoRepo.GetCompanyCode();
                 await repo.Insert(branch);
 
                 await auditTrailService.Save(new Branch(), branch, "ADD");

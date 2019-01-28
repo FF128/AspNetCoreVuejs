@@ -14,5 +14,6 @@ namespace WebAPI.Models
         public string ProjectDesc { get; set; }
         public string ProjectHeadCode { get; set; }
         public string ProjectHeadName { get; set; }
+        public string CompanyCode { get; set; }
     }
 }

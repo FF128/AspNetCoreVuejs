@@ -12,5 +12,6 @@ namespace WebAPI.Models
         public int Id { get; set; }
         public string CitiCode { get; set; }
         public string CitiDesc { get; set; }
+        public string CompanyCode { get; set; }
     }
 }

@@ -14,5 +14,6 @@ namespace WebAPI.Models
         public string SectionDesc { get; set; }
         public string SecHead { get; set; }
         public string SecHeadCode { get; set; }
+        public string CompanyCode { get; set; }
     }
 }

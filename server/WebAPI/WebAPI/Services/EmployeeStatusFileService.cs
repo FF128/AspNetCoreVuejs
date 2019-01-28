@@ -12,15 +12,15 @@ namespace WebAPI.Services
     public class EmployeeStatusFileService : IEmployeeStatusFileService
     {
         private readonly IEmployeeStatusFileRepository repo;
-        private readonly IAuditTrailRepository auditTrailRepo;
         private readonly IAuditTrailService<EmployeeStatusFile> auditTrailService;
+        private readonly ICompanyInformationRepository compInfoRepo;
         public EmployeeStatusFileService(IEmployeeStatusFileRepository repo,
-            IAuditTrailRepository auditTrailRepo,
-             IAuditTrailService<EmployeeStatusFile> auditTrailService)
+             IAuditTrailService<EmployeeStatusFile> auditTrailService,
+             ICompanyInformationRepository compInfoRepo)
         {
             this.repo = repo;
-            this.auditTrailRepo = auditTrailRepo;
             this.auditTrailService = auditTrailService;
+            this.compInfoRepo = compInfoRepo;
         }
 
         public async Task<CustomMessage> Delete(int id)
@@ -42,6 +42,7 @@ namespace WebAPI.Services
             var esfData = await repo.GetByCode(esf.Code);
             if (esfData == null)
             {
+                esf.CompanyCode = compInfoRepo.GetCompanyCode();
                 await repo.Insert(esf);
 
                 await auditTrailService.Save(new EmployeeStatusFile(), esf, "ADD");

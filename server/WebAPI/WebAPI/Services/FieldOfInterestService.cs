@@ -13,11 +13,14 @@ namespace WebAPI.Services
     {
         private readonly IFieldOfInterestRepository repo;
         private readonly IAuditTrailService<FieldOfInterest> auditTrailService;
+        private readonly ICompanyInformationRepository compInfoRepo;
         public FieldOfInterestService(IFieldOfInterestRepository repo,
-             IAuditTrailService<FieldOfInterest> auditTrailService)
+             IAuditTrailService<FieldOfInterest> auditTrailService,
+             ICompanyInformationRepository compInfoRepo)
         {
             this.repo = repo;
             this.auditTrailService = auditTrailService;
+            this.compInfoRepo = compInfoRepo;
         }
 
         public async Task<CustomMessage> Delete(int id)
@@ -43,6 +46,7 @@ namespace WebAPI.Services
 
             if ((await repo.GetByCode(foi.InterestCode)) == null)
             {
+                foi.CompanyCode = compInfoRepo.GetCompanyCode();
                 await repo.Insert(foi);
 
                 await auditTrailService.Save(new FieldOfInterest(), foi, "ADD");

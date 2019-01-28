@@ -13,5 +13,6 @@ namespace WebAPI.Models
         public string DepartmentCode { get; set; }
         public string DepartmentDesc { get; set; }
         public string DepHeadCode { get; set; }
+        public string CompanyCode { get; set; }
     }
 }

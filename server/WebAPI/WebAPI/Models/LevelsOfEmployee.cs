@@ -12,5 +12,6 @@ namespace WebAPI.Models
         public int Id { get; set; }
         public string LOECode { get; set; }
         public string LOEDesc { get; set; }
+        public string CompanyCode { get; set; }
     }
 }

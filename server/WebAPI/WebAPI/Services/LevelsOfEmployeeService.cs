@@ -13,11 +13,14 @@ namespace WebAPI.Services
     {
         private readonly ILevelsOfEmployeeRepository repo;
         private readonly IAuditTrailService<LevelsOfEmployee> auditTrailService;
+        private readonly ICompanyInformationRepository compInfoRepo;
         public LevelsOfEmployeeService(ILevelsOfEmployeeRepository repo,
-             IAuditTrailService<LevelsOfEmployee> auditTrailService)
+             IAuditTrailService<LevelsOfEmployee> auditTrailService,
+             ICompanyInformationRepository compInfoRepo)
         {
             this.repo = repo;
             this.auditTrailService = auditTrailService;
+            this.compInfoRepo = compInfoRepo;
         }
 
         public async Task<CustomMessage> Delete(int id)
@@ -43,6 +46,7 @@ namespace WebAPI.Services
 
             if ((await repo.GetByCode(loe.LOECode)) == null)
             {
+                loe.CompanyCode = compInfoRepo.GetCompanyCode();
                 await repo.Insert(loe);
 
                 await auditTrailService.Save(new LevelsOfEmployee(), loe, "ADD");

@@ -13,21 +13,24 @@ namespace WebAPI.Services
     {
         private readonly IGovExamsRepository repo;
         private readonly IAuditTrailService<GovExams> auditTrailService;
+        private readonly ICompanyInformationRepository compInfoRepo;
         public GovExamsService(IGovExamsRepository repo,
-             IAuditTrailService<GovExams> auditTrailService)
+             IAuditTrailService<GovExams> auditTrailService,
+             ICompanyInformationRepository compInfoRepo)
         {
             this.repo = repo;
             this.auditTrailService = auditTrailService;
+            this.compInfoRepo = compInfoRepo;
         }
 
         public async Task<CustomMessage> Delete(int id)
         {
-            var payHouse = await repo.GetById(id);
-            if (payHouse != null)
+            var govExam = await repo.GetById(id);
+            if (govExam != null)
             {
                 await repo.Delete(id);
 
-                await auditTrailService.Save(new GovExams(), payHouse, "DELETE");
+                await auditTrailService.Save(new GovExams(), govExam, "DELETE");
 
                 return CustomMessageHandler.RecordDeleted();
             }
@@ -43,6 +46,7 @@ namespace WebAPI.Services
 
             if ((await repo.GetByCode(ge.ExamCode)) == null)
             {
+                ge.CompanyCode = compInfoRepo.GetCompanyCode();
                 await repo.Insert(ge);
 
                 await auditTrailService.Save(new GovExams(), ge, "ADD");
@@ -55,13 +59,13 @@ namespace WebAPI.Services
 
         public async Task<CustomMessage> Update(GovExams ge)
         {
-            var payHouse = await repo.GetByCode(ge.ExamCode);
-            if (payHouse != null)
+            var govExam = await repo.GetByCode(ge.ExamCode);
+            if (govExam != null)
             {
                 await repo.Update(ge);
 
                 //Audit Trail
-                await auditTrailService.Save(payHouse, ge, "EDIT");
+                await auditTrailService.Save(govExam, ge, "EDIT");
 
                 return CustomMessageHandler.RecordUpdated();
 

@@ -13,39 +13,43 @@ namespace WebAPI.Services
     {
         private readonly IJobReqRepository repo;
         private readonly IAuditTrailService<JobReq> auditTrailService;
+        private readonly ICompanyInformationRepository compInfoRepo;
         public JobReqService(IJobReqRepository repo,
-             IAuditTrailService<JobReq> auditTrailService)
+             IAuditTrailService<JobReq> auditTrailService,
+             ICompanyInformationRepository compInfoRepo)
         {
             this.repo = repo;
             this.auditTrailService = auditTrailService;
+            this.compInfoRepo = compInfoRepo;
         }
 
         public async Task<CustomMessage> Delete(int id)
         {
-            var payHouse = await repo.GetById(id);
-            if (payHouse != null)
+            var jobReqData = await repo.GetById(id);
+            if (jobReqData != null)
             {
                 await repo.Delete(id);
 
-                await auditTrailService.Save(new JobReq(), payHouse, "DELETE");
+                await auditTrailService.Save(new JobReq(), jobReqData, "DELETE");
 
                 return CustomMessageHandler.RecordDeleted();
             }
             return CustomMessageHandler.Error("Data doesn't exist");
         }
 
-        public async Task<CustomMessage> Insert(JobReq ph)
+        public async Task<CustomMessage> Insert(JobReq jobReq)
         {
-            if (String.IsNullOrEmpty(ph.JobReqCode) || String.IsNullOrWhiteSpace(ph.JobReqCode))
+            if (String.IsNullOrEmpty(jobReq.JobReqCode) || String.IsNullOrWhiteSpace(jobReq.JobReqCode))
             {
                 return CustomMessageHandler.Error("Code: field is required");
             }
 
-            if ((await repo.GetByCode(ph.JobReqCode)) == null)
+            if ((await repo.GetByCode(jobReq.JobReqCode)) == null)
             {
-                await repo.Insert(ph);
+                jobReq.CompanyCode = compInfoRepo.GetCompanyCode();
+                await repo.Insert(jobReq);
 
-                await auditTrailService.Save(new JobReq(), ph, "ADD");
+                await auditTrailService.Save(new JobReq(), jobReq, "ADD");
 
                 return CustomMessageHandler.RecordAdded();
 
@@ -53,15 +57,15 @@ namespace WebAPI.Services
             return CustomMessageHandler.Error("Code is already used");
         }
 
-        public async Task<CustomMessage> Update(JobReq ph)
+        public async Task<CustomMessage> Update(JobReq jobReq)
         {
-            var payHouse = await repo.GetByCode(ph.JobReqCode);
-            if (payHouse != null)
+            var jobReqData = await repo.GetByCode(jobReq.JobReqCode);
+            if (jobReqData != null)
             {
-                await repo.Update(ph);
+                await repo.Update(jobReq);
 
                 //Audit Trail
-                await auditTrailService.Save(payHouse, ph, "EDIT");
+                await auditTrailService.Save(jobReqData, jobReq, "EDIT");
 
                 return CustomMessageHandler.RecordUpdated();
 

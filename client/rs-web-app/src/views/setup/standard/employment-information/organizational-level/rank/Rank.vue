@@ -74,7 +74,7 @@
                 <v-card-title class="headline">Confirmation</v-card-title>
 
                 <v-card-text>
-                    Do you want to delete this Code: {{ selectedRank.code }}?
+                    Do you want to delete this Code: {{ selectedRank.rankCode }}?
                 </v-card-text>
 
                 <v-card-actions>

@@ -13,5 +13,6 @@ namespace WebAPI.Models
         public string DesignationFileCode { get; set; }
         public string DesignationFileDesc { get; set; }
         public string JobLevelCode { get; set; }
+        public string CompanyCode { get; set; }
     }
 }

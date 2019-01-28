@@ -13,11 +13,14 @@ namespace WebAPI.Services
     {
         private readonly IRankRepository repo;
         private readonly IAuditTrailService<Rank> auditTrailService;
+        private readonly ICompanyInformationRepository compInfoRepo;
         public RankService(IRankRepository repo,
-             IAuditTrailService<Rank> auditTrailService)
+             IAuditTrailService<Rank> auditTrailService,
+             ICompanyInformationRepository compInfoRepo)
         {
             this.repo = repo;
             this.auditTrailService = auditTrailService;
+            this.compInfoRepo = compInfoRepo;
         }
 
         public async Task<CustomMessage> Delete(int id)
@@ -43,6 +46,7 @@ namespace WebAPI.Services
 
             if ((await repo.GetByCode(rank.RankCode)) == null)
             {
+                rank.CompanyCode = compInfoRepo.GetCompanyCode();
                 await repo.Insert(rank);
 
                 await auditTrailService.Save(new Rank(), rank, "ADD");

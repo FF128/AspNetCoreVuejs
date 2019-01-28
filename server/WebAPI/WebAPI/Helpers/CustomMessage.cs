@@ -8,6 +8,7 @@ namespace WebAPI.Helpers
     public class CustomMessage
     {
         public string Message { get; set; }
+        public string[] Errors { get; set; }
         public bool HasError { get; set; } = false;
     }
     public static class CustomMessageHandler
@@ -33,9 +34,10 @@ namespace WebAPI.Helpers
         {
             return new CustomMessage { Message = "You have successfully deleted a record" };
         }
-        public static CustomMessage Custom(string message, bool hasError)
+        public static CustomMessage Custom(string message, string[] errors, bool hasError)
         {
-            return new CustomMessage { Message = message, HasError = hasError };
+            return new CustomMessage { Message = message, HasError = hasError, Errors = errors };
         }
+
     }
 }

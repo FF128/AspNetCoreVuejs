@@ -13,39 +13,43 @@ namespace WebAPI.Services
     {
         private readonly ISchoolRepository repo;
         private readonly IAuditTrailService<School> auditTrailService;
+        private readonly ICompanyInformationRepository compInfoRepo;
         public SchoolService(ISchoolRepository repo,
-             IAuditTrailService<School> auditTrailService)
+             IAuditTrailService<School> auditTrailService,
+             ICompanyInformationRepository compInfoRepo)
         {
             this.repo = repo;
             this.auditTrailService = auditTrailService;
+            this.compInfoRepo = compInfoRepo;
         }
 
         public async Task<CustomMessage> Delete(int id)
         {
-            var payHouse = await repo.GetById(id);
-            if (payHouse != null)
+            var schoolData = await repo.GetById(id);
+            if (schoolData != null)
             {
                 await repo.Delete(id);
 
-                await auditTrailService.Save(new School(), payHouse, "DELETE");
+                await auditTrailService.Save(new School(), schoolData, "DELETE");
 
                 return CustomMessageHandler.RecordDeleted();
             }
             return CustomMessageHandler.Error("Data doesn't exist");
         }
 
-        public async Task<CustomMessage> Insert(School ph)
+        public async Task<CustomMessage> Insert(School school)
         {
-            if (String.IsNullOrEmpty(ph.SchoolCode) || String.IsNullOrWhiteSpace(ph.SchoolCode))
+            if (String.IsNullOrEmpty(school.SchoolCode) || String.IsNullOrWhiteSpace(school.SchoolCode))
             {
                 return CustomMessageHandler.Error("Code: field is required");
             }
 
-            if ((await repo.GetByCode(ph.SchoolCode)) == null)
+            if ((await repo.GetByCode(school.SchoolCode)) == null)
             {
-                await repo.Insert(ph);
+                school.CompanyCode = compInfoRepo.GetCompanyCode();
+                await repo.Insert(school);
 
-                await auditTrailService.Save(new School(), ph, "ADD");
+                await auditTrailService.Save(new School(), school, "ADD");
 
                 return CustomMessageHandler.RecordAdded();
 
@@ -53,15 +57,15 @@ namespace WebAPI.Services
             return CustomMessageHandler.Error("Code is already used");
         }
 
-        public async Task<CustomMessage> Update(School ph)
+        public async Task<CustomMessage> Update(School school)
         {
-            var payHouse = await repo.GetByCode(ph.SchoolCode);
-            if (payHouse != null)
+            var schoolData = await repo.GetByCode(school.SchoolCode);
+            if (schoolData != null)
             {
-                await repo.Update(ph);
+                await repo.Update(school);
 
                 //Audit Trail
-                await auditTrailService.Save(payHouse, ph, "EDIT");
+                await auditTrailService.Save(schoolData, school, "EDIT");
 
                 return CustomMessageHandler.RecordUpdated();
 

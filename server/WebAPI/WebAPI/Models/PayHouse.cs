@@ -14,5 +14,6 @@ namespace WebAPI.Models
         public string PayHouseDesc { get; set; }
         public string HeadCode { get; set; }
         public string HeadName { get; set; }
+        public string CompanyCode { get; set; }
     }
 }

@@ -31,6 +31,18 @@ class Toast {
       this.success(message);
     }
   }
+  validate(data) {
+    let { message, errors, hasError} = data;
+    let error = "";
+    errors.filter(item => {
+      error += `${item}\n`
+    });
+    if (hasError) {
+      this.error(error);
+    } else {
+      this.success(error);
+    }
+  }
 
   // info(msg) {
   //     return vue.$toast.open({

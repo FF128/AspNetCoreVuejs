@@ -14,5 +14,6 @@ namespace WebAPI.Models
         public string BranchDesc { get; set; }
         public string HeadCode { get; set; }
         public string AcctCode { get; set; }
+        public string CompanyCode { get; set; }
     }
 }

@@ -10,5 +10,6 @@ namespace WebAPI.Models
     public class Grade : BaseModelCodeDescription
     {
         public int Id { get; set; }
+        public string CompanyCode { get; set; }
     }
 }

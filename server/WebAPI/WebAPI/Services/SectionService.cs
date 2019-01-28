@@ -13,11 +13,14 @@ namespace WebAPI.Services
     {
         private readonly ISectionRepository repo;
         private readonly IAuditTrailService<Section> auditTrailService;
+        private readonly ICompanyInformationRepository compInfoRepo;
         public SectionService(ISectionRepository repo,
-             IAuditTrailService<Section> auditTrailService)
+             IAuditTrailService<Section> auditTrailService,
+             ICompanyInformationRepository compInfoRepo)
         {
             this.repo = repo;
             this.auditTrailService = auditTrailService;
+            this.compInfoRepo = compInfoRepo;
         }
 
         public async Task<CustomMessage> Delete(int id)
@@ -34,18 +37,19 @@ namespace WebAPI.Services
             return CustomMessageHandler.Error("Data doesn't exist");
         }
 
-        public async Task<CustomMessage> Insert(Section div)
+        public async Task<CustomMessage> Insert(Section sec)
         {
-            if (String.IsNullOrEmpty(div.SectionCode) || String.IsNullOrWhiteSpace(div.SectionDesc))
+            if (String.IsNullOrEmpty(sec.SectionCode) || String.IsNullOrWhiteSpace(sec.SectionDesc))
             {
                 return CustomMessageHandler.Error("Code: field is required");
             }
 
-            if ((await repo.GetByCode(div.SectionCode)) == null)
+            if ((await repo.GetByCode(sec.SectionCode)) == null)
             {
-                await repo.Insert(div);
+                sec.CompanyCode = compInfoRepo.GetCompanyCode();
+                await repo.Insert(sec);
 
-                await auditTrailService.Save(new Section(), div, "ADD");
+                await auditTrailService.Save(new Section(), sec, "ADD");
 
                 return CustomMessageHandler.RecordAdded();
 
@@ -53,15 +57,15 @@ namespace WebAPI.Services
             return CustomMessageHandler.Error("Code is already used");
         }
 
-        public async Task<CustomMessage> Update(Section div)
+        public async Task<CustomMessage> Update(Section sec)
         {
-            var sectionData = await repo.GetByCode(div.SectionCode);
+            var sectionData = await repo.GetByCode(sec.SectionCode);
             if (sectionData != null)
             {
-                await repo.Update(div);
+                await repo.Update(sec);
 
                 //Audit Trail
-                await auditTrailService.Save(sectionData, div, "EDIT");
+                await auditTrailService.Save(sectionData, sec, "EDIT");
 
                 return CustomMessageHandler.RecordUpdated();
 

@@ -13,5 +13,6 @@ namespace WebAPI.Models
         public string SkillsCode { get; set; }
 
         public string SkillsDesc { get; set; }
+        public string CompanyCode { get; set; }
     }
 }

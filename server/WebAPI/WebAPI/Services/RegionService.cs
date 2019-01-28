@@ -13,11 +13,14 @@ namespace WebAPI.Services
     {
         private readonly IRegionRepository repo;
         private readonly IAuditTrailService<Region> auditTrailService;
+        private readonly ICompanyInformationRepository compInfoRepo;
         public RegionService(IRegionRepository repo,
-             IAuditTrailService<Region> auditTrailService)
+             IAuditTrailService<Region> auditTrailService,
+             ICompanyInformationRepository compInfoRepo)
         {
             this.repo = repo;
             this.auditTrailService = auditTrailService;
+            this.compInfoRepo = compInfoRepo;
         }
 
         public async Task<CustomMessage> Delete(int id)
@@ -34,18 +37,19 @@ namespace WebAPI.Services
             return CustomMessageHandler.Error("Data doesn't exist");
         }
 
-        public async Task<CustomMessage> Insert(Region ph)
+        public async Task<CustomMessage> Insert(Region reg)
         {
-            if (String.IsNullOrEmpty(ph.RegionCode) || String.IsNullOrWhiteSpace(ph.RegionCode))
+            if (String.IsNullOrEmpty(reg.RegionCode) || String.IsNullOrWhiteSpace(reg.RegionCode))
             {
                 return CustomMessageHandler.Error("Code: field is required");
             }
 
-            if ((await repo.GetByCode(ph.RegionCode)) == null)
+            if ((await repo.GetByCode(reg.RegionCode)) == null)
             {
-                await repo.Insert(ph);
+                reg.CompanyCode = compInfoRepo.GetCompanyCode();
+                await repo.Insert(reg);
 
-                await auditTrailService.Save(new Region(), ph, "ADD");
+                await auditTrailService.Save(new Region(), reg, "ADD");
 
                 return CustomMessageHandler.RecordAdded();
 
@@ -53,15 +57,15 @@ namespace WebAPI.Services
             return CustomMessageHandler.Error("Code is already used");
         }
 
-        public async Task<CustomMessage> Update(Region ph)
+        public async Task<CustomMessage> Update(Region reg)
         {
-            var region = await repo.GetByCode(ph.RegionCode);
+            var region = await repo.GetByCode(reg.RegionCode);
             if (region != null)
             {
-                await repo.Update(ph);
+                await repo.Update(reg);
 
                 //Audit Trail
-                await auditTrailService.Save(region, ph, "EDIT");
+                await auditTrailService.Save(region, reg, "EDIT");
 
                 return CustomMessageHandler.RecordUpdated();
 

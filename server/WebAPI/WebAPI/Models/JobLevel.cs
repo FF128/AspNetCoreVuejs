@@ -14,5 +14,6 @@ namespace WebAPI.Models
         public string StepCode { get; set; }
         public decimal MinimumSalary { get; set; }
         public decimal MaximumSalary { get; set; }
+        public string CompanyCode { get; set; }
     }
 }

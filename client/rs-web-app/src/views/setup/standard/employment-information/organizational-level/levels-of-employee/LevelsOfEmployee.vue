@@ -75,7 +75,7 @@
                 <v-card-title class="headline">Confirmation</v-card-title>
 
                 <v-card-text>
-                    Do you want to delete this Code: {{ selectedLevel.code }}?
+                    Do you want to delete this Code: {{ selectedLevel.loeCode }}?
                 </v-card-text>
 
                 <v-card-actions>
@@ -145,15 +145,13 @@ export default {
         .post(this.apiEndpoint, this.loe)
         .then(response => {
           this.isSaving = false;
-          let { message, hasError } = response.data;
-
-          // Toast custom message
-          toast.show(message, hasError);
+          toast.show(response.data)
           // Update List
           this.cancel();
         })
-        .catch(err => {
+        .catch(({response}) => {
           this.isSaving = false;
+          toast.show(response.data)
         });
     },
     edit(item) {
@@ -167,15 +165,13 @@ export default {
         .then(response => {
           this.isUpdating = false;
 
-          let { message, hasError } = response.data;
-
-          // Toast custom message
-          toast.show(message, hasError);
+          toast.show(response.data)
 
           this.cancel();
         })
-        .catch(err => {
+        .catch(({response}) => {
           this.isUpdating = false;
+          toast.show(response.data)
         });
     },
     deleteInfo(item) {
@@ -187,16 +183,14 @@ export default {
       this.$axios
         .delete(`${this.apiEndpoint}/${this.selectedLevel.id}`)
         .then(response => {
-          let { message, hasError } = response.data;
-
-          // Toast custom message
-          toast.show(message, hasError);
+          toast.show(response.data)
           this.cancel();
           this.isDeleting = false;
           this.deleteDialog = false;
         })
-        .catch(err => {
+        .catch(({response}) => {
           this.isDeleting = false;
+          toast.show(response.data)
         });
     },
     closeDeleteDialog() {

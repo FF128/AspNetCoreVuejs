@@ -13,11 +13,14 @@ namespace WebAPI.Services
     {
         private readonly IResidenceTypeRepository repo;
         private readonly IAuditTrailService<ResidenceType> auditTrailService;
+        private readonly ICompanyInformationRepository compInfoRepo;
         public ResidenceTypeService(IResidenceTypeRepository repo,
-             IAuditTrailService<ResidenceType> auditTrailService)
+             IAuditTrailService<ResidenceType> auditTrailService,
+             ICompanyInformationRepository compInfoRepo)
         {
             this.repo = repo;
             this.auditTrailService = auditTrailService;
+            this.compInfoRepo = compInfoRepo;
         }
 
         public async Task<CustomMessage> Delete(int id)
@@ -43,6 +46,7 @@ namespace WebAPI.Services
 
             if ((await repo.GetByCode(rt.ResidenceTypeCode)) == null)
             {
+                rt.CompanyCode = compInfoRepo.GetCompanyCode();
                 await repo.Insert(rt);
 
                 await auditTrailService.Save(new ResidenceType(), rt, "ADD");
