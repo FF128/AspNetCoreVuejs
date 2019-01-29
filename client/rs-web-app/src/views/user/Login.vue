@@ -20,7 +20,7 @@
                     </v-card-text>
                     <v-card-actions>
                         <v-spacer></v-spacer>
-                        <v-btn color="primary" @click.prevent="login">Login</v-btn>
+                        <v-btn color="primary" @click.prevent="login" :loading="isLoading">Login</v-btn>
                     </v-card-actions>
                     </v-card>
                 </v-flex>
@@ -63,20 +63,25 @@ export default {
         x: null,
         mode: "",
         timeout: 6000
-      }
+      },
+      isLoading: false
     };
   },
   methods: {
     login() {
+      this.isLoading = true
       this.$axios
         .post(`${this.apiEndpoint}/authenticate`, this.user)
         .then(response => {
+          this.isLoading = false
           localStorage.setItem("_u", JSON.stringify(response.data));
         //   this.$router.push("/");
-            window.location.href = "/"
+          window.location.href = "/"
+
         })
         .catch(err => {
           toast.show(err.response);
+          this.isLoading = false;
         });
     }
   }

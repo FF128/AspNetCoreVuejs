@@ -218,8 +218,8 @@ namespace WebAPI.Services
                 //}
                 #endregion
 
-                await repo.Insert(cit); 
-
+                await repo.InsertFileSetup(cit);
+                await repo.Insert(cit);
                 await auditTrailService.Save(new Citizenship(), cit, "ADD");
 
                 return CustomMessageHandler.RecordAdded();

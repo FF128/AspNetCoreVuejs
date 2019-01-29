@@ -17,6 +17,7 @@
     <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.1.2" PrivateAssets="All" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.1.1" />
     <PackageReference Include="StackifyMiddleware" Version="3.0.2" />
+    <PackageReference Include="Syncfusion.Report.Net.Core" Version="16.4.0.48" />
   </ItemGroup>
 
   <ItemGroup>

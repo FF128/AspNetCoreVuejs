@@ -8,6 +8,7 @@ using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
+using WebAPI.Dtos.Section;
 
 namespace WebAPI.Repositories
 {
@@ -24,6 +25,16 @@ namespace WebAPI.Repositories
             {
                 await conn.ExecuteAsync("sp_SectionSetUp_Delete",
                     new { Id = id },
+                    commandType: CommandType.StoredProcedure);
+            }
+        }
+
+        public async Task DeleteByCode(string code)
+        {
+            using (var conn = connectionFactory.Connection)
+            {
+                await conn.ExecuteAsync("sp_tbl_fsSection_Delete",
+                    new { code },
                     commandType: CommandType.StoredProcedure);
             }
         }
@@ -48,6 +59,39 @@ namespace WebAPI.Repositories
             }
         }
 
+        public async Task<dynamic> GetByCodeFromHRIS(string code, string hrisDB)
+        {
+            using (var conn = connectionFactory.Connection)
+            {
+                return
+                   await conn.QueryFirstOrDefaultAsync("sp_tbl_fsSection_ViewByCodeFromHRIS",
+                       new { Code = code, DBName = hrisDB },
+                       commandType: CommandType.StoredProcedure);
+            }
+        }
+
+        public async Task<dynamic> GetByCodeFromPayroll(string code, string payrollDB)
+        {
+            using (var conn = connectionFactory.Connection)
+            {
+                return
+                   await conn.QueryFirstOrDefaultAsync("sp_tbl_fsSection_ViewByCodeFromPayroll",
+                       new { Code = code, DBName = payrollDB },
+                       commandType: CommandType.StoredProcedure);
+            }
+        }
+
+        public async Task<dynamic> GetByCodeFromTKS(string code, string tskDB)
+        {
+            using (var conn = connectionFactory.Connection)
+            {
+                return
+                   await conn.QueryFirstOrDefaultAsync("sp_tbl_fsSection_ViewByCodeFromTKS",
+                       new { Code = code, DBName = tskDB },
+                       commandType: CommandType.StoredProcedure);
+            }
+        }
+
         public async Task<Section> GetById(int id)
         {
             using (var conn = connectionFactory.Connection)
@@ -67,6 +111,43 @@ namespace WebAPI.Repositories
                     sec, commandType: CommandType.StoredProcedure);
             }
         }
+
+        public async Task InsertFileSetup(Section sec)
+        {
+            using (var conn = connectionFactory.Connection)
+            {
+                await conn.ExecuteAsync("sp_tbl_fsSection_Insert",
+                    sec, commandType: CommandType.StoredProcedure);
+            }
+        }
+
+        public async Task InsertToHRISFileSetUp(SectionInsertToHRISFSDto dto)
+        {
+            using (var conn = connectionFactory.Connection)
+            {
+                await conn.ExecuteAsync("sp_tbl_fsSection_InsertToHRIS",
+                    dto, commandType: CommandType.StoredProcedure);
+            }
+        }
+
+        public async Task InsertToPayrollFileSetUp(SectionInsertToPayrollFSDto dto)
+        {
+            using (var conn = connectionFactory.Connection)
+            {
+                await conn.ExecuteAsync("sp_tbl_fsSection_InsertToPayroll",
+                    dto, commandType: CommandType.StoredProcedure);
+            }
+        }
+
+        public async Task InsertToTSKFileSetUp(SectionInsertToTKSFSDto dto)
+        {
+            using (var conn = connectionFactory.Connection)
+            {
+                await conn.ExecuteAsync("sp_tbl_fsSection_InsertToTKS",
+                    dto, commandType: CommandType.StoredProcedure);
+            }
+        }
+
         public async Task Update(Section sec)
         {
             using (var conn = connectionFactory.Connection)

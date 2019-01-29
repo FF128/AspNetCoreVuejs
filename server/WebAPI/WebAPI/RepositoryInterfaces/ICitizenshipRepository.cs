@@ -15,6 +15,7 @@ namespace WebAPI.RepositoryInterfaces
         Task<dynamic> GetByCodeFromPayroll(string code, string payrollDB);
         Task<dynamic> GetByCodeFromHRIS(string code, string hrisDB);
 
+        Task InsertFileSetup(Citizenship cit);
         Task Insert(Citizenship cit);
         Task Update(Citizenship cit);
         Task Delete(int id);

@@ -12,5 +12,6 @@ namespace WebAPI.ServiceInterfaces
         Task<CustomMessage> Insert(Division div);
         Task<CustomMessage> Update(Division div);
         Task<CustomMessage> Delete(int id);
+        Task<CustomMessage> DeleteByCode(string code);
     }
 }

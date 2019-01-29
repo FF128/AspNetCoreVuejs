@@ -69,7 +69,7 @@ namespace WebAPI.Repositories
             }
         }
 
-        public async Task Insert(Citizenship cit)
+        public async Task InsertFileSetup(Citizenship cit)
         {
             using (var conn = connectionFactory.Connection)
             {
@@ -121,6 +121,15 @@ namespace WebAPI.Repositories
                     await conn.QueryFirstOrDefaultAsync("sp_tbl_fsCitizenship_ViewByCodeFromHRIS",
                         new { Code = code, DBName = hrisDB },
                         commandType: CommandType.StoredProcedure);
+            }
+        }
+
+        public async Task Insert(Citizenship cit)
+        {
+            using (var conn = connectionFactory.Connection)
+            {
+                await conn.ExecuteAsync("sp_CitizenshipSetUp_Insert",
+                    cit, commandType: CommandType.StoredProcedure);
             }
         }
     }

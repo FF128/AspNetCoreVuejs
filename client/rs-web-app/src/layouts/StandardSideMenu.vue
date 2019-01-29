@@ -13,9 +13,13 @@
             <v-list-tile slot="activator">
                 <v-list-tile-title>General Setup</v-list-tile-title>
             </v-list-tile>
-            <v-list-tile @click="$router.push('/company-info')">
-                <v-list-tile-title>Company Information</v-list-tile-title>
-            </v-list-tile>
+            <v-tooltip right>
+                <v-list-tile @click="$router.push('/company-info')" slot="activator">
+                    <v-list-tile-title>Company Information</v-list-tile-title>
+                </v-list-tile>
+                <span>Company Information</span>
+            </v-tooltip>
+            
            
         </v-list-group>
         <!-- Personal Information -->
@@ -28,20 +32,6 @@
             <v-list-tile v-for="(item,key) in personal" :key="key" @click.prevent="$router.push(item.link)">
                 <v-list-tile-title>{{item.title}}</v-list-tile-title>
             </v-list-tile>
-            <!-- <v-list-group
-                sub-group
-                no-action>
-                <v-list-tile slot="activator">
-                    <v-list-tile-title>Employment Other Information</v-list-tile-title>
-                </v-list-tile>
-
-                <v-list-tile @click="$router.push('/citizenship')">
-                    <v-list-tile-title>Citizenship</v-list-tile-title>
-                    <v-list-tile-action>
-                        <v-icon></v-icon>
-                    </v-list-tile-action>
-                </v-list-tile>
-            </v-list-group> -->
         </v-list-group>
         <!-- Employment Information -->
         <v-list-group
@@ -112,14 +102,16 @@
                 <v-list-tile slot="activator">
                     <v-list-tile-title>Others</v-list-tile-title>
                 </v-list-tile>
-              
-                <v-list-tile v-for="(item,key) in others" :key="key"
-                    @click="$router.push(item.link)">
-                    <v-list-tile-title>{{item.title}}</v-list-tile-title>
-                    <v-list-tile-action>
-                        <v-icon></v-icon>
-                    </v-list-tile-action>
-                </v-list-tile>
+                <v-tooltip v-for="(item,key) in others" :key="key" right>
+                    <v-list-tile 
+                        @click="$router.push(item.link)" slot="activator">
+                        <v-list-tile-title>{{item.title}}</v-list-tile-title>
+                        <v-list-tile-action>
+                            <v-icon></v-icon>
+                        </v-list-tile-action>
+                    </v-list-tile>
+                    <span>{{item.title}}</span>
+                </v-tooltip>
             </v-list-group>
             
         </v-list-group>

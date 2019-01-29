@@ -8,6 +8,7 @@ using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
+using WebAPI.Dtos.Unit;
 
 namespace WebAPI.Repositories
 {
@@ -24,6 +25,16 @@ namespace WebAPI.Repositories
             {
                 await conn.ExecuteAsync("sp_UnitSetUp_Delete",
                     new { Id = id },
+                    commandType: CommandType.StoredProcedure);
+            }
+        }
+
+        public async Task DeleteByCode(string code)
+        {
+            using (var conn = connectionFactory.Connection)
+            {
+                await conn.ExecuteAsync("sp_tbl_fsUnit_DeleteByCode",
+                    new { code },
                     commandType: CommandType.StoredProcedure);
             }
         }
@@ -48,6 +59,28 @@ namespace WebAPI.Repositories
             }
         }
 
+        public async Task<dynamic> GetByCodeFromHRIS(string code, string hrisDB)
+        {
+            using (var conn = connectionFactory.Connection)
+            {
+                return
+                   await conn.QueryFirstOrDefaultAsync("sp_tbl_fsUnit_ViewByCodeFromHRIS",
+                       new { Code = code, DBName = hrisDB },
+                       commandType: CommandType.StoredProcedure);
+            }
+        }
+
+        public async Task<dynamic> GetByCodeFromPayroll(string code, string payrollDB)
+        {
+            using (var conn = connectionFactory.Connection)
+            {
+                return
+                   await conn.QueryFirstOrDefaultAsync("sp_tbl_fsUnit_ViewByCodeFromPayroll",
+                       new { Code = code, DBName = payrollDB },
+                       commandType: CommandType.StoredProcedure);
+            }
+        }
+
         public async Task<Unit> GetById(int id)
         {
             using (var conn = connectionFactory.Connection)
@@ -59,21 +92,48 @@ namespace WebAPI.Repositories
             }
         }
 
-        public async Task Insert(Unit dep)
+        public async Task Insert(Unit unit)
         {
             using (var conn = connectionFactory.Connection)
             {
                 await conn.ExecuteAsync("sp_UnitSetUp_Insert",
-                    dep, commandType: CommandType.StoredProcedure);
+                    unit, commandType: CommandType.StoredProcedure);
             }
         }
 
-        public async Task Update(Unit dep)
+        public async Task InsertFileSetup(Unit unit)
+        {
+            using (var conn = connectionFactory.Connection)
+            {
+                await conn.ExecuteAsync("sp_tbl_fsUnit_Insert",
+                    unit, commandType: CommandType.StoredProcedure);
+            }
+        }
+
+        public async Task InsertToHRISFileSetUp(UnitInsertToHRISFSDto dto)
+        {
+            using (var conn = connectionFactory.Connection)
+            {
+                await conn.ExecuteAsync("sp_tbl_fsUnit_InsertToHRIS",
+                    dto, commandType: CommandType.StoredProcedure);
+            }
+        }
+
+        public async Task InsertToPayrollFileSetUp(UnitInsertToPayrollFSDto dto)
+        {
+            using (var conn = connectionFactory.Connection)
+            {
+                await conn.ExecuteAsync("sp_tbl_fsUnit_InsertToPayroll",
+                    dto, commandType: CommandType.StoredProcedure);
+            }
+        }
+
+        public async Task Update(Unit unit)
         {
             using (var conn = connectionFactory.Connection)
             {
                 await conn.ExecuteAsync("sp_UnitSetUp_Update",
-                    dep, commandType: CommandType.StoredProcedure);
+                    unit, commandType: CommandType.StoredProcedure);
             }
         }
     }

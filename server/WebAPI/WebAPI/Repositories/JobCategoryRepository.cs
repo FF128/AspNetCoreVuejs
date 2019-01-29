@@ -56,7 +56,7 @@ namespace WebAPI.Repositories
             }
         }
 
-        public async Task<JobCategory> GetById(int id)
+        public Task<JobCategory> GetById(int id)
         {
             throw new NotImplementedException();
         }

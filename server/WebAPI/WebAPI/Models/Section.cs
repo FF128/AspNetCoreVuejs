@@ -11,9 +11,9 @@ namespace WebAPI.Models
     {
         public int Id { get; set; }
         public string SectionCode { get; set; }
-        public string SectionDesc { get; set; }
-        public string SecHead { get; set; }
-        public string SecHeadCode { get; set; }
+        public string SectionDesc { get; set; } = "";
+        public string SecHead { get; set; } = "";
+        public string SecHeadCode { get; set; } = "";
         public string CompanyCode { get; set; }
     }
 }

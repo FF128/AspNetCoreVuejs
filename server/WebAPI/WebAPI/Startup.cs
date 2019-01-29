@@ -60,28 +60,34 @@ namespace WebAPI
             //services.AddSingleton<IValidator<Step>, StepValidator>();
             //services.AddSingleton<IValidator<DesignationFile>, DesignationFileValidator>();
             //services.AddSingleton<IValidator<Area>, AreaValidator>();
-
             services.AddMvc()
-                .SetCompatibilityVersion(CompatibilityVersion.Version_2_1)
-                .AddFluentValidation(fv => {
-                    fv.RegisterValidatorsFromAssemblyContaining<CitizenshipValidator>();
-                });
-            services.Configure<ApiBehaviorOptions>(options =>
-            {
-                options.InvalidModelStateResponseFactory = (context) =>
-                {
-                    var errors = context.ModelState.Values.SelectMany(x => x.Errors.Select(p => p.ErrorMessage)).ToList();
-                    
-                    //var result = new
-                    //{
-                    //    Code = "00009",
-                    //    Message = "Validation errors",
-                    //    Errors = errors
-                    //}; 
+               .SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            //services.AddMvc()
+            //    .SetCompatibilityVersion(CompatibilityVersion.Version_2_1)
+            //    .AddFluentValidation(fv => {
+            //        fv.RegisterValidatorsFromAssemblyContaining<CitizenshipValidator>();
+            //    });
+            //services.Configure<ApiBehaviorOptions>(options =>
+            //{
+            //    options.InvalidModelStateResponseFactory = (context) =>
+            //    {
+            //        var errors = context.ModelState.Values.SelectMany(x => x.Errors.Select(p => p.ErrorMessage)).ToList();
 
-                    return new BadRequestObjectResult(CustomMessageHandler.Custom("Validation Errors", errors.ToArray(), true));
-                };
+            //        //var result = new
+            //        //{
+            //        //    Code = "00009",
+            //        //    Message = "Validation errors",
+            //        //    Errors = errors
+            //        //}; 
+
+            //        return new BadRequestObjectResult(CustomMessageHandler.Custom("Validation Errors", errors.ToArray(), true));
+            //    };
+            //});
+            services.Configure<IISOptions>(opt =>
+            {
+                opt.AutomaticAuthentication = true;
             });
+
             services.AddAutoMapper();
 
             services.AddCors();
@@ -240,7 +246,6 @@ namespace WebAPI
             services.AddScoped<IMultiCompanyDatabaseService, MultiCompanyDatabaseService>();
             services.AddScoped<ISMSFormatService, SMSFormatService>();
             services.AddScoped<IEvalEmailFormatService, EvalEmailFormatService>();
-
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -255,7 +260,6 @@ namespace WebAPI
                 app.UseHsts();
             }
             //app.UseMiddleware<StackifyMiddleware.RequestTracerMiddleware>();
-
             app.UseCors(options => options.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin());
             app.UseAuthentication();
             app.UseHttpsRedirection();

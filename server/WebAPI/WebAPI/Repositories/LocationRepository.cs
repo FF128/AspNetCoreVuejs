@@ -8,6 +8,7 @@ using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
+using WebAPI.Dtos.Location;
 
 namespace WebAPI.Repositories
 {
@@ -24,6 +25,16 @@ namespace WebAPI.Repositories
             {
                 await conn.ExecuteAsync("sp_LocationSetUp_Delete",
                     new { Id = id },
+                    commandType: CommandType.StoredProcedure);
+            }
+        }
+
+        public async Task DeleteByCode(string code)
+        {
+            using (var conn = connectionFactory.Connection)
+            {
+                await conn.ExecuteAsync("sp_tbl_fsLocation_DeleteByCode",
+                    new { code },
                     commandType: CommandType.StoredProcedure);
             }
         }
@@ -48,6 +59,39 @@ namespace WebAPI.Repositories
             }
         }
 
+        public async Task<dynamic> GetByCodeFromHRIS(string code, string hrisDB)
+        {
+            using (var conn = connectionFactory.Connection)
+            {
+                return
+                   await conn.QueryFirstOrDefaultAsync("sp_tbl_fsLocation_ViewByCodeFromHRIS",
+                       new { Code = code, DBName = hrisDB },
+                       commandType: CommandType.StoredProcedure);
+            }
+        }
+
+        public async Task<dynamic> GetByCodeFromPayroll(string code, string payrollDB)
+        {
+            using (var conn = connectionFactory.Connection)
+            {
+                return
+                   await conn.QueryFirstOrDefaultAsync("sp_tbl_fsLocation_ViewByCodeFromPayroll",
+                       new { Code = code, DBName = payrollDB },
+                       commandType: CommandType.StoredProcedure);
+            }
+        }
+
+        public async Task<dynamic> GetByCodeFromTKS(string code, string tskDB)
+        {
+            using (var conn = connectionFactory.Connection)
+            {
+                return
+                   await conn.QueryFirstOrDefaultAsync("sp_tbl_fsLocation_ViewByCodeFromTKS",
+                       new { Code = code, DBName = tskDB },
+                       commandType: CommandType.StoredProcedure);
+            }
+        }
+
         public async Task<Location> GetById(int id)
         {
             using (var conn = connectionFactory.Connection)
@@ -59,21 +103,57 @@ namespace WebAPI.Repositories
             }
         }
 
-        public async Task Insert(Location dep)
+        public async Task Insert(Location loc)
         {
             using (var conn = connectionFactory.Connection)
             {
                 await conn.ExecuteAsync("sp_LocationSetUp_Insert",
-                    dep, commandType: CommandType.StoredProcedure);
+                    loc, commandType: CommandType.StoredProcedure);
             }
         }
 
-        public async Task Update(Location dep)
+        public async Task InsertFileSetup(Location loc)
+        {
+            using (var conn = connectionFactory.Connection)
+            {
+                await conn.ExecuteAsync("sp_tbl_fsLocation_Insert",
+                    loc, commandType: CommandType.StoredProcedure);
+            }
+        }
+
+        public async Task InsertToHRISFileSetUp(LocationInsertFileSetupDto dto)
+        {
+            using (var conn = connectionFactory.Connection)
+            {
+                await conn.ExecuteAsync("sp_tbl_fsLocation_InsertToHRIS",
+                    dto, commandType: CommandType.StoredProcedure);
+            }
+        }
+
+        public async Task InsertToPayrollFileSetUp(LocationInsertFileSetupDto dto)
+        {
+            using (var conn = connectionFactory.Connection)
+            {
+                await conn.ExecuteAsync("sp_tbl_fsLocation_InsertToPayroll",
+                    dto, commandType: CommandType.StoredProcedure);
+            }
+        }
+
+        public async Task InsertToTSKFileSetUp(LocationInsertFileSetupDto dto)
+        {
+            using (var conn = connectionFactory.Connection)
+            {
+                await conn.ExecuteAsync("sp_tbl_fsLocation_InsertToTKS",
+                    dto, commandType: CommandType.StoredProcedure);
+            }
+        }
+
+        public async Task Update(Location loc)
         {
             using (var conn = connectionFactory.Connection)
             {
                 await conn.ExecuteAsync("sp_LocationSetUp_Update",
-                    dep, commandType: CommandType.StoredProcedure);
+                    loc, commandType: CommandType.StoredProcedure);
             }
         }
     }
