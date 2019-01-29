@@ -5,6 +5,7 @@ using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using WebAPI.Data;
+using WebAPI.Dtos.Religion;
 using WebAPI.Models;
 using WebAPI.RepositoryInterfaces;
 
@@ -23,6 +24,16 @@ namespace WebAPI.Repositories
             {
                 await conn.ExecuteAsync("sp_ReligionSetUp_Delete",
                     new { Id = id },
+                    commandType: CommandType.StoredProcedure);
+            }
+        }
+
+        public async Task DeleteByCode(string code)
+        {
+            using (var conn = connectionFactory.Connection)
+            {
+                await conn.ExecuteAsync("sp_tbl_fsReligion_DeleteByCode",
+                    new { code },
                     commandType: CommandType.StoredProcedure);
             }
         }
@@ -47,6 +58,17 @@ namespace WebAPI.Repositories
             }
         }
 
+        public async Task<dynamic> GetByCodeFromHRIS(string code, string hrisDB)
+        {
+            using (var conn = connectionFactory.Connection)
+            {
+                return
+                   await conn.QueryFirstOrDefaultAsync("sp_tbl_fsReligion_ViewByCodeFromHRIS",
+                       new { Code = code, DBName = hrisDB },
+                       commandType: CommandType.StoredProcedure);
+            }
+        }
+
         public async Task<Religion> GetById(int id)
         {
             using (var conn = connectionFactory.Connection)
@@ -64,6 +86,24 @@ namespace WebAPI.Repositories
             {
                 await conn.ExecuteAsync("sp_ReligionSetUp_Insert",
                     rel, commandType: CommandType.StoredProcedure);
+            }
+        }
+
+        public async Task InsertFileSetup(Religion rel)
+        {
+            using (var conn = connectionFactory.Connection)
+            {
+                await conn.ExecuteAsync("sp_tbl_fsReligion_Insert",
+                    rel, commandType: CommandType.StoredProcedure);
+            }
+        }
+
+        public async Task InsertToHRISFileSetUp(ReligionInsertToHRISFSDto dto)
+        {
+            using (var conn = connectionFactory.Connection)
+            {
+                var result = await conn.ExecuteAsync("sp_tbl_fsReligion_InsertToHRIS",
+                     dto, commandType: CommandType.StoredProcedure);
             }
         }
 
