@@ -63,6 +63,7 @@ namespace WebAPI
             //services.AddSingleton<IValidator<Step>, StepValidator>();
             //services.AddSingleton<IValidator<DesignationFile>, DesignationFileValidator>();
             //services.AddSingleton<IValidator<Area>, AreaValidator>();
+
             services.AddMvc()
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_1)
                 .AddFluentValidation(fv =>

@@ -21,9 +21,14 @@ namespace WebAPI.Helpers
             // School
             CreateMap<SchoolInsertToHRISFSDto, School>();
             CreateMap<School, SchoolInsertToHRISFSDto>();
+            CreateMap<School, SchoolUpdateToHRISFSDto>();
+            CreateMap<SchoolUpdateToHRISFSDto, School>();
+
             // Course
             CreateMap<CourseInsertToHRISFSDto, CourseDegree>();
             CreateMap<CourseDegree, CourseInsertToHRISFSDto>();
+            CreateMap<CourseUpdateToHRISFSDto, CourseDegree>();
+            CreateMap<CourseDegree, CourseUpdateToHRISFSDto>();
             //Skills
             CreateMap<SkillInsertToHRISFSDto, Skills>();
             CreateMap<Skills, SkillInsertToHRISFSDto>();

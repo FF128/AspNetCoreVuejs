@@ -16,13 +16,16 @@ namespace WebAPI.Services
         private readonly IReligionRepository repo;
         private readonly IAuditTrailService<Religion> auditTrailService;
         private readonly ICompanyInformationRepository compInfoRepo;
+        private readonly IFileSetupService fileSetupService;
         public ReligionService(IReligionRepository repo,
             IAuditTrailService<Religion> auditTrailService,
-            ICompanyInformationRepository compInfoRepo)
+            ICompanyInformationRepository compInfoRepo,
+            IFileSetupService fileSetupService)
         {
             this.repo = repo;
             this.auditTrailService = auditTrailService;
             this.compInfoRepo = compInfoRepo;
+            this.fileSetupService = fileSetupService;
         }
 
         public async Task<CustomMessage> Delete(int id)
@@ -68,22 +71,13 @@ namespace WebAPI.Services
             if (relData == null)
             {
                 var companyInfo = await compInfoRepo.GetByCompanyCode(compInfoRepo.GetCompanyCode());
-                if (companyInfo == null)
-                {
-                    return CustomMessageHandler.Error("Company Information doesn't exist");
-                }
+                var validationResult =
+                    fileSetupService.Validate(companyInfo, await compInfoRepo.CheckDBIfExists(companyInfo.PayrollDB),
+                        await compInfoRepo.CheckDBIfExists(companyInfo.TKSDB), await compInfoRepo.CheckDBIfExists(companyInfo.HRISDB));
 
-                if (!(await compInfoRepo.CheckDBIfExists(companyInfo.PayrollDB)))
+                if (!validationResult.hasError)
                 {
-                    return CustomMessageHandler.Error("Payroll Database doesn't exist!");
-                }
-                else if (!(await compInfoRepo.CheckDBIfExists(companyInfo.TKSDB)))
-                {
-                    return CustomMessageHandler.Error("Timekeeping Database doesn't exist!");
-                }
-                else if (!(await compInfoRepo.CheckDBIfExists(companyInfo.HRISDB)))
-                {
-                    return CustomMessageHandler.Error("HRIS Database doesn't exist!");
+                    return CustomMessageHandler.Error(validationResult.message);
                 }
                 else
                 {
@@ -120,15 +114,47 @@ namespace WebAPI.Services
 
         public async Task<CustomMessage> Update(Religion rel)
         {
-            var oldVal = await repo.GetById(rel.Id);
-            if ((await repo.GetByCode(rel.Code)) != null)
+            var relData = await repo.GetByCode(rel.Code);
+            if (relData != null)
             {
-                await repo.Update(rel);
+                var companyInfo = await compInfoRepo.GetByCompanyCode(compInfoRepo.GetCompanyCode());
+                var validationResult =
+                    fileSetupService.Validate(companyInfo, await compInfoRepo.CheckDBIfExists(companyInfo.PayrollDB),
+                        await compInfoRepo.CheckDBIfExists(companyInfo.TKSDB), await compInfoRepo.CheckDBIfExists(companyInfo.HRISDB));
 
-                //Audit Trail
-                await auditTrailService.Save(oldVal, rel, "EDIT");
+                if (!validationResult.hasError)
+                {
+                    return CustomMessageHandler.Error(validationResult.message);
+                }
+                else
+                {
+                    // HRIS 
+                    var hrisResult = await compInfoRepo.CheckTableIfExists(companyInfo.HRISDB, TABLE_NAME);
+                    if (hrisResult && companyInfo.HRISFlag)
+                    {
+                        // Check from payroll database
+                        var results = await repo.GetByCodeFromHRIS(rel.Code, companyInfo.HRISDB);
+                        if (results != null)
+                        {
+                            // SAVE TO PAYROLL DB
+                            await repo.UpdateToHRISFileSetUp(new ReligionUpdateToHRISFSDto
+                            {
+                                RelCode = rel.Code,
+                                RelDesc = rel.Description,
+                                EditedBy = "", // Current User
+                                DBName = companyInfo.HRISDB
+                            });
+                        }
+                    }
 
-                return CustomMessageHandler.RecordUpdated();
+                    await repo.UpdateFileSetup(rel);
+                    await repo.Update(rel);
+
+                    //Audit Trail
+                    await auditTrailService.Save(relData, rel, "EDIT");
+
+                    return CustomMessageHandler.RecordUpdated();
+                }
             }
             return CustomMessageHandler.Error("You can't edit this code");
         }

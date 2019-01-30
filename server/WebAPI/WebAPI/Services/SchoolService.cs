@@ -17,16 +17,19 @@ namespace WebAPI.Services
         private readonly ISchoolRepository repo;
         private readonly IAuditTrailService<School> auditTrailService;
         private readonly ICompanyInformationRepository compInfoRepo;
+        private readonly IFileSetupService fileSetupService;
         private readonly IMapper mapper;
         public SchoolService(ISchoolRepository repo,
              IAuditTrailService<School> auditTrailService,
              ICompanyInformationRepository compInfoRepo,
-             IMapper mapper)
+             IMapper mapper,
+             IFileSetupService fileSetupService)
         {
             this.repo = repo;
             this.auditTrailService = auditTrailService;
             this.compInfoRepo = compInfoRepo;
             this.mapper = mapper;
+            this.fileSetupService = fileSetupService;
         }
 
         public async Task<CustomMessage> Delete(int id)
@@ -71,22 +74,13 @@ namespace WebAPI.Services
             if (schoolData == null)
             {
                 var companyInfo = await compInfoRepo.GetByCompanyCode(compInfoRepo.GetCompanyCode());
-                if (companyInfo == null)
-                {
-                    return CustomMessageHandler.Error("Company Information doesn't exist");
-                }
+                var validationResult =
+                    fileSetupService.Validate(companyInfo, await compInfoRepo.CheckDBIfExists(companyInfo.PayrollDB),
+                        await compInfoRepo.CheckDBIfExists(companyInfo.TKSDB), await compInfoRepo.CheckDBIfExists(companyInfo.HRISDB));
 
-                if (!(await compInfoRepo.CheckDBIfExists(companyInfo.PayrollDB)))
+                if (!validationResult.hasError)
                 {
-                    return CustomMessageHandler.Error("Payroll Database doesn't exist!");
-                }
-                else if (!(await compInfoRepo.CheckDBIfExists(companyInfo.TKSDB)))
-                {
-                    return CustomMessageHandler.Error("Timekeeping Database doesn't exist!");
-                }
-                else if (!(await compInfoRepo.CheckDBIfExists(companyInfo.HRISDB)))
-                {
-                    return CustomMessageHandler.Error("HRIS Database doesn't exist!");
+                    return CustomMessageHandler.Error(validationResult.message);
                 }
                 else
                 {
@@ -122,13 +116,40 @@ namespace WebAPI.Services
             var schoolData = await repo.GetByCode(school.SchoolCode);
             if (schoolData != null)
             {
-                await repo.Update(school);
+                var companyInfo = await compInfoRepo.GetByCompanyCode(compInfoRepo.GetCompanyCode());
+                var validationResult =
+                    fileSetupService.Validate(companyInfo, await compInfoRepo.CheckDBIfExists(companyInfo.PayrollDB),
+                        await compInfoRepo.CheckDBIfExists(companyInfo.TKSDB), await compInfoRepo.CheckDBIfExists(companyInfo.HRISDB));
 
-                //Audit Trail
-                await auditTrailService.Save(schoolData, school, "EDIT");
+                if (!validationResult.hasError)
+                {
+                    return CustomMessageHandler.Error(validationResult.message);
+                }
+                else
+                {
+                    // HRIS 
+                    var hrisResult = await compInfoRepo.CheckTableIfExists(companyInfo.HRISDB, TABLE_NAME);
+                    if (hrisResult && companyInfo.HRISFlag)
+                    {
+                        // Check from payroll database
+                        var results = await repo.GetByCodeFromHRIS(school.SchoolCode, companyInfo.HRISDB);
+                        if (results != null)
+                        {
+                            var schoolDto = mapper.Map<SchoolUpdateToHRISFSDto>(school);
+                            schoolDto.DBName = companyInfo.HRISDB;
+                            // SAVE TO HRIS DB
+                            await repo.UpdateToHRISFileSetUp(schoolDto);
+                        }
+                    }
 
-                return CustomMessageHandler.RecordUpdated();
+                    await repo.UpdateFileSetup(school);
+                    await repo.Update(school);
 
+                    //Audit Trail
+                    await auditTrailService.Save(schoolData, school, "EDIT");
+
+                    return CustomMessageHandler.RecordUpdated();
+                }
             }
             return CustomMessageHandler.Error("You can't edit this code");
         }

@@ -115,5 +115,23 @@ namespace WebAPI.Repositories
                     rel, commandType: CommandType.StoredProcedure);
             }
         }
+
+        public async Task UpdateFileSetup(Religion rel)
+        {
+            using (var conn = connectionFactory.Connection)
+            {
+                await conn.ExecuteAsync("sp_tbl_fsReligion_Update",
+                    rel, commandType: CommandType.StoredProcedure);
+            }
+        }
+
+        public async Task UpdateToHRISFileSetUp(ReligionUpdateToHRISFSDto dto)
+        {
+            using (var conn = connectionFactory.Connection)
+            {
+                var result = await conn.ExecuteAsync("sp_tbl_fsReligion_UpdateToHRIS",
+                     dto, commandType: CommandType.StoredProcedure);
+            }
+        }
     }
 }

@@ -116,5 +116,23 @@ namespace WebAPI.Repositories
                     dep, commandType: CommandType.StoredProcedure);
             }
         }
+
+        public async Task UpdateFileSetup(CourseDegree cd)
+        {
+            using (var conn = connectionFactory.Connection)
+            {
+                await conn.ExecuteAsync("sp_tbl_fsCourseDegree_Update",
+                    cd, commandType: CommandType.StoredProcedure);
+            }
+        }
+
+        public async Task UpdateToHRISFileSetUp(CourseUpdateToHRISFSDto dto)
+        {
+            using (var conn = connectionFactory.Connection)
+            {
+                var result = await conn.ExecuteAsync("sp_tbl_fsCourseDegree_UpdateToHRIS",
+                     dto, commandType: CommandType.StoredProcedure);
+            }
+        }
     }
 }

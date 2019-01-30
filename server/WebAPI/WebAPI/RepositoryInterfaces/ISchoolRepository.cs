@@ -18,6 +18,8 @@ namespace WebAPI.RepositoryInterfaces
         Task InsertFileSetup(School school);
         Task InsertToHRISFileSetUp(SchoolInsertToHRISFSDto dto);
         Task Update(School school);
+        Task UpdateFileSetup(School school);
+        Task UpdateToHRISFileSetUp(SchoolUpdateToHRISFSDto dto);
         Task Delete(int id);
         Task DeleteByCode(string code);
     }

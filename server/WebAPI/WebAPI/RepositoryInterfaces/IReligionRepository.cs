@@ -16,6 +16,8 @@ namespace WebAPI.RepositoryInterfaces
         Task InsertFileSetup(Religion rel);
         Task InsertToHRISFileSetUp(ReligionInsertToHRISFSDto dto);
         Task Update(Religion rel);
+        Task UpdateFileSetup(Religion rel);
+        Task UpdateToHRISFileSetUp(ReligionUpdateToHRISFSDto dto);
         Task Delete(int id);
         Task<Religion> GetByCode(string code);
         Task DeleteByCode(string code);
