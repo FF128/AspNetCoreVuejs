@@ -8,6 +8,7 @@ using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
+using WebAPI.Dtos.MajorDto;
 
 namespace WebAPI.Repositories
 {
@@ -24,6 +25,16 @@ namespace WebAPI.Repositories
             {
                 await conn.ExecuteAsync("sp_MajorSetUp_Delete",
                     new { Id = id },
+                    commandType: CommandType.StoredProcedure);
+            }
+        }
+
+        public async Task DeleteByCode(string code)
+        {
+            using(var conn = connectionFactory.Connection)
+            {
+                await conn.ExecuteAsync("sp_tbl_fsMajor_DeleteByCode",
+                    new { code },
                     commandType: CommandType.StoredProcedure);
             }
         }
@@ -48,6 +59,17 @@ namespace WebAPI.Repositories
             }
         }
 
+        public async Task<dynamic> GetByCodeFromHRIS(string code, string hrisDB)
+        {
+            using (var conn = connectionFactory.Connection)
+            {
+                return
+                   await conn.QueryFirstOrDefaultAsync("sp_tbl_fsMajor_ViewByCodeFromHRIS",
+                       new { Code = code, DBName = hrisDB },
+                       commandType: CommandType.StoredProcedure);
+            }
+        }
+
         public async Task<Major> GetById(int id)
         {
             using (var conn = connectionFactory.Connection)
@@ -65,6 +87,24 @@ namespace WebAPI.Repositories
             {
                 await conn.ExecuteAsync("sp_MajorSetUp_Insert",
                     major, commandType: CommandType.StoredProcedure);
+            }
+        }
+
+        public async Task InsertFileSetup(Major major)
+        {
+            using (var conn = connectionFactory.Connection)
+            {
+                await conn.ExecuteAsync("sp_tbl_fsMajor_Insert",
+                    major, commandType: CommandType.StoredProcedure);
+            }
+        }
+
+        public async Task InsertToHRISFileSetUp(MajorInsertToHRISFSDto dto)
+        {
+            using (var conn = connectionFactory.Connection)
+            {
+                var result = await conn.ExecuteAsync("sp_tbl_fsMajor_InsertToHRIS",
+                     dto, commandType: CommandType.StoredProcedure);
             }
         }
 

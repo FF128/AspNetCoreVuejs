@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using WebAPI.Data;
 using WebAPI.Dtos;
+using WebAPI.Dtos.CitizenshipDto;
 using WebAPI.Models;
 using WebAPI.RepositoryInterfaces;
 
@@ -81,7 +82,7 @@ namespace WebAPI.Repositories
         {
             using (var conn = connectionFactory.Connection)
             {
-                await conn.ExecuteAsync("sp_tbl_fsCitizenship_Update",
+                await conn.ExecuteAsync("sp_CitizenshipSetUp_Update",
                     cit, commandType: CommandType.StoredProcedure);
             }
         }
@@ -129,6 +130,33 @@ namespace WebAPI.Repositories
             using (var conn = connectionFactory.Connection)
             {
                 await conn.ExecuteAsync("sp_CitizenshipSetUp_Insert",
+                    cit, commandType: CommandType.StoredProcedure);
+            }
+        }
+
+        public async Task UpdateToPayrollFileSetUp(CitizenshipUpdateToFileSetUpDto dto)
+        {
+            using (var conn = connectionFactory.Connection)
+            {
+                await conn.ExecuteAsync("sp_tbl_fsCitizenship_UpdateToPayroll",
+                    dto, commandType: CommandType.StoredProcedure);
+            }
+        }
+
+        public async Task UpdateToHRISFileSetUp(CitizenshipUpdateToFileSetUpDto dto)
+        {
+            using (var conn = connectionFactory.Connection)
+            {
+                await conn.ExecuteAsync("sp_tbl_fsCitizenship_UpdateToHRIS",
+                    dto, commandType: CommandType.StoredProcedure);
+            }
+        }
+
+        public async Task UpdateFileSetup(Citizenship cit)
+        {
+            using (var conn = connectionFactory.Connection)
+            {
+                await conn.ExecuteAsync("sp_tbl_fsCitizenship_Update",
                     cit, commandType: CommandType.StoredProcedure);
             }
         }

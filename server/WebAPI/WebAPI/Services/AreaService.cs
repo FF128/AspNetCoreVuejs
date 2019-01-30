@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using WebAPI.Dtos;
+using WebAPI.Dtos.AreaDto;
 using WebAPI.Helpers;
 using WebAPI.Models;
 using WebAPI.RepositoryInterfaces;
@@ -16,13 +17,16 @@ namespace WebAPI.Services
         private readonly IAreaRepository repo;
         private readonly IAuditTrailService<Area> auditTrailService;
         private readonly ICompanyInformationRepository compInfoRepo;
+        private readonly IFileSetupService fileSetupService;
         public AreaService(IAreaRepository repo,
              IAuditTrailService<Area> auditTrailService,
-             ICompanyInformationRepository compInfoRepo)
+             ICompanyInformationRepository compInfoRepo,
+             IFileSetupService fileSetupService)
         {
             this.repo = repo;
             this.auditTrailService = auditTrailService;
             this.compInfoRepo = compInfoRepo;
+            this.fileSetupService = fileSetupService;
         }
 
         public async Task<CustomMessage> Delete(int id)
@@ -65,22 +69,13 @@ namespace WebAPI.Services
             if (areaData == null)
             {
                 var companyInfo = await compInfoRepo.GetByCompanyCode(compInfoRepo.GetCompanyCode());
-                if (companyInfo == null)
-                {
-                    return CustomMessageHandler.Error("Company Information doesn't exist");
-                }
+                var validationResult =
+                     fileSetupService.Validate(companyInfo, await compInfoRepo.CheckDBIfExists(companyInfo.PayrollDB),
+                         await compInfoRepo.CheckDBIfExists(companyInfo.TKSDB), await compInfoRepo.CheckDBIfExists(companyInfo.HRISDB));
 
-                if (!(await compInfoRepo.CheckDBIfExists(companyInfo.PayrollDB)))
+                if (!validationResult.hasError)
                 {
-                    return CustomMessageHandler.Error("Payroll Database doesn't exist!");
-                }
-                else if (!(await compInfoRepo.CheckDBIfExists(companyInfo.TKSDB)))
-                {
-                    return CustomMessageHandler.Error("Timekeeping Database doesn't exist!");
-                }
-                else if (!(await compInfoRepo.CheckDBIfExists(companyInfo.HRISDB)))
-                {
-                    return CustomMessageHandler.Error("HRIS Database doesn't exist!");
+                    return CustomMessageHandler.Error(validationResult.message);
                 }
                 else
                 {
@@ -148,16 +143,76 @@ namespace WebAPI.Services
 
         public async Task<CustomMessage> Update(Area area)
         {
-            var AreaData = await repo.GetByCode(area.AreaCode);
-            if (AreaData != null)
+            var areaData = await repo.GetByCode(area.AreaCode);
+            if (areaData != null)
             {
-                await repo.Update(area);
+                var companyInfo = await compInfoRepo.GetByCompanyCode(compInfoRepo.GetCompanyCode());
+                var validationResult =
+                    fileSetupService.Validate(companyInfo, await compInfoRepo.CheckDBIfExists(companyInfo.PayrollDB),
+                        await compInfoRepo.CheckDBIfExists(companyInfo.TKSDB), await compInfoRepo.CheckDBIfExists(companyInfo.HRISDB));
 
-                //Audit Trail
-                await auditTrailService.Save(AreaData, area, "EDIT");
+                if (!validationResult.hasError)
+                {
+                    return CustomMessageHandler.Error(validationResult.message);
+                }
+                else
+                {
+                    var areaDto = new AreaUpdateToFileSetUpDto
+                    {
+                        AreaCode = area.AreaCode,
+                        AreaDesc = area.AreaDesc,
+                        AcctCode = area.AcctCode,
+                        HeadCode = area.HeadCode,
+                        EditedBy = "" // Current User
+                    };
+                    // PAYROLL 
+                    var result = await compInfoRepo.CheckTableIfExists(companyInfo.PayrollDB, TABLE_NAME);
+                    if (result && companyInfo.PayrollFlag)
+                    {
+                        // Check from payroll database
+                        var results = await repo.GetByCodeFromPayroll(area.AreaCode, companyInfo.PayrollDB);
+                        if (results != null)
+                        {
+                            areaDto.DBName = companyInfo.PayrollDB;
+                            // SAVE TO PAYROLL DB
+                            await repo.UpdateToPayrollFileSetUp(areaDto);
+                        }
+                    }
+                    // TIME KEEPING
+                    var tksResult = await compInfoRepo.CheckTableIfExists(companyInfo.TKSDB, TABLE_NAME);
+                    if (tksResult && companyInfo.TKSFlag)
+                    {
+                        var results = await repo.GetByCodeFromTKS(area.AreaCode, companyInfo.TKSDB);
+                        if (results != null)
+                        {
+                            areaDto.DBName = companyInfo.TKSDB;
+                            // SAVE TO TKS DB
+                            await repo.UpdateToTKSFileSetUp(areaDto);
+                        }
+                    }
+                    // HRIS 
+                    var hrisResult = await compInfoRepo.CheckTableIfExists(companyInfo.HRISDB, TABLE_NAME);
+                    if (hrisResult && companyInfo.HRISFlag)
+                    {
+                        // Check from payroll database
+                        var results = await repo.GetByCodeFromHRIS(area.AreaCode, companyInfo.HRISDB);
+                        if (results != null)
+                        {
+                            areaDto.DBName = companyInfo.HRISDB;
+                            // SAVE TO PAYROLL DB
+                            await repo.UpdateToHRISFileSetUp(areaDto);
+                        }
+                    }
 
-                return CustomMessageHandler.RecordUpdated();
 
+                    await repo.UpdateFileSetup(area);
+                    await repo.Update(area);
+
+                    //Audit Trail
+                    await auditTrailService.Save(areaData, area, "EDIT");
+
+                    return CustomMessageHandler.RecordUpdated();
+                }
             }
             return CustomMessageHandler.Error("You can't edit this code");
         }

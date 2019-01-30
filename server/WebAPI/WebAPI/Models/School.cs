@@ -11,8 +11,8 @@ namespace WebAPI.Models
     {
         public int Id { get; set; }
         public string SchoolCode { get; set; }
-        public string SchoolDesc { get; set; }
-        public string SchoolAddress { get; set; }
+        public string SchoolDesc { get; set; } = "";
+        public string SchoolAddress { get; set; } = "";
         public string CompanyCode { get; set; }
     }
 }

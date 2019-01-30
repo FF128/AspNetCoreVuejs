@@ -20,6 +20,9 @@ namespace WebAPI.RepositoryInterfaces
         Task InsertToPayrollFileSetUp(UnitInsertToPayrollFSDto dto);
         Task InsertToHRISFileSetUp(UnitInsertToHRISFSDto dto);
         Task Update(Unit unit);
+        Task UpdateFileSetup(Unit unit);
+        Task UpdateToPayrollFileSetUp(UnitUpdateToPayrollFSDto dto);
+        Task UpdateToHRISFileSetUp(UnitUpdateToHRISFSDto dto);
         Task Delete(int id);
         Task DeleteByCode(string code);
     }

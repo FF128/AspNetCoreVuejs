@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using WebAPI.Dtos.GradeDto;
 using WebAPI.Helpers;
 using WebAPI.Models;
 using WebAPI.RepositoryInterfaces;
@@ -11,6 +12,7 @@ namespace WebAPI.Services
 {
     public class GradeService : IGradeService
     {
+        private const string TABLE_NAME = "tbl_fsGrade";
         private readonly IGradeRepository repo;
         private readonly IAuditTrailService<Grade> auditTrailService;
         private readonly ICompanyInformationRepository compInfoRepo;
@@ -37,19 +39,106 @@ namespace WebAPI.Services
             return CustomMessageHandler.Error("Data doesn't exist");
         }
 
-        public async Task<CustomMessage> Insert(Grade Grade)
+        public async Task<CustomMessage> DeleteByCode(string code)
         {
-            if (String.IsNullOrEmpty(Grade.Code) || String.IsNullOrWhiteSpace(Grade.Code))
+            var grade = await repo.GetByCode(code);
+            if (grade != null)
+            {
+                await repo.DeleteByCode(code);
+
+                await auditTrailService.Save(new Grade(), grade, "DELETE");
+
+                return CustomMessageHandler.RecordDeleted();
+            }
+            return CustomMessageHandler.Error("Data doesn't exist");
+        }
+
+        public async Task<CustomMessage> Insert(Grade grade)
+        {
+            // Get Company Code
+            grade.CompanyCode = compInfoRepo.GetCompanyCode();
+            if (String.IsNullOrEmpty(grade.Code) || String.IsNullOrWhiteSpace(grade.Code))
             {
                 return CustomMessageHandler.Error("Code: field is required");
             }
 
-            if ((await repo.GetByCode(Grade.Code)) == null)
-            {
-                Grade.CompanyCode = compInfoRepo.GetCompanyCode();
-                await repo.Insert(Grade);
+            var gradeData = await repo.GetByCode(grade.Code);
 
-                await auditTrailService.Save(new Grade(), Grade, "ADD");
+            if (gradeData == null)
+            {
+                var companyInfo = await compInfoRepo.GetByCompanyCode(compInfoRepo.GetCompanyCode());
+                if (companyInfo == null)
+                {
+                    return CustomMessageHandler.Error("Company Information doesn't exist");
+                }
+
+                if (!(await compInfoRepo.CheckDBIfExists(companyInfo.PayrollDB)))
+                {
+                    return CustomMessageHandler.Error("Payroll Database doesn't exist!");
+                }
+                else if (!(await compInfoRepo.CheckDBIfExists(companyInfo.TKSDB)))
+                {
+                    return CustomMessageHandler.Error("Timekeeping Database doesn't exist!");
+                }
+                else if (!(await compInfoRepo.CheckDBIfExists(companyInfo.HRISDB)))
+                {
+                    return CustomMessageHandler.Error("HRIS Database doesn't exist!");
+                }
+                else
+                {
+                    var gradeInsertDto = new GradeInsertToFileSetupDto
+                    {
+                        GrdCode = grade.Code,
+                        GrdDesc = grade.Description,
+                        CreatedBy = "" // Current User
+                    };
+                    // PAYROLL 
+                    var result = await compInfoRepo.CheckTableIfExists(companyInfo.PayrollDB, TABLE_NAME);
+                    if (result && companyInfo.PayrollFlag)
+                    {
+                        // Check from payroll database
+                        var results = await repo.GetByCodeFromPayroll(grade.Code, companyInfo.PayrollDB);
+                        if (results == null)
+                        {
+                            gradeInsertDto.DBName = companyInfo.PayrollDB;
+                            // SAVE TO PAYROLL DB
+                            await repo.InsertToPayrollFileSetUp(gradeInsertDto);
+                        }
+
+                    }
+
+                    // TIME KEEPING
+                    var tksResult = await compInfoRepo.CheckTableIfExists(companyInfo.TKSDB, TABLE_NAME);
+                    if (tksResult && companyInfo.TKSFlag)
+                    {
+                        var results = await repo.GetByCodeFromTKS(grade.Code, companyInfo.TKSDB);
+                        if (results == null)
+                        {
+                            gradeInsertDto.DBName = companyInfo.TKSDB;
+                            // SAVE TO TKS DB
+                            await repo.InsertToTSKFileSetUp(gradeInsertDto);
+                        }
+
+                    }
+                    // HRIS
+                    var hrisResult = await compInfoRepo.CheckTableIfExists(companyInfo.HRISDB, TABLE_NAME);
+                    if (hrisResult && companyInfo.HRISFlag)
+                    {
+                        var results = await repo.GetByCodeFromHRIS(grade.Code, companyInfo.HRISDB);
+                        if (results == null)
+                        {
+                            gradeInsertDto.DBName = companyInfo.HRISDB;
+                            // SAVE TO HRIS DB
+                            await repo.InsertToHRISFileSetUp(gradeInsertDto);
+                        }
+
+                    }
+                }
+
+
+                await repo.InsertFileSetup(grade);
+                await repo.Insert(grade);
+                await auditTrailService.Save(new Grade(), grade, "ADD");
 
                 return CustomMessageHandler.RecordAdded();
 

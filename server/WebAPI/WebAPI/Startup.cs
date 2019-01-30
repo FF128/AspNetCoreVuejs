@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO.Compression;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,11 +13,13 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using WebAPI.Compression;
 using WebAPI.Data;
 using WebAPI.Helpers;
 using WebAPI.Models;
@@ -61,32 +64,53 @@ namespace WebAPI
             //services.AddSingleton<IValidator<DesignationFile>, DesignationFileValidator>();
             //services.AddSingleton<IValidator<Area>, AreaValidator>();
             services.AddMvc()
-               .SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
-            //services.AddMvc()
-            //    .SetCompatibilityVersion(CompatibilityVersion.Version_2_1)
-            //    .AddFluentValidation(fv => {
-            //        fv.RegisterValidatorsFromAssemblyContaining<CitizenshipValidator>();
-            //    });
-            //services.Configure<ApiBehaviorOptions>(options =>
-            //{
-            //    options.InvalidModelStateResponseFactory = (context) =>
-            //    {
-            //        var errors = context.ModelState.Values.SelectMany(x => x.Errors.Select(p => p.ErrorMessage)).ToList();
-
-            //        //var result = new
-            //        //{
-            //        //    Code = "00009",
-            //        //    Message = "Validation errors",
-            //        //    Errors = errors
-            //        //}; 
-
-            //        return new BadRequestObjectResult(CustomMessageHandler.Custom("Validation Errors", errors.ToArray(), true));
-            //    };
-            //});
-            services.Configure<IISOptions>(opt =>
+                .SetCompatibilityVersion(CompatibilityVersion.Version_2_1)
+                .AddFluentValidation(fv =>
+                {
+                    fv.RegisterValidatorsFromAssemblyContaining<CitizenshipValidator>();
+                });
+            services.Configure<ApiBehaviorOptions>(options =>
             {
-                opt.AutomaticAuthentication = true;
+                options.InvalidModelStateResponseFactory = (context) =>
+                {
+                    var errors = context.ModelState.Values.SelectMany(x => x.Errors.Select(p => p.ErrorMessage)).ToList();
+
+                    //var result = new
+                    //{
+                    //    Code = "00009",
+                    //    Message = "Validation errors",
+                    //    Errors = errors
+                    //}; 
+
+                    return new BadRequestObjectResult(CustomMessageHandler.Custom("Validation Errors", errors.ToArray(), true));
+                };
             });
+            //services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+
+            #region Configure Response Compression
+            services.Configure<GzipCompressionProviderOptions>(options => options.Level = CompressionLevel.Optimal);
+            services.AddResponseCompression(options =>
+            {
+                options.MimeTypes = new[]
+                {
+                    // Default
+                    "text/plain",
+                    "text/css",
+                    "application/javascript",
+                    "text/html",
+                    "application/xml",
+                    "text/xml",
+                    "application/json",
+                    "text/json",
+                    // Custom
+                    "image/svg+xml"
+                };
+                options.EnableForHttps = true;
+                options.Providers.Add<GzipCompressionProvider>();
+                options.Providers.Add<BrotliCompressionProvider>();
+          
+            });
+            #endregion
 
             services.AddAutoMapper();
 
@@ -94,7 +118,8 @@ namespace WebAPI
 
             services.AddScoped<IConnectionFactory, ConnectionFactory>();
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-            // Repositories
+
+            #region Repositories
             services.AddScoped<ISampleRepository, SampleRepository>();
             services.AddScoped<ICompanyInformationRepository, CompanyInformationRepository>();
             services.AddScoped<ICitizenshipRepository, CitizenshipRepository>();
@@ -149,6 +174,8 @@ namespace WebAPI
             services.AddScoped<IMultiCompanyDatabaseRepository, MultiCompanyDatabaseRepository>();
             services.AddScoped<ISMSFormatRepository, SMSFormatRepository>();
             services.AddScoped<IEvalEmailFormatRepository, EvalEmailFormatRepository>();
+            #endregion
+
 
             #region JWT Service Configuration
             var appSettingsSection = Configuration.GetSection("AppSettings");
@@ -246,6 +273,7 @@ namespace WebAPI
             services.AddScoped<IMultiCompanyDatabaseService, MultiCompanyDatabaseService>();
             services.AddScoped<ISMSFormatService, SMSFormatService>();
             services.AddScoped<IEvalEmailFormatService, EvalEmailFormatService>();
+            services.AddScoped<IFileSetupService, FileSetupService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -259,12 +287,13 @@ namespace WebAPI
             {
                 app.UseHsts();
             }
+            app.UseResponseCompression();
             //app.UseMiddleware<StackifyMiddleware.RequestTracerMiddleware>();
             app.UseCors(options => options.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin());
             app.UseAuthentication();
             app.UseHttpsRedirection();
             app.UseMvc();
-
+            
         }
     }
 }

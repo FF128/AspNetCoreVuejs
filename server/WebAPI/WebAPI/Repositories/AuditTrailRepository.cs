@@ -22,9 +22,13 @@ namespace WebAPI.Repositories
         //    throw new NotImplementedException();
         //}
 
-        public Task<IEnumerable<AuditTrail>> GetAll()
+        public async Task<IEnumerable<AuditTrail>> GetAll()
         {
-            throw new NotImplementedException();
+            using (var conn = connectionFactory.Connection)
+            {
+                return
+                    await conn.QueryAsync<AuditTrail>("sp_AuditTrail_View");
+            }
         }
 
         public Task<AuditTrail> GetById(int id)

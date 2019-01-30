@@ -1,5 +1,5 @@
 <template>
-    <v-list class="green lighten-5">
+    <v-list class="grey lighten-4">
          <v-list-tile v-for="(item,key) in recruitment"
             :key="key"
             @click="$router.push(item.link)">

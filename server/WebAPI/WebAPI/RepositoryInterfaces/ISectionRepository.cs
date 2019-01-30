@@ -20,7 +20,11 @@ namespace WebAPI.RepositoryInterfaces
         Task InsertFileSetup(Section sec);
         Task InsertToPayrollFileSetUp(SectionInsertToPayrollFSDto dto);
         Task InsertToHRISFileSetUp(SectionInsertToHRISFSDto dto);
-        Task InsertToTSKFileSetUp(SectionInsertToTKSFSDto dto);
+        Task InsertToTKSFileSetUp(SectionInsertToTKSFSDto dto);
+        Task UpdateFileSetup(Section sec);
+        Task UpdateToPayrollFileSetUp(SectionUpdateToPayrollFSDto dto);
+        Task UpdateToHRISFileSetUp(SectionUpdateToHRISFSDto dto);
+        Task UpdateToTKSFileSetUp(SectionUpdateToTKSFSDto dto);
         Task Update(Section sec);
         Task Delete(int id);
         Task DeleteByCode(string code);

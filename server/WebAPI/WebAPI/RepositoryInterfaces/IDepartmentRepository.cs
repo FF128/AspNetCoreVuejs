@@ -20,8 +20,12 @@ namespace WebAPI.RepositoryInterfaces
         Task InsertFileSetup(Department dep);
         Task InsertToPayrollFileSetUp(DepartmentInsertToPayrollFSDto dto);
         Task InsertToHRISFileSetUp(DepartmentInsertToHRISFSDto dto);
-        Task InsertToTSKFileSetUp(DepartmentInsertToTKSFSDto dto);
+        Task InsertToTKSFileSetUp(DepartmentInsertToTKSFSDto dto);
         Task Update(Department dep);
+        Task UpdateFileSetup(Department dep);
+        Task UpdateToPayrollFileSetUp(DepartmentUpdateToPayrollFSDto dto);
+        Task UpdateToHRISFileSetUp(DepartmentUpdateToHRISFSDto dto);
+        Task UpdateToTKSFileSetUp(DepartmentUpdateToTKSFSDto dto);
         Task Delete(int id);
         Task DeleteByCode(string code);
     }

@@ -139,7 +139,7 @@ namespace WebAPI.Repositories
             }
         }
 
-        public async Task InsertToTSKFileSetUp(LocationInsertFileSetupDto dto)
+        public async Task InsertToTKSFileSetUp(LocationInsertFileSetupDto dto)
         {
             using (var conn = connectionFactory.Connection)
             {
@@ -154,6 +154,42 @@ namespace WebAPI.Repositories
             {
                 await conn.ExecuteAsync("sp_LocationSetUp_Update",
                     loc, commandType: CommandType.StoredProcedure);
+            }
+        }
+
+        public async Task UpdateFileSetup(Location loc)
+        {
+            using (var conn = connectionFactory.Connection)
+            {
+                await conn.ExecuteAsync("sp_tbl_fsLocation_Update",
+                    loc, commandType: CommandType.StoredProcedure);
+            }
+        }
+
+        public async Task UpdateToHRISFileSetUp(LocationUpdateFileSetupDto dto)
+        {
+            using (var conn = connectionFactory.Connection)
+            {
+                await conn.ExecuteAsync("sp_tbl_fsLocation_UpdateToHRIS",
+                    dto, commandType: CommandType.StoredProcedure);
+            }
+        }
+
+        public async Task UpdateToPayrollFileSetUp(LocationUpdateFileSetupDto dto)
+        {
+            using (var conn = connectionFactory.Connection)
+            {
+                await conn.ExecuteAsync("sp_tbl_fsLocation_UpdateToPayroll",
+                    dto, commandType: CommandType.StoredProcedure);
+            }
+        }
+
+        public async Task UpdateToTKSFileSetUp(LocationUpdateFileSetupDto dto)
+        {
+            using (var conn = connectionFactory.Connection)
+            {
+                await conn.ExecuteAsync("sp_tbl_fsLocation_UpdateToTKS",
+                    dto, commandType: CommandType.StoredProcedure);
             }
         }
     }

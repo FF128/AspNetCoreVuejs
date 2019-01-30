@@ -70,6 +70,17 @@ namespace WebAPI.Repositories
             }
         }
 
+        public async Task<dynamic> GetByCodeFromPayroll(string code, string payrollDB)
+        {
+            using (var conn = connectionFactory.Connection)
+            {
+                return
+                   await conn.QueryFirstOrDefaultAsync("sp_tbl_fsDivision_ViewByCodeFromPayroll",
+                       new { Code = code, DBName = payrollDB },
+                       commandType: CommandType.StoredProcedure);
+            }
+        }
+
         public async Task<dynamic> GetByCodeFromTKS(string code, string tskDB)
         {
             using (var conn = connectionFactory.Connection)
@@ -119,7 +130,16 @@ namespace WebAPI.Repositories
             }
         }
 
-        public async Task InsertToTSKFileSetUp(DivInsertToTKSFSDto dto)
+        public async Task InsertToPayrollFileSetUp(DivInsertToPayrollFSDto dto)
+        {
+            using (var conn = connectionFactory.Connection)
+            {
+                await conn.ExecuteAsync("sp_tbl_fsDivision_InsertToPayroll",
+                    dto, commandType: CommandType.StoredProcedure);
+            }
+        }
+
+        public async Task InsertToTKSFileSetUp(DivInsertToTKSFSDto dto)
         {
             using (var conn = connectionFactory.Connection)
             {
@@ -134,6 +154,42 @@ namespace WebAPI.Repositories
             {
                 await conn.ExecuteAsync("sp_DivisionSetUp_Update",
                     dep, commandType: CommandType.StoredProcedure);
+            }
+        }
+
+        public async Task UpdateFileSetup(DivUpdateFileSetupDto dto)
+        {
+            using (var conn = connectionFactory.Connection)
+            {
+                await conn.ExecuteAsync("sp_tbl_fsDivision_Update",
+                    dto, commandType: CommandType.StoredProcedure);
+            }
+        }
+
+        public async Task UpdateToHRISFileSetUp(DivUpdateToHRISFSDto dto)
+        {
+            using (var conn = connectionFactory.Connection)
+            {
+                await conn.ExecuteAsync("sp_tbl_fsDivision_UpdateToHRIS",
+                    dto, commandType: CommandType.StoredProcedure);
+            }
+        }
+
+        public async Task UpdateToPayrollFileSetUp(DivUpdateToPayrollFSDto dto)
+        {
+            using (var conn = connectionFactory.Connection)
+            {
+                await conn.ExecuteAsync("sp_tbl_fsDivision_UpdateToPayroll",
+                    dto, commandType: CommandType.StoredProcedure);
+            }
+        }
+
+        public async Task UpdateToTKSFileSetUp(DivUpdateToTKSFSDto dto)
+        {
+            using (var conn = connectionFactory.Connection)
+            {
+                await conn.ExecuteAsync("sp_tbl_fsDivision_UpdateToTKS",
+                    dto, commandType: CommandType.StoredProcedure);
             }
         }
     }

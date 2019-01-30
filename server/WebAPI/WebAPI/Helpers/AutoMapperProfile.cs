@@ -1,5 +1,9 @@
 ﻿using AutoMapper;
 using WebAPI.Dtos;
+using WebAPI.Dtos.CourseDto;
+using WebAPI.Dtos.MajorDto;
+using WebAPI.Dtos.School;
+using WebAPI.Dtos.SkillsDto;
 using WebAPI.Models;
 
 namespace WebAPI.Helpers
@@ -14,6 +18,19 @@ namespace WebAPI.Helpers
             CreateMap<PreEmpReqEmpStatusDesignationDto, PreEmpReq>();
 
             CreateMap<DesignationDutiesReqDto, DesignationDuties>();
+            // School
+            CreateMap<SchoolInsertToHRISFSDto, School>();
+            CreateMap<School, SchoolInsertToHRISFSDto>();
+            // Course
+            CreateMap<CourseInsertToHRISFSDto, CourseDegree>();
+            CreateMap<CourseDegree, CourseInsertToHRISFSDto>();
+            //Skills
+            CreateMap<SkillInsertToHRISFSDto, Skills>();
+            CreateMap<Skills, SkillInsertToHRISFSDto>();
+            // Major
+            CreateMap<MajorInsertToHRISFSDto, Major>();
+            CreateMap<Major, MajorInsertToHRISFSDto>();
+
         }
     }
 }

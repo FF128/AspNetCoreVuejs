@@ -49,7 +49,7 @@ namespace WebAPI.Repositories
             }
         }
 
-        public async Task<BranchInsertToHRISFSDto> GetByCodeFromHRIS(string code, string hrisDB)
+        public async Task<dynamic> GetByCodeFromHRIS(string code, string hrisDB)
         {
             using (var conn = connectionFactory.Connection)
             {
@@ -60,7 +60,7 @@ namespace WebAPI.Repositories
             }
         }
 
-        public async Task<BranchInsertToPayrollFSDto> GetByCodeFromPayroll(string code, string payrollDB)
+        public async Task<dynamic> GetByCodeFromPayroll(string code, string payrollDB)
         {
             using (var conn = connectionFactory.Connection)
             {
@@ -71,7 +71,7 @@ namespace WebAPI.Repositories
             }
         }
 
-        public async Task<BranchInsertToTKSFSDto> GetByCodeFromTKS(string code, string tskDB)
+        public async Task<dynamic> GetByCodeFromTKS(string code, string tskDB)
         {
             using (var conn = connectionFactory.Connection)
             {
@@ -144,6 +144,42 @@ namespace WebAPI.Repositories
             {
                 await conn.ExecuteAsync("sp_BranchSetUp_Update",
                     branch, commandType: CommandType.StoredProcedure);
+            }
+        }
+
+        public async Task UpdateFileSetup(BranchUpdateToFSDto dto)
+        {
+            using (var conn = connectionFactory.Connection)
+            {
+                var result = await conn.ExecuteAsync("sp_tbl_fsBranch_Update",
+                    dto, commandType: CommandType.StoredProcedure);
+            }
+        }
+
+        public async Task UpdateToHRISFileSetUp(BranchUpdateToHRISFSDto dto)
+        {
+            using (var conn = connectionFactory.Connection)
+            {
+                var result = await conn.ExecuteAsync("sp_tbl_fsBranch_UpdateToHRIS",
+                    dto, commandType: CommandType.StoredProcedure);
+            }
+        }
+
+        public async Task UpdateToPayrollFileSetUp(BranchUpdateToPayrollFSDto dto)
+        {
+            using (var conn = connectionFactory.Connection)
+            {
+                var result = await conn.ExecuteAsync("sp_tbl_fsBranch_UpdateToPayroll",
+                    dto, commandType: CommandType.StoredProcedure);
+            }
+        }
+
+        public async Task UpdateToTKSFileSetUp(BranchUpdateToTKSFSDto dto)
+        {
+            using (var conn = connectionFactory.Connection)
+            {
+                var result = await conn.ExecuteAsync("sp_tbl_fsBranch_UpdateToTKS",
+                    dto, commandType: CommandType.StoredProcedure);
             }
         }
     }

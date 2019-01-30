@@ -16,13 +16,16 @@ namespace WebAPI.Services
         private readonly IDivisionRepository repo;
         private readonly IAuditTrailService<Division> auditTrailService;
         private readonly ICompanyInformationRepository compInfoRepo;
+        private readonly IFileSetupService fileSetupService;
         public DivisionService(IDivisionRepository repo,
              IAuditTrailService<Division> auditTrailService,
-             ICompanyInformationRepository compInfoRepo)
+             ICompanyInformationRepository compInfoRepo,
+             IFileSetupService fileSetupService)
         {
             this.repo = repo;
             this.auditTrailService = auditTrailService;
             this.compInfoRepo = compInfoRepo;
+            this.fileSetupService = fileSetupService;
         }
 
         public async Task<CustomMessage> Delete(int id)
@@ -67,26 +70,36 @@ namespace WebAPI.Services
             if (divData == null)
             {
                 var companyInfo = await compInfoRepo.GetByCompanyCode(compInfoRepo.GetCompanyCode());
-                if (companyInfo == null)
-                {
-                    return CustomMessageHandler.Error("Company Information doesn't exist");
-                }
+                var validationResult =
+                     fileSetupService.Validate(companyInfo, await compInfoRepo.CheckDBIfExists(companyInfo.PayrollDB),
+                         await compInfoRepo.CheckDBIfExists(companyInfo.TKSDB), await compInfoRepo.CheckDBIfExists(companyInfo.HRISDB));
 
-                if (!(await compInfoRepo.CheckDBIfExists(companyInfo.PayrollDB)))
+                if (!validationResult.hasError)
                 {
-                    return CustomMessageHandler.Error("Payroll Database doesn't exist!");
-                }
-                else if (!(await compInfoRepo.CheckDBIfExists(companyInfo.TKSDB)))
-                {
-                    return CustomMessageHandler.Error("Timekeeping Database doesn't exist!");
-                }
-                else if (!(await compInfoRepo.CheckDBIfExists(companyInfo.HRISDB)))
-                {
-                    return CustomMessageHandler.Error("HRIS Database doesn't exist!");
+                    return CustomMessageHandler.Error(validationResult.message);
                 }
                 else
                 {
-           
+                    // PAYROLL
+                    var result = await compInfoRepo.CheckTableIfExists(companyInfo.PayrollDB, TABLE_NAME);
+                    if (result && companyInfo.TKSFlag)
+                    {
+                        var results = await repo.GetByCodeFromPayroll(div.DivisionCode, companyInfo.PayrollDB);
+                        if (results == null)
+                        {
+                            // SAVE TO TKS DB
+                            await repo.InsertToPayrollFileSetUp(new DivInsertToPayrollFSDto
+                            {
+                                DivCode = div.DivisionCode,
+                                DivDesc = div.DivisionDesc,
+                                DivHead = div.Head,
+                                AccountCode = div.AcctCode,
+                                CreatedBy = "", //Current User
+                                DBName = companyInfo.PayrollDB
+                            });
+                        }
+
+                    }
 
                     // TIME KEEPING
                     var tksResult = await compInfoRepo.CheckTableIfExists(companyInfo.TKSDB, TABLE_NAME);
@@ -96,7 +109,7 @@ namespace WebAPI.Services
                         if (results == null)
                         {
                             // SAVE TO TKS DB
-                            await repo.InsertToTSKFileSetUp(new DivInsertToTKSFSDto
+                            await repo.InsertToTKSFileSetUp(new DivInsertToTKSFSDto
                             {
                                 DivCode = div.DivisionCode,
                                 DivDesc = div.DivisionDesc,
@@ -149,16 +162,95 @@ namespace WebAPI.Services
 
         public async Task<CustomMessage> Update(Division div)
         {
-            var divisionData = await repo.GetByCode(div.DivisionCode);
-            if (divisionData != null)
+            var divData = await repo.GetByCode(div.DivisionCode);
+            if (divData != null)
             {
-                await repo.Update(div);
+                var companyInfo = await compInfoRepo.GetByCompanyCode(compInfoRepo.GetCompanyCode());
+                var validationResult =
+                    fileSetupService.Validate(companyInfo, await compInfoRepo.CheckDBIfExists(companyInfo.PayrollDB),
+                        await compInfoRepo.CheckDBIfExists(companyInfo.TKSDB), await compInfoRepo.CheckDBIfExists(companyInfo.HRISDB));
 
-                //Audit Trail
-                await auditTrailService.Save(divisionData, div, "EDIT");
+                if (!validationResult.hasError)
+                {
+                    return CustomMessageHandler.Error(validationResult.message);
+                }
+                else
+                {
 
-                return CustomMessageHandler.RecordUpdated();
+                    // PAYROLL 
+                    var result = await compInfoRepo.CheckTableIfExists(companyInfo.PayrollDB, TABLE_NAME);
+                    if (result && companyInfo.PayrollFlag)
+                    {
+                        // Check from payroll database
+                        var results = await repo.GetByCodeFromPayroll(div.DivisionCode, companyInfo.PayrollDB);
+                        if (results != null)
+                        {
+                            // SAVE TO PAYROLL DB
+                            await repo.UpdateToPayrollFileSetUp(new DivUpdateToPayrollFSDto
+                            {
+                                DivCode = div.DivisionCode,
+                                DivDesc = div.DivisionDesc,
+                                DivHead = div.Head,
+                                AccountCode = div.AcctCode,
+                                EditedBy = "", //Current User
+                                DBName = companyInfo.PayrollDB
+                            });
+                        }
+                    }
+                    // TIME KEEPING
+                    var tksResult = await compInfoRepo.CheckTableIfExists(companyInfo.TKSDB, TABLE_NAME);
+                    if (tksResult && companyInfo.TKSFlag)
+                    {
+                        var results = await repo.GetByCodeFromTKS(div.DivisionCode, companyInfo.TKSDB);
+                        if (results != null)
+                        {
+                            // SAVE TO TKS DB
+                            await repo.UpdateToTKSFileSetUp(new DivUpdateToTKSFSDto
+                            {
+                                DivCode = div.DivisionCode,
+                                DivDesc = div.DivisionDesc,
+                                DivHead = div.Head,
+                                DivHeadCode = div.HeadCode,
+                                DBName = companyInfo.TKSDB
+                            });
+                        }
+                    }
+                    // HRIS 
+                    var hrisResult = await compInfoRepo.CheckTableIfExists(companyInfo.HRISDB, TABLE_NAME);
+                    if (hrisResult && companyInfo.HRISFlag)
+                    {
+                        // Check from payroll database
+                        var results = await repo.GetByCodeFromHRIS(div.DivisionCode, companyInfo.HRISDB);
+                        if (results != null)
+                        {
+                            // SAVE TO PAYROLL DB
+                            await repo.UpdateToHRISFileSetUp(new DivUpdateToHRISFSDto
+                            {
+                                DivCode = div.DivisionCode,
+                                DivDesc = div.DivisionDesc,
+                                DivHead = div.Head,
+                                DivHeadCode = div.HeadCode,
+                                DBName = companyInfo.HRISDB,
+                                EditedBy = "" // Current User
+                            });
+                        }
+                    }
 
+                    await repo.UpdateFileSetup(new DivUpdateFileSetupDto
+                    {
+                        DivCode = div.DivisionCode,
+                        DivDesc = div.DivisionDesc,
+                        Head = div.Head,
+                        HeadCode = div.HeadCode,
+                        EditedBy = "" // Current User
+                    });
+                    await repo.Update(div);
+
+                    //Audit Trail
+                    await auditTrailService.Save(divData, div, "EDIT");
+
+                    return CustomMessageHandler.RecordUpdated();
+                }
             }
             return CustomMessageHandler.Error("You can't edit this code");
         }

@@ -16,13 +16,16 @@ namespace WebAPI.Services
         private readonly IDepartmentRepository repo;
         private readonly IAuditTrailService<Department> auditTrailService;
         private readonly ICompanyInformationRepository compInfoRepo;
+        private readonly IFileSetupService fileSetupService;
         public DepartmentService(IDepartmentRepository repo,
              IAuditTrailService<Department> auditTrailService,
-             ICompanyInformationRepository compInfoRepo)
+             ICompanyInformationRepository compInfoRepo,
+             IFileSetupService fileSetupService)
         {
             this.repo = repo;
             this.auditTrailService = auditTrailService;
             this.compInfoRepo = compInfoRepo;
+            this.fileSetupService = fileSetupService;
         }
 
         public async Task<CustomMessage> Delete(int id)
@@ -66,22 +69,13 @@ namespace WebAPI.Services
             if (depData == null)
             {
                 var companyInfo = await compInfoRepo.GetByCompanyCode(compInfoRepo.GetCompanyCode());
-                if (companyInfo == null)
-                {
-                    return CustomMessageHandler.Error("Company Information doesn't exist");
-                }
+                var validationResult =
+                   fileSetupService.Validate(companyInfo, await compInfoRepo.CheckDBIfExists(companyInfo.PayrollDB),
+                       await compInfoRepo.CheckDBIfExists(companyInfo.TKSDB), await compInfoRepo.CheckDBIfExists(companyInfo.HRISDB));
 
-                if (!(await compInfoRepo.CheckDBIfExists(companyInfo.PayrollDB)))
+                if (!validationResult.hasError)
                 {
-                    return CustomMessageHandler.Error("Payroll Database doesn't exist!");
-                }
-                else if (!(await compInfoRepo.CheckDBIfExists(companyInfo.TKSDB)))
-                {
-                    return CustomMessageHandler.Error("Timekeeping Database doesn't exist!");
-                }
-                else if (!(await compInfoRepo.CheckDBIfExists(companyInfo.HRISDB)))
-                {
-                    return CustomMessageHandler.Error("HRIS Database doesn't exist!");
+                    return CustomMessageHandler.Error(validationResult.message);
                 }
                 else
                 {
@@ -111,7 +105,7 @@ namespace WebAPI.Services
                         if (results == null)
                         {
                             // SAVE TO TKS DB
-                            await repo.InsertToTSKFileSetUp(new DepartmentInsertToTKSFSDto
+                            await repo.InsertToTKSFileSetUp(new DepartmentInsertToTKSFSDto
                             {
                                 DepDesc = dep.DepartmentDesc,
                                 DepCode = dep.DepartmentCode,
@@ -153,16 +147,82 @@ namespace WebAPI.Services
 
         public async Task<CustomMessage> Update(Department dep)
         {
-            var departmentData = await repo.GetByCode(dep.DepartmentCode);
-            if (departmentData != null)
+            var depData = await repo.GetByCode(dep.DepartmentCode);
+            if (depData != null)
             {
-                await repo.Update(dep);
+                var companyInfo = await compInfoRepo.GetByCompanyCode(compInfoRepo.GetCompanyCode());
+                var validationResult =
+                    fileSetupService.Validate(companyInfo, await compInfoRepo.CheckDBIfExists(companyInfo.PayrollDB),
+                        await compInfoRepo.CheckDBIfExists(companyInfo.TKSDB), await compInfoRepo.CheckDBIfExists(companyInfo.HRISDB));
 
-                //Audit Trail
-                await auditTrailService.Save(departmentData, dep, "EDIT");
+                if (!validationResult.hasError)
+                {
+                    return CustomMessageHandler.Error(validationResult.message);
+                }
+                else
+                {
 
-                return CustomMessageHandler.RecordUpdated();
+                    // PAYROLL 
+                    var result = await compInfoRepo.CheckTableIfExists(companyInfo.PayrollDB, TABLE_NAME);
+                    if (result && companyInfo.PayrollFlag)
+                    {
+                        // Check from payroll database
+                        var results = await repo.GetByCodeFromPayroll(dep.DepartmentCode, companyInfo.PayrollDB);
+                        if (results != null)
+                        {
+                            // SAVE TO PAYROLL DB
+                            await repo.UpdateToPayrollFileSetUp(new DepartmentUpdateToPayrollFSDto
+                            {
+                                DepCode = dep.DepartmentCode,
+                                DepDesc = dep.DepartmentDesc,
+                                DBName = companyInfo.PayrollDB,
+                                EditedBy = "" // Current User
+                            });
+                        }
+                    }
+                    // TIME KEEPING
+                    var tksResult = await compInfoRepo.CheckTableIfExists(companyInfo.TKSDB, TABLE_NAME);
+                    if (tksResult && companyInfo.TKSFlag)
+                    {
+                        var results = await repo.GetByCodeFromTKS(dep.DepartmentCode, companyInfo.TKSDB);
+                        if (results != null)
+                        {
+                            // SAVE TO TKS DB
+                            await repo.UpdateToTKSFileSetUp(new DepartmentUpdateToTKSFSDto
+                            {
+                                DepDesc = dep.DepartmentDesc,
+                                DepCode = dep.DepartmentCode,
+                                DBName = companyInfo.TKSDB
+                            });
+                        }
+                    }
+                    // HRIS 
+                    var hrisResult = await compInfoRepo.CheckTableIfExists(companyInfo.HRISDB, TABLE_NAME);
+                    if (hrisResult && companyInfo.HRISFlag)
+                    {
+                        // Check from payroll database
+                        var results = await repo.GetByCodeFromHRIS(dep.DepartmentCode, companyInfo.HRISDB);
+                        if (results != null)
+                        {
+                            // SAVE TO PAYROLL DB
+                            await repo.UpdateToHRISFileSetUp(new DepartmentUpdateToHRISFSDto
+                            {
+                                DepCode = dep.DepartmentCode,
+                                DepDesc = dep.DepartmentDesc,
+                                DBName = companyInfo.HRISDB,
+                                EditedBy = "" // Current User
+                            });
+                        }
+                    }
 
+                    await repo.UpdateFileSetup(dep);
+                    await repo.Update(dep);
+
+                    //Audit Trail
+                    await auditTrailService.Save(depData, dep, "EDIT");
+
+                    return CustomMessageHandler.RecordUpdated();
+                }
             }
             return CustomMessageHandler.Error("You can't edit this code");
         }

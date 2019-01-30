@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using WebAPI.Dtos;
+using WebAPI.Dtos.AreaDto;
 
 namespace WebAPI.RepositoryInterfaces
 {
@@ -22,6 +23,10 @@ namespace WebAPI.RepositoryInterfaces
         Task InsertToHRISFileSetUp(AreaInsertToFileSetUpDto dto);
         Task InsertToTSKFileSetUp(AreaInsertToFileSetUpDto dto);
         Task Update(Area area);
+        Task UpdateFileSetup(Area area);
+        Task UpdateToPayrollFileSetUp(AreaUpdateToFileSetUpDto dto);
+        Task UpdateToHRISFileSetUp(AreaUpdateToFileSetUpDto dto);
+        Task UpdateToTKSFileSetUp(AreaUpdateToFileSetUpDto dto);
         Task Delete(int id);
         Task DeleteByCode(string code);
     }

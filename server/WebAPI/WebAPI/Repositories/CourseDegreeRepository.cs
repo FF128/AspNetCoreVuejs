@@ -8,6 +8,7 @@ using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
+using WebAPI.Dtos.CourseDto;
 
 namespace WebAPI.Repositories
 {
@@ -24,6 +25,16 @@ namespace WebAPI.Repositories
             {
                 await conn.ExecuteAsync("sp_CourseDegreeSetUp_Delete",
                     new { Id = id },
+                    commandType: CommandType.StoredProcedure);
+            }
+        }
+
+        public async Task DeleteByCode(string code)
+        {
+            using (var conn = connectionFactory.Connection)
+            {
+                await conn.ExecuteAsync("sp_tbl_fsCourseDegree_DeleteByCode",
+                    new { code },
                     commandType: CommandType.StoredProcedure);
             }
         }
@@ -48,6 +59,17 @@ namespace WebAPI.Repositories
             }
         }
 
+        public async Task<dynamic> GetByCodeFromHRIS(string code, string hrisDB)
+        {
+            using (var conn = connectionFactory.Connection)
+            {
+                return
+                   await conn.QueryFirstOrDefaultAsync("sp_tbl_fsCourseDegree_ViewByCodeFromHRIS",
+                       new { Code = code, DBName = hrisDB },
+                       commandType: CommandType.StoredProcedure);
+            }
+        }
+
         public async Task<CourseDegree> GetById(int id)
         {
             using (var conn = connectionFactory.Connection)
@@ -65,6 +87,24 @@ namespace WebAPI.Repositories
             {
                 await conn.ExecuteAsync("sp_CourseDegreeSetUp_Insert",
                     dep, commandType: CommandType.StoredProcedure);
+            }
+        }
+
+        public async Task InsertFileSetup(CourseDegree cd)
+        {
+            using (var conn = connectionFactory.Connection)
+            {
+                await conn.ExecuteAsync("sp_tbl_fsCourseDegree_Insert",
+                    cd, commandType: CommandType.StoredProcedure);
+            }
+        }
+
+        public async Task InsertToHRISFileSetUp(CourseInsertToHRISFSDto dto)
+        {
+            using (var conn = connectionFactory.Connection)
+            {
+                var result = await conn.ExecuteAsync("sp_tbl_fsCourseDegree_InsertToHRIS",
+                     dto, commandType: CommandType.StoredProcedure);
             }
         }
 

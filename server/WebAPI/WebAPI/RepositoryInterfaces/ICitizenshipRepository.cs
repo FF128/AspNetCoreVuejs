@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using WebAPI.Dtos;
+using WebAPI.Dtos.CitizenshipDto;
 using WebAPI.Models;
 
 namespace WebAPI.RepositoryInterfaces
@@ -18,6 +19,9 @@ namespace WebAPI.RepositoryInterfaces
         Task InsertFileSetup(Citizenship cit);
         Task Insert(Citizenship cit);
         Task Update(Citizenship cit);
+        Task UpdateFileSetup(Citizenship cit);
+        Task UpdateToPayrollFileSetUp(CitizenshipUpdateToFileSetUpDto dto);
+        Task UpdateToHRISFileSetUp(CitizenshipUpdateToFileSetUpDto dto);
         Task Delete(int id);
         Task DeleteByCode(string code);
         Task InsertToPayrollFileSetUp(CitizenshipInsertToFileSetUpDto dto);

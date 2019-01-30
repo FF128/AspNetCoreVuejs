@@ -16,14 +16,17 @@ namespace WebAPI.Services
         private readonly IAuditTrailService<Section> auditTrailService;
         private readonly ICompanyInformationRepository compInfoRepo;
         private const string TABLE_NAME = "tbl_fsSection";
+        private readonly IFileSetupService fileSetupService;
 
         public SectionService(ISectionRepository repo,
              IAuditTrailService<Section> auditTrailService,
-             ICompanyInformationRepository compInfoRepo)
+             ICompanyInformationRepository compInfoRepo,
+             IFileSetupService fileSetupService)
         {
             this.repo = repo;
             this.auditTrailService = auditTrailService;
             this.compInfoRepo = compInfoRepo;
+            this.fileSetupService = fileSetupService;
         }
 
         public async Task<CustomMessage> Delete(int id)
@@ -68,22 +71,13 @@ namespace WebAPI.Services
             if (secData == null)
             {
                 var companyInfo = await compInfoRepo.GetByCompanyCode(compInfoRepo.GetCompanyCode());
-                if (companyInfo == null)
-                {
-                    return CustomMessageHandler.Error("Company Information doesn't exist");
-                }
+                var validationResult =
+                   fileSetupService.Validate(companyInfo, await compInfoRepo.CheckDBIfExists(companyInfo.PayrollDB),
+                       await compInfoRepo.CheckDBIfExists(companyInfo.TKSDB), await compInfoRepo.CheckDBIfExists(companyInfo.HRISDB));
 
-                if (!(await compInfoRepo.CheckDBIfExists(companyInfo.PayrollDB)))
+                if (!validationResult.hasError)
                 {
-                    return CustomMessageHandler.Error("Payroll Database doesn't exist!");
-                }
-                else if (!(await compInfoRepo.CheckDBIfExists(companyInfo.TKSDB)))
-                {
-                    return CustomMessageHandler.Error("Timekeeping Database doesn't exist!");
-                }
-                else if (!(await compInfoRepo.CheckDBIfExists(companyInfo.HRISDB)))
-                {
-                    return CustomMessageHandler.Error("HRIS Database doesn't exist!");
+                    return CustomMessageHandler.Error(validationResult.message);
                 }
                 else
                 {
@@ -118,7 +112,7 @@ namespace WebAPI.Services
                         if (results == null)
                         {
                             // SAVE TO TKS DB
-                            await repo.InsertToTSKFileSetUp(new SectionInsertToTKSFSDto
+                            await repo.InsertToTKSFileSetUp(new SectionInsertToTKSFSDto
                             {
                                 SecCode = sec.SectionCode,
                                 SecDesc = sec.SectionDesc,
@@ -163,16 +157,89 @@ namespace WebAPI.Services
         }
         public async Task<CustomMessage> Update(Section sec)
         {
-            var sectionData = await repo.GetByCode(sec.SectionCode);
-            if (sectionData != null)
+            var secData = await repo.GetByCode(sec.SectionCode);
+            if (secData != null)
             {
-                await repo.Update(sec);
+                var companyInfo = await compInfoRepo.GetByCompanyCode(compInfoRepo.GetCompanyCode());
+                var validationResult =
+                    fileSetupService.Validate(companyInfo, await compInfoRepo.CheckDBIfExists(companyInfo.PayrollDB),
+                        await compInfoRepo.CheckDBIfExists(companyInfo.TKSDB), await compInfoRepo.CheckDBIfExists(companyInfo.HRISDB));
 
-                //Audit Trail
-                await auditTrailService.Save(sectionData, sec, "EDIT");
+                if (!validationResult.hasError)
+                {
+                    return CustomMessageHandler.Error(validationResult.message);
+                }
+                else
+                {
 
-                return CustomMessageHandler.RecordUpdated();
+                    // PAYROLL 
+                    var result = await compInfoRepo.CheckTableIfExists(companyInfo.PayrollDB, TABLE_NAME);
+                    if (result && companyInfo.PayrollFlag)
+                    {
+                        // Check from payroll database
+                        var results = await repo.GetByCodeFromPayroll(sec.SectionCode, companyInfo.PayrollDB);
+                        if (results != null)
+                        {
+                            // SAVE TO PAYROLL DB
+                            await repo.UpdateToPayrollFileSetUp(new SectionUpdateToPayrollFSDto
+                            {
+                                SecCode = sec.SectionCode,
+                                SecDesc = sec.SectionDesc,
+                                SecHead = sec.SecHead,
+                                AccountCode = "",
+                                EditedBy = "", // Current User,
+                                DBName = companyInfo.PayrollDB
+                            });
+                        }
+                    }
+                    // TIME KEEPING
+                    var tksResult = await compInfoRepo.CheckTableIfExists(companyInfo.TKSDB, TABLE_NAME);
+                    if (tksResult && companyInfo.TKSFlag)
+                    {
+                        var results = await repo.GetByCodeFromTKS(sec.SectionCode, companyInfo.TKSDB);
+                        if (results != null)
+                        {
+                            // SAVE TO TKS DB
+                            await repo.UpdateToTKSFileSetUp(new SectionUpdateToTKSFSDto
+                            {
+                                SecCode = sec.SectionCode,
+                                SecDesc = sec.SectionDesc,
+                                SecHead = sec.SecHead,
+                                SecHeadCode = sec.SecHeadCode,
+                                DepCode = "",
+                                DBName = companyInfo.TKSDB
+                            });
+                        }
+                    }
+                    // HRIS 
+                    var hrisResult = await compInfoRepo.CheckTableIfExists(companyInfo.HRISDB, TABLE_NAME);
+                    if (hrisResult && companyInfo.HRISFlag)
+                    {
+                        // Check from payroll database
+                        var results = await repo.GetByCodeFromHRIS(sec.SectionCode, companyInfo.HRISDB);
+                        if (results != null)
+                        {
+                            // SAVE TO PAYROLL DB
+                            await repo.UpdateToHRISFileSetUp(new SectionUpdateToHRISFSDto
+                            {
+                                SecCode = sec.SectionCode,
+                                SecDesc = sec.SectionDesc,
+                                SecHead = sec.SecHead,
+                                SecHeadCode = sec.SecHeadCode,
+                                DBName = companyInfo.HRISDB,
+                                DepCode = ""
+                            });
+                        }
+                    }
 
+                    await repo.UpdateFileSetup(sec);
+                    await repo.Update(sec);
+
+                    //Audit Trail
+                    await auditTrailService.Save(secData, sec, "EDIT");
+
+                    return CustomMessageHandler.RecordUpdated();
+                }
             }
             return CustomMessageHandler.Error("You can't edit this code");
         }

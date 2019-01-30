@@ -136,5 +136,32 @@ namespace WebAPI.Repositories
                     unit, commandType: CommandType.StoredProcedure);
             }
         }
+
+        public async Task UpdateFileSetup(Unit unit)
+        {
+            using (var conn = connectionFactory.Connection)
+            {
+                await conn.ExecuteAsync("sp_tbl_fsUnit_Update",
+                    unit, commandType: CommandType.StoredProcedure);
+            }
+        }
+
+        public async Task UpdateToHRISFileSetUp(UnitUpdateToHRISFSDto dto)
+        {
+            using (var conn = connectionFactory.Connection)
+            {
+                await conn.ExecuteAsync("sp_tbl_fsUnit_UpdateToHRIS",
+                    dto, commandType: CommandType.StoredProcedure);
+            }
+        }
+
+        public async Task UpdateToPayrollFileSetUp(UnitUpdateToPayrollFSDto dto)
+        {
+            using (var conn = connectionFactory.Connection)
+            {
+                await conn.ExecuteAsync("sp_tbl_fsUnit_UpdateToPayroll",
+                    dto, commandType: CommandType.StoredProcedure);
+            }
+        }
     }
 }

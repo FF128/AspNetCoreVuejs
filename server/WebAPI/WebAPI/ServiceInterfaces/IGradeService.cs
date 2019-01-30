@@ -12,5 +12,7 @@ namespace WebAPI.ServiceInterfaces
         Task<CustomMessage> Insert(Grade grade);
         Task<CustomMessage> Update(Grade grade);
         Task<CustomMessage> Delete(int id);
+        Task<CustomMessage> DeleteByCode(string code);
+
     }
 }

@@ -31,6 +31,6 @@ Vue.use(Vuetify, {
   },
   iconfont: "md",
   theme: {
-    primary: colors.green.darken1
+    primary: colors.blue.darken2
   }
 });

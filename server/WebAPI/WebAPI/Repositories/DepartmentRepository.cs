@@ -139,7 +139,7 @@ namespace WebAPI.Repositories
             }
         }
 
-        public async Task InsertToTSKFileSetUp(DepartmentInsertToTKSFSDto dto)
+        public async Task InsertToTKSFileSetUp(DepartmentInsertToTKSFSDto dto)
         {
             using (var conn = connectionFactory.Connection)
             {
@@ -154,6 +154,42 @@ namespace WebAPI.Repositories
             {
                 await conn.ExecuteAsync("sp_DepartmentSetUp_Update",
                     dep, commandType: CommandType.StoredProcedure);
+            }
+        }
+
+        public async Task UpdateFileSetup(Department dep)
+        {
+            using (var conn = connectionFactory.Connection)
+            {
+                await conn.ExecuteAsync("sp_tbl_fsDepartment_Update",
+                    dep, commandType: CommandType.StoredProcedure);
+            }
+        }
+
+        public async Task UpdateToHRISFileSetUp(DepartmentUpdateToHRISFSDto dto)
+        {
+            using (var conn = connectionFactory.Connection)
+            {
+                await conn.ExecuteAsync("sp_tbl_fsDepartment_UpdateToHRIS",
+                    dto, commandType: CommandType.StoredProcedure);
+            }
+        }
+
+        public async Task UpdateToPayrollFileSetUp(DepartmentUpdateToPayrollFSDto dto)
+        {
+            using (var conn = connectionFactory.Connection)
+            {
+                await conn.ExecuteAsync("sp_tbl_fsDepartment_UpdateToPayroll",
+                    dto, commandType: CommandType.StoredProcedure);
+            }
+        }
+
+        public async Task UpdateToTKSFileSetUp(DepartmentUpdateToTKSFSDto dto)
+        {
+            using (var conn = connectionFactory.Connection)
+            {
+                await conn.ExecuteAsync("sp_tbl_fsDepartment_UpdateToTKS",
+                    dto, commandType: CommandType.StoredProcedure);
             }
         }
     }
