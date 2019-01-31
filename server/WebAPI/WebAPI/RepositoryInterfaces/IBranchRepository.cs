@@ -27,6 +27,10 @@ namespace WebAPI.RepositoryInterfaces
         Task UpdateToPayrollFileSetUp(BranchUpdateToPayrollFSDto dto);
         Task UpdateToHRISFileSetUp(BranchUpdateToHRISFSDto dto);
         Task UpdateToTKSFileSetUp(BranchUpdateToTKSFSDto dto);
-        Task Delete(int id);
+        Task Delete(string code);
+        Task DeleteFromHRISFileSetUp(DeleteSetUpDto dto);
+        Task DeleteFromPayrollFileSetUp(DeleteSetUpDto dto);
+        Task DeleteFromTKSFileSetUp(DeleteSetUpDto dto);
+        Task DeleteFileSetUp(string code);
     }
 }

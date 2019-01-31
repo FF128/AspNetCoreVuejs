@@ -7,6 +7,7 @@ using WebAPI.Models;
 using WebAPI.RepositoryInterfaces;
 using WebAPI.ServiceInterfaces;
 using WebAPI.Dtos.Department;
+using WebAPI.Dtos;
 
 namespace WebAPI.Services
 {
@@ -33,7 +34,7 @@ namespace WebAPI.Services
             var Department = await repo.GetById(id);
             if (Department != null)
             {
-                await repo.Delete(id);
+                //await repo.Delete(id);
 
                 await auditTrailService.Save(new Department(), Department, "DELETE");
 
@@ -42,14 +43,73 @@ namespace WebAPI.Services
             return CustomMessageHandler.Error("Data doesn't exist");
         }
 
-        public async Task<CustomMessage> Delete(string code)
+        public async Task<CustomMessage> DeleteByCode(string code)
         {
-            var department = await repo.GetByCode(code);
-            if (department != null)
+            var dep = await repo.GetByCode(code);
+            if (dep != null)
             {
-                await repo.DeleteByCode(code);
+                var companyInfo = await compInfoRepo.GetByCompanyCode(compInfoRepo.GetCompanyCode());
+                var validationResult =
+                    fileSetupService.Validate(companyInfo, await compInfoRepo.CheckDBIfExists(companyInfo.PayrollDB),
+                        await compInfoRepo.CheckDBIfExists(companyInfo.TKSDB), await compInfoRepo.CheckDBIfExists(companyInfo.HRISDB));
 
-                await auditTrailService.Save(new Department(), department, "DELETE");
+                if (!validationResult.hasError)
+                {
+                    return CustomMessageHandler.Error(validationResult.message);
+                }
+                // Payroll
+                var result = await compInfoRepo.CheckTableIfExists(companyInfo.PayrollDB, TABLE_NAME);
+                if (result && companyInfo.PayrollFlag)
+                {
+                    // Check from payroll database
+                    var results = await repo.GetByCodeFromPayroll(dep.DepartmentCode, companyInfo.PayrollDB);
+                    if (results != null)
+                    {
+                        // DELETE FROM PAYROLL DB
+                        await repo.DeleteFromPayrollFileSetUp(new DeleteSetUpDto
+                        {
+                            Code = dep.DepartmentCode,
+                            DBName = companyInfo.PayrollDB
+                        });
+                    }
+                }
+                // TIME KEEPING
+                var tksResult = await compInfoRepo.CheckTableIfExists(companyInfo.TKSDB, TABLE_NAME);
+                if (tksResult && companyInfo.TKSFlag)
+                {
+                    var results = await repo.GetByCodeFromTKS(dep.DepartmentCode, companyInfo.TKSDB);
+                    if (results != null)
+                    {
+                        // SAVE TO TKS DB
+                        await repo.DeleteFromTKSFileSetUp(new DeleteSetUpDto
+                        {
+                            Code = dep.DepartmentCode,
+                            DBName = companyInfo.TKSDB
+                        });
+                    }
+
+                }
+                // HRIS
+                var hrisResult = await compInfoRepo.CheckTableIfExists(companyInfo.HRISDB, TABLE_NAME);
+                if (hrisResult && companyInfo.HRISFlag)
+                {
+                    var results = await repo.GetByCodeFromHRIS(dep.DepartmentCode, companyInfo.HRISDB);
+                    if (results != null)
+                    {
+                        // SAVE TO HRIS DB
+                        await repo.DeleteFromHRISFileSetUp(new DeleteSetUpDto
+                        {
+                            Code = dep.DepartmentCode,
+                            DBName = companyInfo.HRISDB
+                        });
+                    }
+                }
+
+                await repo.DeleteFileSetUp(dep.DepartmentCode);
+                await repo.Delete(dep.DepartmentCode);
+
+
+                await auditTrailService.Save(new Department(), dep, "DELETE");
 
                 return CustomMessageHandler.RecordDeleted();
             }

@@ -175,6 +175,8 @@ namespace WebAPI
             services.AddScoped<IMultiCompanyDatabaseRepository, MultiCompanyDatabaseRepository>();
             services.AddScoped<ISMSFormatRepository, SMSFormatRepository>();
             services.AddScoped<IEvalEmailFormatRepository, EvalEmailFormatRepository>();
+            services.AddScoped<IBudgetEntryRepository, BudgetEntryRepository>();
+            services.AddScoped<IPayLocationRepository, PayLocationRepository>();
             #endregion
 
 
@@ -275,6 +277,8 @@ namespace WebAPI
             services.AddScoped<ISMSFormatService, SMSFormatService>();
             services.AddScoped<IEvalEmailFormatService, EvalEmailFormatService>();
             services.AddScoped<IFileSetupService, FileSetupService>();
+            services.AddScoped<IBudgetEntryService, BudgetEntryService>();
+            services.AddScoped<IPayLocationService, PayLocationService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

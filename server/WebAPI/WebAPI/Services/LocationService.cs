@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using WebAPI.Dtos;
 using WebAPI.Dtos.Location;
 using WebAPI.Helpers;
 using WebAPI.Models;
@@ -33,7 +34,7 @@ namespace WebAPI.Services
             var location = await repo.GetById(id);
             if (location != null)
             {
-                await repo.Delete(id);
+                //await repo.Delete(id);
 
                 await auditTrailService.Save(new Location(), location, "DELETE");
 
@@ -47,7 +48,66 @@ namespace WebAPI.Services
             var loc = await repo.GetByCode(code);
             if (loc != null)
             {
-                await repo.DeleteByCode(code);
+                var companyInfo = await compInfoRepo.GetByCompanyCode(compInfoRepo.GetCompanyCode());
+                var validationResult =
+                    fileSetupService.Validate(companyInfo, await compInfoRepo.CheckDBIfExists(companyInfo.PayrollDB),
+                        await compInfoRepo.CheckDBIfExists(companyInfo.TKSDB), await compInfoRepo.CheckDBIfExists(companyInfo.HRISDB));
+
+                if (!validationResult.hasError)
+                {
+                    return CustomMessageHandler.Error(validationResult.message);
+                }
+                // Payroll
+                var result = await compInfoRepo.CheckTableIfExists(companyInfo.PayrollDB, TABLE_NAME);
+                if (result && companyInfo.PayrollFlag)
+                {
+                    // Check from payroll database
+                    var results = await repo.GetByCodeFromPayroll(loc.LocationCode, companyInfo.PayrollDB);
+                    if (results != null)
+                    {
+                        // DELETE FROM PAYROLL DB
+                        await repo.DeleteFromPayrollFileSetUp(new DeleteSetUpDto
+                        {
+                            Code = loc.LocationCode,
+                            DBName = companyInfo.PayrollDB
+                        });
+                    }
+                }
+                // TIME KEEPING
+                var tksResult = await compInfoRepo.CheckTableIfExists(companyInfo.TKSDB, TABLE_NAME);
+                if (tksResult && companyInfo.TKSFlag)
+                {
+                    var results = await repo.GetByCodeFromTKS(loc.LocationCode, companyInfo.TKSDB);
+                    if (results != null)
+                    {
+                        // SAVE TO TKS DB
+                        await repo.DeleteFromTKSFileSetUp(new DeleteSetUpDto
+                        {
+                            Code = loc.LocationCode,
+                            DBName = companyInfo.TKSDB
+                        });
+                    }
+
+                }
+                // HRIS
+                var hrisResult = await compInfoRepo.CheckTableIfExists(companyInfo.HRISDB, TABLE_NAME);
+                if (hrisResult && companyInfo.HRISFlag)
+                {
+                    var results = await repo.GetByCodeFromHRIS(loc.LocationCode, companyInfo.HRISDB);
+                    if (results != null)
+                    {
+                        // SAVE TO HRIS DB
+                        await repo.DeleteFromHRISFileSetUp(new DeleteSetUpDto
+                        {
+                            Code = loc.LocationCode,
+                            DBName = companyInfo.HRISDB
+                        });
+                    }
+                }
+
+                await repo.DeleteFileSetUp(loc.LocationCode);
+                await repo.Delete(loc.LocationCode);
+
 
                 await auditTrailService.Save(new Location(), loc, "DELETE");
 

@@ -4,6 +4,16 @@ const API_ENDPOINT = "api/dep";
 
 const state = {
   departments: [],
+  headers: [
+    {
+      text: "Code",
+      align: "left",
+      sortable: false,
+      value: "code"
+    },
+    { text: "Description", value: "description", align: "left" },
+    { text: "", value: "actions" }
+  ],
   loading: false
 };
 

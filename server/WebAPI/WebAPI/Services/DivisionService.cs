@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using WebAPI.Dtos;
 using WebAPI.Dtos.Division;
 using WebAPI.Helpers;
 using WebAPI.Models;
@@ -33,7 +34,7 @@ namespace WebAPI.Services
             var division = await repo.GetById(id);
             if (division != null)
             {
-                await repo.Delete(id);
+                //await repo.Delete(id);
 
                 await auditTrailService.Save(new Division(), division, "DELETE");
 
@@ -47,7 +48,66 @@ namespace WebAPI.Services
             var div = await repo.GetByCode(code);
             if (div != null)
             {
-                await repo.DeleteByCode(code);
+                var companyInfo = await compInfoRepo.GetByCompanyCode(compInfoRepo.GetCompanyCode());
+                var validationResult =
+                    fileSetupService.Validate(companyInfo, await compInfoRepo.CheckDBIfExists(companyInfo.PayrollDB),
+                        await compInfoRepo.CheckDBIfExists(companyInfo.TKSDB), await compInfoRepo.CheckDBIfExists(companyInfo.HRISDB));
+
+                if (!validationResult.hasError)
+                {
+                    return CustomMessageHandler.Error(validationResult.message);
+                }
+                // Payroll
+                var result = await compInfoRepo.CheckTableIfExists(companyInfo.PayrollDB, TABLE_NAME);
+                if (result && companyInfo.PayrollFlag)
+                {
+                    // Check from payroll database
+                    var results = await repo.GetByCodeFromPayroll(div.DivisionCode, companyInfo.PayrollDB);
+                    if (results != null)
+                    {
+                        // DELETE FROM PAYROLL DB
+                        await repo.DeleteFromPayrollFileSetUp(new DeleteSetUpDto
+                        {
+                            Code = div.DivisionCode,
+                            DBName = companyInfo.PayrollDB
+                        });
+                    }
+                }
+                // TIME KEEPING
+                var tksResult = await compInfoRepo.CheckTableIfExists(companyInfo.TKSDB, TABLE_NAME);
+                if (tksResult && companyInfo.TKSFlag)
+                {
+                    var results = await repo.GetByCodeFromTKS(div.DivisionCode, companyInfo.TKSDB);
+                    if (results != null)
+                    {
+                        // SAVE TO TKS DB
+                        await repo.DeleteFromTKSFileSetUp(new DeleteSetUpDto
+                        {
+                            Code = div.DivisionCode,
+                            DBName = companyInfo.TKSDB
+                        });
+                    }
+
+                }
+                // HRIS
+                var hrisResult = await compInfoRepo.CheckTableIfExists(companyInfo.HRISDB, TABLE_NAME);
+                if (hrisResult && companyInfo.HRISFlag)
+                {
+                    var results = await repo.GetByCodeFromHRIS(div.DivisionCode, companyInfo.HRISDB);
+                    if (results != null)
+                    {
+                        // SAVE TO HRIS DB
+                        await repo.DeleteFromHRISFileSetUp(new DeleteSetUpDto
+                        {
+                            Code = div.DivisionCode,
+                            DBName = companyInfo.HRISDB
+                        });
+                    }
+                }
+
+                await repo.DeleteFileSetUp(div.DivisionCode);
+                await repo.Delete(div.DivisionCode);
+
 
                 await auditTrailService.Save(new Division(), div, "DELETE");
 

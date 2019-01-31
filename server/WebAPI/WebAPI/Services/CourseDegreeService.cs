@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using WebAPI.Dtos;
 using WebAPI.Dtos.CourseDto;
 using WebAPI.Helpers;
 using WebAPI.Models;
@@ -37,7 +38,7 @@ namespace WebAPI.Services
             var courseDegree = await repo.GetById(id);
             if (courseDegree != null)
             {
-                await repo.Delete(id);
+                //await repo.Delete(id);
 
                 await auditTrailService.Save(new CourseDegree(), courseDegree, "DELETE");
 
@@ -51,7 +52,35 @@ namespace WebAPI.Services
             var course = await repo.GetByCode(code);
             if (course != null)
             {
-                await repo.DeleteByCode(code);
+                var companyInfo = await compInfoRepo.GetByCompanyCode(compInfoRepo.GetCompanyCode());
+                var validationResult =
+                    fileSetupService.Validate(companyInfo, await compInfoRepo.CheckDBIfExists(companyInfo.PayrollDB),
+                        await compInfoRepo.CheckDBIfExists(companyInfo.TKSDB), await compInfoRepo.CheckDBIfExists(companyInfo.HRISDB));
+
+                if (!validationResult.hasError)
+                {
+                    return CustomMessageHandler.Error(validationResult.message);
+                }
+
+                // HRIS
+                var hrisResult = await compInfoRepo.CheckTableIfExists(companyInfo.HRISDB, TABLE_NAME);
+                if (hrisResult && companyInfo.HRISFlag)
+                {
+                    var results = await repo.GetByCodeFromHRIS(course.CourseDegreeCode, companyInfo.HRISDB);
+                    if (results != null)
+                    {
+                        // SAVE TO HRIS DB
+                        await repo.DeleteFromHRISFileSetUp(new DeleteSetUpDto
+                        {
+                            Code = course.CourseDegreeCode,
+                            DBName = companyInfo.HRISDB
+                        });
+                    }
+                }
+
+                await repo.DeleteFileSetUp(course.CourseDegreeCode);
+                await repo.Delete(course.CourseDegreeCode);
+
 
                 await auditTrailService.Save(new CourseDegree(), course, "DELETE");
 

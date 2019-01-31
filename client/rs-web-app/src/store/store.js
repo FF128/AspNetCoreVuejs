@@ -49,6 +49,7 @@ import multiCompany from "./modules/multiCompany"
 import smsFormat from "./modules/smsFormat"
 import evalEmailFormat from "./modules/evalEmailFormat"
 import routing from "./modules/routing"
+import payLocation from "./modules/payLocation"
 
 Vue.use(Vuex);
 
@@ -104,6 +105,7 @@ export default new Vuex.Store({
     screenDetails,
     multiCompany,
     smsFormat,
-    evalEmailFormat
+    evalEmailFormat,
+    payLocation
   }
 });

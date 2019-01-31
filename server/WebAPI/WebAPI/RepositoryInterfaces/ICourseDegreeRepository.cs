@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using WebAPI.Dtos.CourseDto;
+using WebAPI.Dtos;
 
 namespace WebAPI.RepositoryInterfaces
 {
@@ -20,7 +21,8 @@ namespace WebAPI.RepositoryInterfaces
         Task Update(CourseDegree cd);
         Task UpdateFileSetup(CourseDegree cd);
         Task UpdateToHRISFileSetUp(CourseUpdateToHRISFSDto dto);
-        Task Delete(int id);
-        Task DeleteByCode(string code);
+        Task Delete(string code);
+        Task DeleteFromHRISFileSetUp(DeleteSetUpDto dto);
+        Task DeleteFileSetUp(string code);
     }
 }

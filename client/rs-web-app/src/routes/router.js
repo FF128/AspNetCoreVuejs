@@ -88,7 +88,8 @@ import screenDetailsRoute from "./screenDetailsRoute"
 import multiCompanyRoute from "./multiCompanyRoute"
 import smsFormatRoute from "./smsFormatRoute"
 import evalEmailFormatRoute from "./evalEmailFormatRoute"
-
+// Transactions 
+import budgetEntryRoute from "./budgetEntryRoute"
 const router = new Router({
   mode: "history",
   base: process.env.BASE_URL,
@@ -148,7 +149,8 @@ const router = new Router({
     screenDetailsRoute,
     multiCompanyRoute,
     smsFormatRoute,
-    evalEmailFormatRoute
+    evalEmailFormatRoute,
+    budgetEntryRoute
   ]
 });
 

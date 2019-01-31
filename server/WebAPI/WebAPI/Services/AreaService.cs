@@ -34,7 +34,7 @@ namespace WebAPI.Services
             var Area = await repo.GetById(id);
             if (Area != null)
             {
-                await repo.Delete(id);
+               // await repo.Delete(id);
 
                 await auditTrailService.Save(new Area(), Area, "DELETE");
 
@@ -47,7 +47,66 @@ namespace WebAPI.Services
             var area = await repo.GetByCode(code);
             if (area != null)
             {
-                await repo.DeleteByCode(code);
+                var companyInfo = await compInfoRepo.GetByCompanyCode(compInfoRepo.GetCompanyCode());
+                var validationResult =
+                    fileSetupService.Validate(companyInfo, await compInfoRepo.CheckDBIfExists(companyInfo.PayrollDB),
+                        await compInfoRepo.CheckDBIfExists(companyInfo.TKSDB), await compInfoRepo.CheckDBIfExists(companyInfo.HRISDB));
+
+                if (!validationResult.hasError)
+                {
+                    return CustomMessageHandler.Error(validationResult.message);
+                }
+                // Payroll
+                var result = await compInfoRepo.CheckTableIfExists(companyInfo.PayrollDB, TABLE_NAME);
+                if (result && companyInfo.PayrollFlag)
+                {
+                    // Check from payroll database
+                    var results = await repo.GetByCodeFromPayroll(area.AreaCode, companyInfo.PayrollDB);
+                    if (results != null)
+                    {
+                        // DELETE FROM PAYROLL DB
+                        await repo.DeleteFromPayrollFileSetUp(new DeleteSetUpDto
+                        {
+                            Code = area.AreaCode,
+                            DBName = companyInfo.PayrollDB
+                        });
+                    }
+                }
+                // TIME KEEPING
+                var tksResult = await compInfoRepo.CheckTableIfExists(companyInfo.TKSDB, TABLE_NAME);
+                if (tksResult && companyInfo.TKSFlag)
+                {
+                    var results = await repo.GetByCodeFromTKS(area.AreaCode, companyInfo.TKSDB);
+                    if (results != null)
+                    {
+                        // SAVE TO TKS DB
+                        await repo.DeleteFromTKSFileSetUp(new DeleteSetUpDto
+                        {
+                            Code = area.AreaCode,
+                            DBName = companyInfo.TKSDB
+                        });
+                    }
+
+                }
+                // HRIS
+                var hrisResult = await compInfoRepo.CheckTableIfExists(companyInfo.HRISDB, TABLE_NAME);
+                if (hrisResult && companyInfo.HRISFlag)
+                {
+                    var results = await repo.GetByCodeFromHRIS(area.AreaCode, companyInfo.HRISDB);
+                    if (results != null)
+                    {
+                        // SAVE TO HRIS DB
+                        await repo.DeleteFromHRISFileSetUp(new DeleteSetUpDto
+                        {
+                            Code = area.AreaCode,
+                            DBName = companyInfo.HRISDB
+                        });
+                    }
+                }
+
+                await repo.DeleteFileSetUp(area.AreaCode);
+                await repo.Delete(area.AreaCode);
+
 
                 await auditTrailService.Save(new Area(), area, "DELETE");
 

@@ -96,14 +96,27 @@ namespace WebAPI.Controllers
         {
             try
             {
-                var result = await service.Delete(id);
+                //var result = await service.Delete(id);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(CustomMessageHandler.Error(ex.Message));
+            }
+        }
+
+        [HttpDelete("{code}")]
+        public async Task<IActionResult> Delete(string code)
+        {
+            try
+            {
+                var result = await service.DeleteByCode(code);
                 return Ok(result);
             }
             catch (Exception ex)
             {
                 return BadRequest(CustomMessageHandler.Error(ex.Message));
             }
-
         }
     }
 }

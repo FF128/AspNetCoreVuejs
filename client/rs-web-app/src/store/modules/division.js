@@ -4,6 +4,16 @@ const API_ENDPOINT = "api/div";
 
 const state = {
   divisions: [],
+  headers: [
+    {
+      text: "Code",
+      align: "left",
+      sortable: false,
+      value: "code"
+    },
+    { text: "Description", value: "description", align: "left" },
+    { text: "", value: "actions" }
+  ],
   loading: false
 };
 

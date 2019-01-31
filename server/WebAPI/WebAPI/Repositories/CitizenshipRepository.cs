@@ -19,17 +19,17 @@ namespace WebAPI.Repositories
         {
             this.connectionFactory = connectionFactory;
         }
-        public async Task Delete(int id)
+        public async Task Delete(string code)
         {
             using (var conn = connectionFactory.Connection)
             {
-                await conn.ExecuteAsync("sp_tbl_fsCitizenship_Delete",
-                    new { Id = id },
+                await conn.ExecuteAsync("sp_CitizenshipSetUp_DeleteByCode",
+                    new { code },
                     commandType: CommandType.StoredProcedure);
             }
         }
 
-        public async Task DeleteByCode(string code)
+        public async Task DeleteFileSetUp(string code)
         {
             using (var conn = connectionFactory.Connection)
             {
@@ -158,6 +158,26 @@ namespace WebAPI.Repositories
             {
                 await conn.ExecuteAsync("sp_tbl_fsCitizenship_Update",
                     cit, commandType: CommandType.StoredProcedure);
+            }
+        }
+
+        public async Task DeleteFromHRISFileSetUp(DeleteSetUpDto dto)
+        {
+            using (var conn = connectionFactory.Connection)
+            {
+                await conn.ExecuteAsync("sp_tbl_fsCitizenship_DeleteFromHRIS",
+                    dto,
+                    commandType: CommandType.StoredProcedure);
+            }
+        }
+
+        public async Task DeleteFromPayrollFileSetUp(DeleteSetUpDto dto)
+        {
+            using (var conn = connectionFactory.Connection)
+            {
+                await conn.ExecuteAsync("sp_tbl_fsCitizenship_DeleteFromPayroll",
+                    dto,
+                    commandType: CommandType.StoredProcedure);
             }
         }
     }

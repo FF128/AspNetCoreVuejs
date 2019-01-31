@@ -4,7 +4,17 @@ const API_ENDPOINT = "api/prt";
 
 const state = {
   prtData: [],
-  loading: false
+  loading: false,
+  headers: [
+    {
+      text: "Code",
+      align: "left",
+      sortable: false,
+      value: "code"
+    },
+    { text: "Description", value: "description", align: "left" },
+    { text: "", value: "actions" }
+  ]
 };
 
 const getters = {};
@@ -19,10 +29,6 @@ const mutations = {
         state.loading = false;
       })
       .catch(err => {
-        // console.log(err.response.status)
-        // if(err.response.status === 401){
-        //     alert("Unauthorized")
-        // }
         state.loading = false;
       });
   }

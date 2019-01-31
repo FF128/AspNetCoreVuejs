@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using WebAPI.Dtos;
 using WebAPI.Dtos.Unit;
 using WebAPI.Helpers;
 using WebAPI.Models;
@@ -33,7 +34,7 @@ namespace WebAPI.Services
             var unit = await repo.GetById(id);
             if (unit != null)
             {
-                await repo.Delete(id);
+                //await repo.Delete(id);
 
                 await auditTrailService.Save(new Unit(), unit, "DELETE");
 
@@ -42,12 +43,55 @@ namespace WebAPI.Services
             return CustomMessageHandler.Error("Data doesn't exist");
         }
 
-        public async Task<CustomMessage> Delete(string code)
+        public async Task<CustomMessage> DeleteByCode(string code)
         {
             var unit = await repo.GetByCode(code);
             if (unit != null)
             {
-                await repo.DeleteByCode(code);
+                var companyInfo = await compInfoRepo.GetByCompanyCode(compInfoRepo.GetCompanyCode());
+                var validationResult =
+                    fileSetupService.Validate(companyInfo, await compInfoRepo.CheckDBIfExists(companyInfo.PayrollDB),
+                        await compInfoRepo.CheckDBIfExists(companyInfo.TKSDB), await compInfoRepo.CheckDBIfExists(companyInfo.HRISDB));
+
+                if (!validationResult.hasError)
+                {
+                    return CustomMessageHandler.Error(validationResult.message);
+                }
+                // Payroll
+                var result = await compInfoRepo.CheckTableIfExists(companyInfo.PayrollDB, TABLE_NAME);
+                if (result && companyInfo.PayrollFlag)
+                {
+                    // Check from payroll database
+                    var results = await repo.GetByCodeFromPayroll(unit.UnitCode, companyInfo.PayrollDB);
+                    if (results != null)
+                    {
+                        // DELETE FROM PAYROLL DB
+                        await repo.DeleteFromPayrollFileSetUp(new DeleteSetUpDto
+                        {
+                            Code = unit.UnitCode,
+                            DBName = companyInfo.PayrollDB
+                        });
+                    }
+                }
+                // HRIS
+                var hrisResult = await compInfoRepo.CheckTableIfExists(companyInfo.HRISDB, TABLE_NAME);
+                if (hrisResult && companyInfo.HRISFlag)
+                {
+                    var results = await repo.GetByCodeFromHRIS(unit.UnitCode, companyInfo.HRISDB);
+                    if (results != null)
+                    {
+                        // SAVE TO HRIS DB
+                        await repo.DeleteFromHRISFileSetUp(new DeleteSetUpDto
+                        {
+                            Code = unit.UnitCode,
+                            DBName = companyInfo.HRISDB
+                        });
+                    }
+                }
+
+                await repo.DeleteFileSetUp(unit.UnitCode);
+                await repo.Delete(unit.UnitCode);
+
 
                 await auditTrailService.Save(new Unit(), unit, "DELETE");
 

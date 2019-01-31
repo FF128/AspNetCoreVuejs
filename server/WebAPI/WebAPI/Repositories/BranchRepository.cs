@@ -9,6 +9,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 using WebAPI.Dtos.Branch;
+using WebAPI.Dtos;
 
 namespace WebAPI.Repositories
 {
@@ -19,12 +20,52 @@ namespace WebAPI.Repositories
         {
             this.connectionFactory = connectionFactory;
         }
-        public async Task Delete(int id)
+        public async Task Delete(string code)
         {
             using (var conn = connectionFactory.Connection)
             {
-                await conn.ExecuteAsync("sp_BranchSetUp_Delete",
-                    new { Id = id },
+                await conn.ExecuteAsync("sp_BranchSetUp_DeleteByCode",
+                    new { code },
+                    commandType: CommandType.StoredProcedure);
+            }
+        }
+
+        public async Task DeleteFileSetUp(string code)
+        {
+            using (var conn = connectionFactory.Connection)
+            {
+                await conn.ExecuteAsync("sp_tbl_fsBranch_DeleteByCode",
+                    new { code },
+                    commandType: CommandType.StoredProcedure);
+            }
+        }
+
+        public async Task DeleteFromHRISFileSetUp(DeleteSetUpDto dto)
+        {
+            using (var conn = connectionFactory.Connection)
+            {
+                await conn.ExecuteAsync("sp_tbl_fsBranch_DeleteFromHRIS",
+                    dto,
+                    commandType: CommandType.StoredProcedure);
+            }
+        }
+
+        public async Task DeleteFromPayrollFileSetUp(DeleteSetUpDto dto)
+        {
+            using (var conn = connectionFactory.Connection)
+            {
+                await conn.ExecuteAsync("sp_tbl_fsBranch_DeleteFromPayroll",
+                    dto,
+                    commandType: CommandType.StoredProcedure);
+            }
+        }
+
+        public async Task DeleteFromTKSFileSetUp(DeleteSetUpDto dto)
+        {
+            using (var conn = connectionFactory.Connection)
+            {
+                await conn.ExecuteAsync("sp_tbl_fsBranch_DeleteFromTKS",
+                    dto,
                     commandType: CommandType.StoredProcedure);
             }
         }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using WebAPI.Dtos.SkillsDto;
+using WebAPI.Dtos;
 
 namespace WebAPI.RepositoryInterfaces
 {
@@ -15,7 +16,10 @@ namespace WebAPI.RepositoryInterfaces
         Task InsertFileSetup(Skills sk);
         Task InsertToHRISFileSetUp(SkillInsertToHRISFSDto dto);
         Task Update(Skills sk);
-        Task Delete(int id);
-        Task DeleteByCode(string code);
+        Task UpdateFileSetup(Skills sk);
+        Task UpdateToHRISFileSetUp(SkillUpdateToHRISFSDto dto);
+        Task Delete(string code);
+        Task DeleteFromHRISFileSetUp(DeleteSetUpDto dto);
+        Task DeleteFileSetUp(string code);
     }
 }

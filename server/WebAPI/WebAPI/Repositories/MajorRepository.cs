@@ -9,6 +9,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 using WebAPI.Dtos.MajorDto;
+using WebAPI.Dtos;
 
 namespace WebAPI.Repositories
 {
@@ -19,22 +20,32 @@ namespace WebAPI.Repositories
         {
             this.connectionFactory = connectionFactory;
         }
-        public async Task Delete(int id)
+        public async Task Delete(string code)
         {
             using (var conn = connectionFactory.Connection)
             {
-                await conn.ExecuteAsync("sp_MajorSetUp_Delete",
-                    new { Id = id },
+                await conn.ExecuteAsync("sp_MajorSetUp_DeleteByCode",
+                    new { code },
                     commandType: CommandType.StoredProcedure);
             }
         }
 
-        public async Task DeleteByCode(string code)
+        public async Task DeleteFileSetUp(string code)
         {
             using(var conn = connectionFactory.Connection)
             {
                 await conn.ExecuteAsync("sp_tbl_fsMajor_DeleteByCode",
                     new { code },
+                    commandType: CommandType.StoredProcedure);
+            }
+        }
+
+        public async Task DeleteFromHRISFileSetUp(DeleteSetUpDto dto)
+        {
+            using (var conn = connectionFactory.Connection)
+            {
+                await conn.ExecuteAsync("sp_tbl_fsMajor_DeleteFromHRIS",
+                    dto,
                     commandType: CommandType.StoredProcedure);
             }
         }
@@ -114,6 +125,24 @@ namespace WebAPI.Repositories
             {
                 await conn.ExecuteAsync("sp_MajorSetUp_Update",
                     major, commandType: CommandType.StoredProcedure);
+            }
+        }
+
+        public async Task UpdateFileSetup(Major major)
+        {
+            using (var conn = connectionFactory.Connection)
+            {
+                await conn.ExecuteAsync("sp_tbl_fsMajor_Update",
+                    major, commandType: CommandType.StoredProcedure);
+            }
+        }
+
+        public async Task UpdateToHRISFileSetUp(MajorUpdateToHRISFSDto dto)
+        {
+            using (var conn = connectionFactory.Connection)
+            {
+                await conn.ExecuteAsync("sp_tbl_fsMajor_UpdateToHRIS",
+                     dto, commandType: CommandType.StoredProcedure);
             }
         }
     }

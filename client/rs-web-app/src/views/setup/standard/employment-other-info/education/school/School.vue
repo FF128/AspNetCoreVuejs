@@ -179,7 +179,7 @@ export default {
     deleteConfirmed() {
       this.isDeleting = true;
       this.$axios
-        .delete(`${this.apiEndpoint}/${this.selectedSchool.id}`)
+        .delete(`${this.apiEndpoint}/${this.selectedSchool.schoolCode}`)
         .then(response => {
           toast.show(response.data);
 

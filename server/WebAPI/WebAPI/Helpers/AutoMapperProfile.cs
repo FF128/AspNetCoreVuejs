@@ -32,9 +32,13 @@ namespace WebAPI.Helpers
             //Skills
             CreateMap<SkillInsertToHRISFSDto, Skills>();
             CreateMap<Skills, SkillInsertToHRISFSDto>();
+            CreateMap<SkillUpdateToHRISFSDto, Skills>();
+            CreateMap<Skills, SkillUpdateToHRISFSDto>();
             // Major
             CreateMap<MajorInsertToHRISFSDto, Major>();
             CreateMap<Major, MajorInsertToHRISFSDto>();
+            CreateMap<MajorUpdateToHRISFSDto, Major>();
+            CreateMap<Major, MajorUpdateToHRISFSDto>();
 
         }
     }

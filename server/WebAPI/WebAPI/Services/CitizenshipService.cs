@@ -41,7 +41,51 @@ namespace WebAPI.Services
             var cit = await repo.GetById(id);
             if (cit != null)
             {
-                await repo.Delete(id);
+                var companyInfo = await comInfoRepo.GetByCompanyCode(comInfoRepo.GetCompanyCode());
+                var validationResult =
+                    fileSetupService.Validate(companyInfo, await comInfoRepo.CheckDBIfExists(companyInfo.PayrollDB),
+                        await comInfoRepo.CheckDBIfExists(companyInfo.TKSDB), await comInfoRepo.CheckDBIfExists(companyInfo.HRISDB));
+
+                if (!validationResult.hasError)
+                {
+                    return CustomMessageHandler.Error(validationResult.message);
+                }
+                // Payroll
+                var result = await comInfoRepo.CheckTableIfExists(companyInfo.PayrollDB, TABLE_NAME);
+                if (result && companyInfo.PayrollFlag)
+                {
+                    // Check from payroll database
+                    var results = await repo.GetByCodeFromPayroll(cit.CitiCode, companyInfo.PayrollDB);
+                    if (results == null)
+                    {
+                        // DELETE FROM PAYROLL DB
+                        await repo.DeleteFromHRISFileSetUp(new DeleteSetUpDto
+                        {
+                            Code = cit.CitiCode,
+                            DBName = companyInfo.PayrollDB
+                        });
+                    }
+                }
+
+                // HRIS
+                var hrisResult = await comInfoRepo.CheckTableIfExists(companyInfo.HRISDB, TABLE_NAME);
+                if (hrisResult && companyInfo.HRISFlag)
+                {
+                    var results = await repo.GetByCodeFromHRIS(cit.CitiCode, companyInfo.HRISDB);
+                    if (results == null)
+                    {
+                        // SAVE TO HRIS DB
+                        await repo.DeleteFromPayrollFileSetUp(new DeleteSetUpDto
+                        {
+                            Code = cit.CitiCode,
+                            DBName = companyInfo.HRISDB
+                        });
+                    }
+                }
+
+                await repo.DeleteFileSetUp(cit.CitiCode);
+                await repo.Delete(cit.CitiCode);
+                
 
                 await auditTrailService.Save(new Citizenship(), cit, "DELETE");
 
@@ -55,7 +99,51 @@ namespace WebAPI.Services
             var cit = await repo.GetByCode(code);
             if (cit != null)
             {
-                await repo.DeleteByCode(code);
+                var companyInfo = await comInfoRepo.GetByCompanyCode(comInfoRepo.GetCompanyCode());
+                var validationResult =
+                    fileSetupService.Validate(companyInfo, await comInfoRepo.CheckDBIfExists(companyInfo.PayrollDB),
+                        await comInfoRepo.CheckDBIfExists(companyInfo.TKSDB), await comInfoRepo.CheckDBIfExists(companyInfo.HRISDB));
+
+                if (!validationResult.hasError)
+                {
+                    return CustomMessageHandler.Error(validationResult.message);
+                }
+                // Payroll
+                var result = await comInfoRepo.CheckTableIfExists(companyInfo.PayrollDB, TABLE_NAME);
+                if (result && companyInfo.PayrollFlag)
+                {
+                    // Check from payroll database
+                    var results = await repo.GetByCodeFromPayroll(cit.CitiCode, companyInfo.PayrollDB);
+                    if (results != null)
+                    {
+                        // DELETE FROM PAYROLL DB
+                        await repo.DeleteFromPayrollFileSetUp(new DeleteSetUpDto
+                        {
+                            Code = cit.CitiCode,
+                            DBName = companyInfo.PayrollDB
+                        });
+                    }
+                }
+
+                // HRIS
+                var hrisResult = await comInfoRepo.CheckTableIfExists(companyInfo.HRISDB, TABLE_NAME);
+                if (hrisResult && companyInfo.HRISFlag)
+                {
+                    var results = await repo.GetByCodeFromHRIS(cit.CitiCode, companyInfo.HRISDB);
+                    if (results != null)
+                    {
+                        // SAVE TO HRIS DB
+                        await repo.DeleteFromHRISFileSetUp(new DeleteSetUpDto
+                        {
+                            Code = cit.CitiCode,
+                            DBName = companyInfo.HRISDB
+                        });
+                    }
+                }
+
+                await repo.DeleteFileSetUp(cit.CitiCode);
+                await repo.Delete(cit.CitiCode);
+
 
                 await auditTrailService.Save(new Citizenship(), cit, "DELETE");
 

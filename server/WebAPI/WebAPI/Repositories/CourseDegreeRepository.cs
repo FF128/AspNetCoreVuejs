@@ -9,6 +9,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 using WebAPI.Dtos.CourseDto;
+using WebAPI.Dtos;
 
 namespace WebAPI.Repositories
 {
@@ -19,22 +20,32 @@ namespace WebAPI.Repositories
         {
             this.connectionFactory = connectionFactory;
         }
-        public async Task Delete(int id)
+        public async Task Delete(string code)
         {
             using (var conn = connectionFactory.Connection)
             {
-                await conn.ExecuteAsync("sp_CourseDegreeSetUp_Delete",
-                    new { Id = id },
+                await conn.ExecuteAsync("sp_CourseDegreeSetUp_DeleteByCode",
+                    new { code },
                     commandType: CommandType.StoredProcedure);
             }
         }
 
-        public async Task DeleteByCode(string code)
+        public async Task DeleteFileSetUp(string code)
         {
             using (var conn = connectionFactory.Connection)
             {
                 await conn.ExecuteAsync("sp_tbl_fsCourseDegree_DeleteByCode",
                     new { code },
+                    commandType: CommandType.StoredProcedure);
+            }
+        }
+
+        public async Task DeleteFromHRISFileSetUp(DeleteSetUpDto dto)
+        {
+            using (var conn = connectionFactory.Connection)
+            {
+                await conn.ExecuteAsync("sp_tbl_fsCourseDegree_DeleteFromHRIS",
+                    dto,
                     commandType: CommandType.StoredProcedure);
             }
         }

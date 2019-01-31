@@ -268,7 +268,7 @@ export default {
     deleteConfirmed() {
       this.isDeleting = true;
       this.$axios
-        .delete(`${this.apiEndpoint}/${this.selectedSection.id}`)
+        .delete(`${this.apiEndpoint}/${this.selectedSection.sectionCode}`)
         .then(response => {
           let { message, hasError } = response.data;
 

@@ -5,6 +5,7 @@ using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using WebAPI.Data;
+using WebAPI.Dtos;
 using WebAPI.Dtos.Religion;
 using WebAPI.Models;
 using WebAPI.RepositoryInterfaces;
@@ -18,22 +19,32 @@ namespace WebAPI.Repositories
         {
             this.connectionFactory = connectionFactory;
         }
-        public async Task Delete(int id)
+        public async Task Delete(string code)
         {
             using (var conn = connectionFactory.Connection)
             {
-                await conn.ExecuteAsync("sp_ReligionSetUp_Delete",
-                    new { Id = id },
+                await conn.ExecuteAsync("sp_ReligionSetUp_DeleteByCode",
+                    new { code },
                     commandType: CommandType.StoredProcedure);
             }
         }
 
-        public async Task DeleteByCode(string code)
+        public async Task DeleteFileSetUp(string code)
         {
             using (var conn = connectionFactory.Connection)
             {
                 await conn.ExecuteAsync("sp_tbl_fsReligion_DeleteByCode",
                     new { code },
+                    commandType: CommandType.StoredProcedure);
+            }
+        }
+
+        public async Task DeleteFromHRISFileSetUp(DeleteSetUpDto dto)
+        {
+            using (var conn = connectionFactory.Connection)
+            {
+                await conn.ExecuteAsync("sp_tbl_fsReligion_DeleteFromHRIS",
+                    dto,
                     commandType: CommandType.StoredProcedure);
             }
         }

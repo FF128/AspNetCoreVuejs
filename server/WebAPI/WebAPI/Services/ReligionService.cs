@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using WebAPI.Dtos;
 using WebAPI.Dtos.Religion;
 using WebAPI.Helpers;
 using WebAPI.Models;
@@ -33,7 +34,7 @@ namespace WebAPI.Services
             var rel = await repo.GetById(id);
             if (rel != null)
             {
-                await repo.Delete(id);
+                //await repo.Delete(id);
 
                 //Audit Trail
                 await auditTrailService.Save(new Religion(), rel, "DELETE");
@@ -48,7 +49,35 @@ namespace WebAPI.Services
             var rel = await repo.GetByCode(code);
             if (rel != null)
             {
-                await repo.DeleteByCode(code);
+                var companyInfo = await compInfoRepo.GetByCompanyCode(compInfoRepo.GetCompanyCode());
+                var validationResult =
+                    fileSetupService.Validate(companyInfo, await compInfoRepo.CheckDBIfExists(companyInfo.PayrollDB),
+                        await compInfoRepo.CheckDBIfExists(companyInfo.TKSDB), await compInfoRepo.CheckDBIfExists(companyInfo.HRISDB));
+
+                if (!validationResult.hasError)
+                {
+                    return CustomMessageHandler.Error(validationResult.message);
+                }
+                
+                // HRIS
+                var hrisResult = await compInfoRepo.CheckTableIfExists(companyInfo.HRISDB, TABLE_NAME);
+                if (hrisResult && companyInfo.HRISFlag)
+                {
+                    var results = await repo.GetByCodeFromHRIS(rel.Code, companyInfo.HRISDB);
+                    if (results != null)
+                    {
+                        // SAVE TO HRIS DB
+                        await repo.DeleteFromHRISFileSetUp(new DeleteSetUpDto
+                        {
+                            Code = rel.Code,
+                            DBName = companyInfo.HRISDB
+                        });
+                    }
+                }
+
+                await repo.DeleteFileSetUp(rel.Code);
+                await repo.Delete(rel.Code);
+
 
                 await auditTrailService.Save(new Religion(), rel, "DELETE");
 

@@ -9,6 +9,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 using WebAPI.Dtos.SkillsDto;
+using WebAPI.Dtos;
 
 namespace WebAPI.Repositories
 {
@@ -19,22 +20,32 @@ namespace WebAPI.Repositories
         {
             this.connectionFactory = connectionFactory;
         }
-        public async Task Delete(int id)
+        public async Task Delete(string code)
         {
             using (var conn = connectionFactory.Connection)
             {
-                await conn.ExecuteAsync("sp_SkillsSetUp_Delete",
-                    new { Id = id },
+                await conn.ExecuteAsync("sp_SkillsSetUp_DeleteByCode",
+                    new { code },
                     commandType: CommandType.StoredProcedure);
             }
         }
 
-        public async Task DeleteByCode(string code)
+        public async Task DeleteFileSetUp(string code)
         {
             using (var conn = connectionFactory.Connection)
             {
                 await conn.ExecuteAsync("sp_tbl_fsSkills_DeleteByCode",
                     new { code },
+                    commandType: CommandType.StoredProcedure);
+            }
+        }
+
+        public async Task DeleteFromHRISFileSetUp(DeleteSetUpDto dto)
+        {
+            using (var conn = connectionFactory.Connection)
+            {
+                await conn.ExecuteAsync("sp_tbl_fsSkills_DeleteFromHRIS",
+                    dto,
                     commandType: CommandType.StoredProcedure);
             }
         }
@@ -114,6 +125,24 @@ namespace WebAPI.Repositories
             {
                 await conn.ExecuteAsync("sp_SkillsSetUp_Update",
                     sk, commandType: CommandType.StoredProcedure);
+            }
+        }
+
+        public async Task UpdateFileSetup(Skills sk)
+        {
+            using (var conn = connectionFactory.Connection)
+            {
+                await conn.ExecuteAsync("sp_tbl_fsSkills_Update",
+                    sk, commandType: CommandType.StoredProcedure);
+            }
+        }
+
+        public async Task UpdateToHRISFileSetUp(SkillUpdateToHRISFSDto dto)
+        {
+            using (var conn = connectionFactory.Connection)
+            {
+                var result = await conn.ExecuteAsync("sp_tbl_fsSkills_UpdateToHRIS",
+                     dto, commandType: CommandType.StoredProcedure);
             }
         }
     }

@@ -18,13 +18,16 @@ namespace WebAPI.RepositoryInterfaces
 
         Task InsertFileSetup(Citizenship cit);
         Task Insert(Citizenship cit);
+        Task InsertToPayrollFileSetUp(CitizenshipInsertToFileSetUpDto dto);
+        Task InsertToHRISFileSetUp(CitizenshipInsertToFileSetUpDto dto);
         Task Update(Citizenship cit);
         Task UpdateFileSetup(Citizenship cit);
         Task UpdateToPayrollFileSetUp(CitizenshipUpdateToFileSetUpDto dto);
         Task UpdateToHRISFileSetUp(CitizenshipUpdateToFileSetUpDto dto);
-        Task Delete(int id);
-        Task DeleteByCode(string code);
-        Task InsertToPayrollFileSetUp(CitizenshipInsertToFileSetUpDto dto);
-        Task InsertToHRISFileSetUp(CitizenshipInsertToFileSetUpDto dto);
+        Task Delete(string code);
+        Task DeleteFromHRISFileSetUp(DeleteSetUpDto dto);
+        Task DeleteFromPayrollFileSetUp(DeleteSetUpDto dto);
+        Task DeleteFileSetUp(string code);
+        
     }
 }

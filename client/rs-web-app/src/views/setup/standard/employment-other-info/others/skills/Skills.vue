@@ -179,7 +179,7 @@ export default {
     deleteConfirmed() {
       this.isDeleting = true;
       this.$axios
-        .delete(`${this.apiEndpoint}/${this.selectedSkill.id}`)
+        .delete(`${this.apiEndpoint}/${this.selectedSkill.skillsCode}`)
         .then(response => {
           toast.show(response.data);
 

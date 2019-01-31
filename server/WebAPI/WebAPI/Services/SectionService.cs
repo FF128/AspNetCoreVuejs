@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using WebAPI.Dtos;
 using WebAPI.Dtos.Section;
 using WebAPI.Helpers;
 using WebAPI.Models;
@@ -34,7 +35,7 @@ namespace WebAPI.Services
             var section = await repo.GetById(id);
             if (section != null)
             {
-                await repo.Delete(id);
+                //await repo.Delete(id);
 
                 await auditTrailService.Save(new Section(), section, "DELETE");
 
@@ -45,12 +46,71 @@ namespace WebAPI.Services
 
         public async Task<CustomMessage> DeleteByCode(string code)
         {
-            var sec = await repo.GetByCode(code);
-            if (sec != null)
+            var section = await repo.GetByCode(code);
+            if (section != null)
             {
-                await repo.DeleteByCode(code);
+                var companyInfo = await compInfoRepo.GetByCompanyCode(compInfoRepo.GetCompanyCode());
+                var validationResult =
+                    fileSetupService.Validate(companyInfo, await compInfoRepo.CheckDBIfExists(companyInfo.PayrollDB),
+                        await compInfoRepo.CheckDBIfExists(companyInfo.TKSDB), await compInfoRepo.CheckDBIfExists(companyInfo.HRISDB));
 
-                await auditTrailService.Save(new Section(), sec, "DELETE");
+                if (!validationResult.hasError)
+                {
+                    return CustomMessageHandler.Error(validationResult.message);
+                }
+                // Payroll
+                var result = await compInfoRepo.CheckTableIfExists(companyInfo.PayrollDB, TABLE_NAME);
+                if (result && companyInfo.PayrollFlag)
+                {
+                    // Check from payroll database
+                    var results = await repo.GetByCodeFromPayroll(section.SectionCode, companyInfo.PayrollDB);
+                    if (results != null)
+                    {
+                        // DELETE FROM PAYROLL DB
+                        await repo.DeleteFromPayrollFileSetUp(new DeleteSetUpDto
+                        {
+                            Code = section.SectionCode,
+                            DBName = companyInfo.PayrollDB
+                        });
+                    }
+                }
+                // TIME KEEPING
+                var tksResult = await compInfoRepo.CheckTableIfExists(companyInfo.TKSDB, TABLE_NAME);
+                if (tksResult && companyInfo.TKSFlag)
+                {
+                    var results = await repo.GetByCodeFromTKS(section.SectionCode, companyInfo.TKSDB);
+                    if (results != null)
+                    {
+                        // SAVE TO TKS DB
+                        await repo.DeleteFromTKSFileSetUp(new DeleteSetUpDto
+                        {
+                            Code = section.SectionCode,
+                            DBName = companyInfo.TKSDB
+                        });
+                    }
+
+                }
+                // HRIS
+                var hrisResult = await compInfoRepo.CheckTableIfExists(companyInfo.HRISDB, TABLE_NAME);
+                if (hrisResult && companyInfo.HRISFlag)
+                {
+                    var results = await repo.GetByCodeFromHRIS(section.SectionCode, companyInfo.HRISDB);
+                    if (results != null)
+                    {
+                        // SAVE TO HRIS DB
+                        await repo.DeleteFromHRISFileSetUp(new DeleteSetUpDto
+                        {
+                            Code = section.SectionCode,
+                            DBName = companyInfo.HRISDB
+                        });
+                    }
+                }
+
+                await repo.DeleteFileSetUp(section.SectionCode);
+                await repo.Delete(section.SectionCode);
+
+
+                await auditTrailService.Save(new Section(), section, "DELETE");
 
                 return CustomMessageHandler.RecordDeleted();
             }

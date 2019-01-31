@@ -1,7 +1,8 @@
 <template>
   <v-container>
-    <v-layout>
-      <h1>Under Development...</h1>
+    <h1>Under Development...</h1>
+    <v-layout row>
+      <pagination></pagination>
     </v-layout>
     
   </v-container>
@@ -9,9 +10,11 @@
 
 <script>
 import toast from "@/components/CustomToast";
-
+import Pagination from "@/components/Pagination"
 export default {
-  components: {},
+  components: {
+    Pagination
+  },
   data() {
     return {
       snackbar: true

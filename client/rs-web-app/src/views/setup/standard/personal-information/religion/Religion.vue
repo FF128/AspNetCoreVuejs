@@ -182,7 +182,7 @@ export default {
     deleteConfirmed() {
       this.isDeleting = true;
       this.$axios
-        .delete(`${this.apiEndpoint}/${this.selectedRel.id}`)
+        .delete(`${this.apiEndpoint}/${this.selectedRel.code}`)
         .then(response => {
           this.getAllReligions();
           // Toast custom message

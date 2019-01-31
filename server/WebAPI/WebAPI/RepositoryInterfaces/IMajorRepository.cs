@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using WebAPI.Dtos.MajorDto;
+using WebAPI.Dtos;
 
 namespace WebAPI.RepositoryInterfaces
 {
@@ -18,8 +19,11 @@ namespace WebAPI.RepositoryInterfaces
         Task InsertFileSetup(Major major);
         Task InsertToHRISFileSetUp(MajorInsertToHRISFSDto dto);
         Task Update(Major major);
-        Task Delete(int id);
-        Task DeleteByCode(string code);
+        Task UpdateFileSetup(Major major);
+        Task UpdateToHRISFileSetUp(MajorUpdateToHRISFSDto dto);
+        Task Delete(string code);
+        Task DeleteFromHRISFileSetUp(DeleteSetUpDto dto);
+        Task DeleteFileSetUp(string code);
 
     }
 }

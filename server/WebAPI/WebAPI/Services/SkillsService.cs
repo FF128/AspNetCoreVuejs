@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using WebAPI.Dtos;
 using WebAPI.Dtos.SkillsDto;
 using WebAPI.Helpers;
 using WebAPI.Models;
@@ -17,16 +18,19 @@ namespace WebAPI.Services
         private readonly ISkillsRepository repo;
         private readonly IAuditTrailService<Skills> auditTrailService;
         private readonly ICompanyInformationRepository compInfoRepo;
+        private readonly IFileSetupService fileSetupService;
         private readonly IMapper mapper;
         public SkillsService(ISkillsRepository repo,
              IAuditTrailService<Skills> auditTrailService,
              ICompanyInformationRepository compInfoRepo,
+             IFileSetupService fileSetupService,
              IMapper mapper)
         {
             this.repo = repo;
             this.auditTrailService = auditTrailService;
             this.compInfoRepo = compInfoRepo;
             this.mapper = mapper;
+            this.fileSetupService = fileSetupService;
         }
 
         public async Task<CustomMessage> Delete(int id)
@@ -34,7 +38,7 @@ namespace WebAPI.Services
             var skillData = await repo.GetById(id);
             if (skillData != null)
             {
-                await repo.Delete(id);
+                //await repo.Delete(id);
 
                 await auditTrailService.Save(new Skills(), skillData, "DELETE");
 
@@ -48,7 +52,35 @@ namespace WebAPI.Services
             var skill = await repo.GetByCode(code);
             if (skill != null)
             {
-                await repo.DeleteByCode(code);
+                var companyInfo = await compInfoRepo.GetByCompanyCode(compInfoRepo.GetCompanyCode());
+                var validationResult =
+                    fileSetupService.Validate(companyInfo, await compInfoRepo.CheckDBIfExists(companyInfo.PayrollDB),
+                        await compInfoRepo.CheckDBIfExists(companyInfo.TKSDB), await compInfoRepo.CheckDBIfExists(companyInfo.HRISDB));
+
+                if (!validationResult.hasError)
+                {
+                    return CustomMessageHandler.Error(validationResult.message);
+                }
+
+                // HRIS
+                var hrisResult = await compInfoRepo.CheckTableIfExists(companyInfo.HRISDB, TABLE_NAME);
+                if (hrisResult && companyInfo.HRISFlag)
+                {
+                    var results = await repo.GetByCodeFromHRIS(skill.SkillsCode, companyInfo.HRISDB);
+                    if (results != null)
+                    {
+                        // SAVE TO HRIS DB
+                        await repo.DeleteFromHRISFileSetUp(new DeleteSetUpDto
+                        {
+                            Code = skill.SkillsCode,
+                            DBName = companyInfo.HRISDB
+                        });
+                    }
+                }
+
+                await repo.DeleteFileSetUp(skill.SkillsCode);
+                await repo.Delete(skill.SkillsCode);
+
 
                 await auditTrailService.Save(new Skills(), skill, "DELETE");
 
@@ -71,22 +103,13 @@ namespace WebAPI.Services
             if (skillData == null)
             {
                 var companyInfo = await compInfoRepo.GetByCompanyCode(compInfoRepo.GetCompanyCode());
-                if (companyInfo == null)
-                {
-                    return CustomMessageHandler.Error("Company Information doesn't exist");
-                }
+                var validationResult =
+                    fileSetupService.Validate(companyInfo, await compInfoRepo.CheckDBIfExists(companyInfo.PayrollDB),
+                        await compInfoRepo.CheckDBIfExists(companyInfo.TKSDB), await compInfoRepo.CheckDBIfExists(companyInfo.HRISDB));
 
-                if (!(await compInfoRepo.CheckDBIfExists(companyInfo.PayrollDB)))
+                if (!validationResult.hasError)
                 {
-                    return CustomMessageHandler.Error("Payroll Database doesn't exist!");
-                }
-                else if (!(await compInfoRepo.CheckDBIfExists(companyInfo.TKSDB)))
-                {
-                    return CustomMessageHandler.Error("Timekeeping Database doesn't exist!");
-                }
-                else if (!(await compInfoRepo.CheckDBIfExists(companyInfo.HRISDB)))
-                {
-                    return CustomMessageHandler.Error("HRIS Database doesn't exist!");
+                    return CustomMessageHandler.Error(validationResult.message);
                 }
                 else
                 {
@@ -122,13 +145,40 @@ namespace WebAPI.Services
             var skillData = await repo.GetByCode(skill.SkillsCode);
             if (skillData != null)
             {
-                await repo.Update(skill);
+                var companyInfo = await compInfoRepo.GetByCompanyCode(compInfoRepo.GetCompanyCode());
+                var validationResult =
+                    fileSetupService.Validate(companyInfo, await compInfoRepo.CheckDBIfExists(companyInfo.PayrollDB),
+                        await compInfoRepo.CheckDBIfExists(companyInfo.TKSDB), await compInfoRepo.CheckDBIfExists(companyInfo.HRISDB));
 
-                //Audit Trail
-                await auditTrailService.Save(skillData, skill, "EDIT");
+                if (!validationResult.hasError)
+                {
+                    return CustomMessageHandler.Error(validationResult.message);
+                }
+                else
+                {
+                    // HRIS 
+                    var hrisResult = await compInfoRepo.CheckTableIfExists(companyInfo.HRISDB, TABLE_NAME);
+                    if (hrisResult && companyInfo.HRISFlag)
+                    {
+                        // Check from payroll database
+                        var results = await repo.GetByCodeFromHRIS(skill.SkillsCode, companyInfo.HRISDB);
+                        if (results != null)
+                        {
+                            var skillDto = mapper.Map<SkillUpdateToHRISFSDto>(skill);
+                            skillDto.DBName = companyInfo.HRISDB;
+                            // SAVE TO HRIS DB
+                            await repo.UpdateToHRISFileSetUp(skillDto);
+                        }
+                    }
 
-                return CustomMessageHandler.RecordUpdated();
+                    await repo.UpdateFileSetup(skill);
+                    await repo.Update(skill);
 
+                    //Audit Trail
+                    await auditTrailService.Save(skillData, skill, "EDIT");
+
+                    return CustomMessageHandler.RecordUpdated();
+                }
             }
             return CustomMessageHandler.Error("You can't edit this code");
         }
