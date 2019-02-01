@@ -19,6 +19,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using Swashbuckle.AspNetCore.Swagger;
 using WebAPI.Compression;
 using WebAPI.Data;
 using WebAPI.Helpers;
@@ -86,7 +87,10 @@ namespace WebAPI
                     return new BadRequestObjectResult(CustomMessageHandler.Custom("Validation Errors", errors.ToArray(), true));
                 };
             });
-            //services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new Info { Title = "Recruitment API", Version = "v1" });
+            });
 
             #region Configure Response Compression
             services.Configure<GzipCompressionProviderOptions>(options => options.Level = CompressionLevel.Optimal);
@@ -297,6 +301,16 @@ namespace WebAPI
             app.UseCors(options => options.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin());
             app.UseAuthentication();
             app.UseHttpsRedirection();
+
+            app.UseSwagger();
+
+            // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.), 
+            // specifying the Swagger JSON endpoint.
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Recruitment API V1");
+            });
+
             app.UseMvc();
             
         }

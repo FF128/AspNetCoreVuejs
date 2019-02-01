@@ -4,7 +4,17 @@ const API_ENDPOINT = "api/project-code";
 
 const state = {
   projectCodeData: [],
-  loading: false
+  loading: false,
+  headers: [
+    {
+      text: "Code",
+      align: "left",
+      sortable: false,
+      value: "code"
+    },
+    { text: "Description", value: "description", align: "left" },
+    { text: "", value: "actions" }
+  ]
 };
 
 const getters = {};

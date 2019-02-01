@@ -138,7 +138,7 @@ export default {
     };
   },
   methods: {
-    ...mapActions("affiliations", ["getAllAffiliations"]),
+    ...mapActions("affiliation", ["getAllAffiliations"]),
     ...mapActions("routing", [
         'changeRoute'
     ]),
@@ -206,7 +206,7 @@ export default {
     }
   },
   computed: {
-    ...mapState("affiliations", {
+    ...mapState("affiliation", {
       affiliationData: state => state.affData,
       isLoading: state => state.loading
     })

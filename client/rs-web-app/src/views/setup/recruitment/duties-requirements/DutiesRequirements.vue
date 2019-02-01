@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-form>
+    <v-form v-model="valid">
       <v-container>
         <h1>{{title}}</h1>
         <v-layout row wrap>
@@ -9,7 +9,8 @@
               v-model="selectedDesignation"
               :append-icon="'mdi-account-search'"
               @click:append="searchDesignation"
-              readonly>
+              readonly
+              :rules="codeRules">
           </v-text-field>
         </v-layout>
       </v-container>
@@ -104,14 +105,15 @@
     </v-container>
     <v-container>
        <v-flex xs12 sm12 md12>
-        <v-btn @click.prevent="save" :loading="isSaving" color="success" v-if="!onEdit">
+        <v-btn @click.prevent="save" :loading="isSaving" color="success" v-if="!onEdit" :disabled="!valid">
           Save
         </v-btn>
         <div v-if="onEdit">
             <v-btn
                 color="success"
                 @click.prevent="update"
-                :loading="isUpdating">
+                :loading="isUpdating"
+                :disabled="!valid">
                 Update
             </v-btn>
             <v-btn
@@ -196,6 +198,7 @@
 <script>
 import Toast from "@/project-modules/toast";
 import { mapState, mapActions } from "vuex";
+import codeRules from "@/rules/codeRules"
 let toast = new Toast();
 export default {
   data() {
@@ -209,6 +212,8 @@ export default {
       onEdit: false,
       isSaving: false,
       isUpdating: false,
+      codeRules,
+      valid: false,
       dutiesHeaders: [
         { text: "Code", value: "dutiesResponsibilitiesCode" },
         { text: "Description", value: "dutiesResponsibilitiesDesc" }
@@ -244,7 +249,7 @@ export default {
     };
   },
   methods: {
-    ...mapActions("dutiesReq", ["getAllDutiesReqData"]),
+    ...mapActions("designationDutiesReq", ["getAllDutiesReqData"]),
     ...mapActions("designationFile", ["getAllDesignationFiles"]),
     ...mapActions("duties", ["getAllDuties"]),
     ...mapActions("jobReq", ["getAllJobReqData"]),
@@ -329,7 +334,7 @@ export default {
     }
   },
   computed: {
-    ...mapState("dutiesReq", {
+    ...mapState("designationDutiesReq", {
       dutiesReqData: state => state.dutiesReqData
     }),
     ...mapState("designationFile", {

@@ -1,12 +1,13 @@
 <template>
     <div>
-        <v-form>
+        <v-form v-model="valid">
             <v-container>
                 <v-layout row wrap>
                     <v-flex xs12 sm6 md8>
                         <v-text-field
                             label="Description"
-                            v-model="attachment.desc">
+                            v-model="attachment.desc"
+                            :rules="requiredRules">
 
                         </v-text-field>
                     </v-flex>
@@ -21,14 +22,16 @@
                             @click.prevent="save"
                             v-if="!onEdit"
                             color="success"
-                            :loading="isSaving">
+                            :loading="isSaving"
+                            :disabled="!valid">
                             Add
                         </v-btn>
                         <div v-if="onEdit">
                             <v-btn
                                 color="success"
                                 @click.prevent="update"
-                                :loading="isUpdating">
+                                :loading="isUpdating"
+                                :disabled="!valid">
                                 Update
                             </v-btn>
                             <v-btn
@@ -95,7 +98,7 @@
 <script>
 import Toast from "@/project-modules/toast";
 import { mapState, mapActions } from "vuex";
-
+import requiredRules from "@/rules/requiredRules"
 let toast = new Toast();
 export default {
   data() {
@@ -104,6 +107,8 @@ export default {
       onEdit: false,
       isSaving: false,
       isUpdating: false,
+      valid: false,
+      requiredRules,
       headers: [
         {
           text: "Active",
