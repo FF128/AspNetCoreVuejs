@@ -8,6 +8,9 @@ const getters = {
 
 const mutations = {
     changeRoute(state, payload) {
+        if(typeof payload == "undefined"){
+            payload = state.activeRoute
+        }
         state.activeRoute = payload;
     }
 }

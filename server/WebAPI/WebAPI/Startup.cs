@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Text;
@@ -16,6 +17,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -181,6 +183,8 @@ namespace WebAPI
             services.AddScoped<IEvalEmailFormatRepository, EvalEmailFormatRepository>();
             services.AddScoped<IBudgetEntryRepository, BudgetEntryRepository>();
             services.AddScoped<IPayLocationRepository, PayLocationRepository>();
+            services.AddScoped<IBudgetEntryApprovalRepository, BudgetEntryApprovalRepository>();
+            services.AddScoped<IReturnedBudgetEntryRepository, ReturnedBudgetEntryRepository>();
             #endregion
 
 
@@ -225,7 +229,7 @@ namespace WebAPI
             });
             #endregion
 
-
+            
             // Services 
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<ICompanyInfoService, CompanyInfoService>();
@@ -296,8 +300,15 @@ namespace WebAPI
             {
                 app.UseHsts();
             }
+            app.UseStaticFiles();
+            app.UseStaticFiles(new StaticFileOptions
+            {
+                FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "Files")),
+                RequestPath = "/files"
+               
+            });
             app.UseResponseCompression();
-            //app.UseMiddleware<StackifyMiddleware.RequestTracerMiddleware>();
+           
             app.UseCors(options => options.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin());
             app.UseAuthentication();
             app.UseHttpsRedirection();

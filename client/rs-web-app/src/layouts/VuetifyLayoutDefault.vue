@@ -18,6 +18,8 @@
         </v-card>
         <standard-side-menu v-if="activeRoute == 'STD'"></standard-side-menu>
         <recruitment-side-menu v-if="activeRoute == 'REC'"></recruitment-side-menu>
+        <transaction-side-menu v-if="activeRoute == 'TRANS'"></transaction-side-menu>
+        
       </v-navigation-drawer>
       <!-- Toolbar -->
       <v-toolbar 
@@ -41,6 +43,7 @@
               <v-btn
                 flat
                 slot="activator"
+                @click="changeRoute(item.routeName)"
               >
                 {{ item.title }}
                 <v-icon>{{item.icon}}</v-icon>
@@ -75,10 +78,10 @@
             </v-list>
           </v-menu>
 
-          <v-toolbar-items class="hidden-md-and-up">
+          <v-toolbar-items class="hidden-md-and-up" >
             <v-toolbar-side-icon>
               <v-tooltip bottom>
-                <v-icon slot="activator">description</v-icon>
+                <v-icon slot="activator" @click="changeRoute('TRANS')">description</v-icon>
                 <span>Transactions</span>
               </v-tooltip>
             </v-toolbar-side-icon>
@@ -146,11 +149,16 @@ let StandardSideMenu = resolve =>
 
 let RecruitmentSideMenu = resolve =>
   require(["@/layouts/RecruitmentSideMenu"], resolve);
+
+let TransactionSideMenu = resolve =>
+  require(["@/layouts/TransactionSideMenu"], resolve);
+
   
 export default {
   components: {
     StandardSideMenu,
-    RecruitmentSideMenu
+    RecruitmentSideMenu,
+    TransactionSideMenu
   },
   data() {
     return {
@@ -190,9 +198,9 @@ export default {
             }
           ] 
         },
-        { icon: '', title: 'Transactions' },
-        { icon: '', title: 'Reports' },
-        { icon: '', title: 'Admin'  }
+        { icon: '', title: 'Transactions', routeName: 'TRANS' },
+        { icon: '', title: 'Reports', routeName: 'REP' },
+        { icon: '', title: 'Admin', routeName: 'ADMIn'  }
       ]
     };
   },

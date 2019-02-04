@@ -204,7 +204,7 @@ export default {
     };
   },
   methods: {
-    ...mapActions("screenDetails", ["getAllDetails"]),
+    ...mapActions("screeningDetails", ["getAllDetails"]),
     ...mapActions("designationFile", ["getAllDesignationFiles"]),
     save() {
       this.isSaving = true;
@@ -284,7 +284,7 @@ export default {
     }
   },
   computed: {
-    ...mapState("screenDetails", {
+    ...mapState("screeningDetails", {
       screenDetailData: state => state.screenDetails,
       isLoading: state => state.loading
     }),
