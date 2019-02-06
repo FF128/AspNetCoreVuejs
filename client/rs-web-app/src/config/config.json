@@ -1,5 +1,6 @@
 {
     "apiBaseUrl": "https://localhost:44346",
+    "apiBaseUrl4": "https://localhost:5001",
     "apiBaseUrl2" : "http://localhost:82",
     "apiBaseUrl3" : "http://172.16.0.69:82"
 }

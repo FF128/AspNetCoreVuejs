@@ -62,8 +62,22 @@ namespace WebAPI.Repositories
         {
             using (var conn = connectionFactory.Connection)
             {
-                await conn.ExecuteAsync("sp_AffiliationsSetUp_Insert",
-                    affiliations, commandType: CommandType.StoredProcedure);
+                conn.Open();
+                using (var transaction = conn.BeginTransaction())
+                {
+                    try
+                    {
+                        await conn.ExecuteAsync("sp_AffiliationsSetUp_Insert",
+                            affiliations, transaction, commandType: CommandType.StoredProcedure);
+                        transaction.Commit();
+                       
+                    }catch
+                    {
+                        transaction.Rollback();
+                    }
+                    
+                }
+                
             }
         }
 

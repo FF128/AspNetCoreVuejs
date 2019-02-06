@@ -58,14 +58,6 @@ namespace WebAPI
 
             // Validators
             //services.AddSingleton<IValidator<Citizenship>, CitizenshipValidator>();
-            //services.AddSingleton<IValidator<Religion>, ReligionValidator>();
-            //services.AddSingleton<IValidator<LevelsOfEmployee>, EmployeeLevelValidator>();
-            //services.AddSingleton<IValidator<EmployeeStatusFile>, EmployeeStatusFileValidator>();
-            //services.AddSingleton<IValidator<JobLevel>, JobLevelValidator>();
-            //services.AddSingleton<IValidator<Grade>, GradeValidator>();
-            //services.AddSingleton<IValidator<Step>, StepValidator>();
-            //services.AddSingleton<IValidator<DesignationFile>, DesignationFileValidator>();
-            //services.AddSingleton<IValidator<Area>, AreaValidator>();
 
             services.AddMvc()
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_1)
@@ -95,28 +87,28 @@ namespace WebAPI
             });
 
             #region Configure Response Compression
-            services.Configure<GzipCompressionProviderOptions>(options => options.Level = CompressionLevel.Optimal);
-            services.AddResponseCompression(options =>
-            {
-                options.MimeTypes = new[]
-                {
-                    // Default
-                    "text/plain",
-                    "text/css",
-                    "application/javascript",
-                    "text/html",
-                    "application/xml",
-                    "text/xml",
-                    "application/json",
-                    "text/json",
-                    // Custom
-                    "image/svg+xml"
-                };
-                options.EnableForHttps = true;
-                options.Providers.Add<GzipCompressionProvider>();
-                options.Providers.Add<BrotliCompressionProvider>();
+            //services.Configure<GzipCompressionProviderOptions>(options => options.Level = CompressionLevel.Optimal);
+            //services.AddResponseCompression(options =>
+            //{
+            //    options.MimeTypes = new[]
+            //    {
+            //        // Default
+            //        "text/plain",
+            //        "text/css",
+            //        "application/javascript",
+            //        "text/html",
+            //        "application/xml",
+            //        "text/xml",
+            //        "application/json",
+            //        "text/json",
+            //        // Custom
+            //        "image/svg+xml"
+            //    };
+            //    options.EnableForHttps = true;
+            //    options.Providers.Add<GzipCompressionProvider>();
+            //    options.Providers.Add<BrotliCompressionProvider>();
           
-            });
+            //});
             #endregion
 
             services.AddAutoMapper();
@@ -185,6 +177,7 @@ namespace WebAPI
             services.AddScoped<IPayLocationRepository, PayLocationRepository>();
             services.AddScoped<IBudgetEntryApprovalRepository, BudgetEntryApprovalRepository>();
             services.AddScoped<IReturnedBudgetEntryRepository, ReturnedBudgetEntryRepository>();
+            services.AddScoped<IPaginationRepository, PaginationRepository>();
             #endregion
 
 
@@ -213,6 +206,7 @@ namespace WebAPI
                         {
                             // return unauthorized if user no longer exists
                             context.Fail("Unauthorized");
+
                         }
                         return Task.CompletedTask;
                     }
@@ -295,6 +289,14 @@ namespace WebAPI
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                app.UseSwagger();
+
+                // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.), 
+                // specifying the Swagger JSON endpoint.
+                app.UseSwaggerUI(c =>
+                {
+                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Recruitment API V1");
+                });
             }
             else
             {
@@ -307,21 +309,10 @@ namespace WebAPI
                 RequestPath = "/files"
                
             });
-            app.UseResponseCompression();
-           
+     
             app.UseCors(options => options.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin());
             app.UseAuthentication();
             app.UseHttpsRedirection();
-
-            app.UseSwagger();
-
-            // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.), 
-            // specifying the Swagger JSON endpoint.
-            app.UseSwaggerUI(c =>
-            {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Recruitment API V1");
-            });
-
             app.UseMvc();
             
         }

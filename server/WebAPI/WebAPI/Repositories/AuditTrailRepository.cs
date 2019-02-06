@@ -45,9 +45,15 @@ namespace WebAPI.Repositories
             }
         }
 
-        //public Task Update(AuditTrail auditTrail)
-        //{
-        //    throw new NotImplementedException();
-        //}
+        public async Task<IEnumerable<dynamic>> Pagination(int pageNumber, int pageSize, string query)
+        {
+            using (var conn = connectionFactory.Connection)
+            {
+                return
+                    await conn.QueryAsync("sp_AuditTrail_Pagination", 
+                        new { PageNumber = pageNumber, PageSize= pageSize, Query = query },
+                        commandType: CommandType.StoredProcedure);
+            }
+        }
     }
 }

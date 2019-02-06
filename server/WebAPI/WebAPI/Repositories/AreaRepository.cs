@@ -34,6 +34,7 @@ namespace WebAPI.Repositories
         {
             using (var conn = connectionFactory.Connection)
             {
+                
                 await conn.ExecuteAsync("sp_tbl_fsArea_DeleteByCode",
                     new { Code = code },
                     commandType: CommandType.StoredProcedure);

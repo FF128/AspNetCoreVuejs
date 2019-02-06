@@ -9,6 +9,7 @@ namespace WebAPI.RepositoryInterfaces
     public interface IAuditTrailRepository
     {
         Task<IEnumerable<AuditTrail>> GetAll();
+        Task<IEnumerable<dynamic>> Pagination(int pageNum, int pageSize, string query);
         Task<AuditTrail> GetById(int id);
         Task Insert(AuditTrail auditTrail);
        // Task Update(AuditTrail auditTrail);
