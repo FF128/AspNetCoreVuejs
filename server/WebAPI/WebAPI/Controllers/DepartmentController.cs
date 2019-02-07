@@ -10,11 +10,15 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using WebAPI.ServiceInterfaces;
 using WebAPI.Helpers;
+using Microsoft.AspNetCore.Authorization;
+using WebAPI.CustomAuthorization;
 
 namespace WebAPI.Controllers
 {
     [Route("api/dep")]
     [ApiController]
+    //[AuthorizedAction]
+    
     public class DepartmentController : ControllerBase
     {
         private readonly IDepartmentRepository repo;

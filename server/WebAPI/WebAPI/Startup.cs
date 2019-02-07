@@ -177,7 +177,7 @@ namespace WebAPI
             services.AddScoped<IPayLocationRepository, PayLocationRepository>();
             services.AddScoped<IBudgetEntryApprovalRepository, BudgetEntryApprovalRepository>();
             services.AddScoped<IReturnedBudgetEntryRepository, ReturnedBudgetEntryRepository>();
-            services.AddScoped<IPaginationRepository, PaginationRepository>();
+            services.AddScoped(typeof(IPaginationRepository<>), typeof(PaginationRepository<>));
             #endregion
 
 
@@ -222,7 +222,6 @@ namespace WebAPI
                 };
             });
             #endregion
-
             
             // Services 
             services.AddScoped<IUserService, UserService>();

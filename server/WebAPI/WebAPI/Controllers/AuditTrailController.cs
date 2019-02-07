@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using WebAPI.Dtos.AuditTrail;
 using WebAPI.Helpers;
 using WebAPI.RepositoryInterfaces;
 
@@ -14,9 +15,9 @@ namespace WebAPI.Controllers
     public class AuditTrailController : ControllerBase
     {
         private readonly IAuditTrailRepository repo;
-        private readonly IPaginationRepository paginationRepo;
+        private readonly IPaginationRepository<PaginationAuditTrail> paginationRepo;
         public AuditTrailController(IAuditTrailRepository repo,
-            IPaginationRepository paginationRepo)
+            IPaginationRepository<PaginationAuditTrail> paginationRepo)
         {
             this.repo = repo;
             this.paginationRepo = paginationRepo;
