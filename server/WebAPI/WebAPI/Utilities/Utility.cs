@@ -75,6 +75,34 @@ namespace WebAPI.Utilities
             }
             return response;
         }
+        public string CreateMessage<T>(IEnumerable<T> oldObj, IEnumerable<T> newObj)
+        {
+           // var result = oldObj.Where(p => !newObj.Any());
+
+            var response = "";
+            try
+            {
+                var result = Compare(oldObj, newObj);
+                foreach (PropertyCompareResult item in result)
+                {
+                    if (item.OldValue == null && item.NewValue != null)
+                    {
+                        response += $"{item.Name}={item.NewValue};"; // for AddRec & Delete
+                    }
+                    else if (item.OldValue != null && item.NewValue != null) // for EditRec
+                    {
+                        response += $"{item.Name}:{item.OldValue}={item.NewValue};";
+                    }
+                }
+
+                response = response.TrimEnd(',', ' ').Trim();
+            }
+            catch (Exception)
+            {
+
+            }
+            return response;
+        }
         public T Clone<T>(T source)
         {
             return JsonConvert.DeserializeObject<T>(JsonConvert.SerializeObject(source));

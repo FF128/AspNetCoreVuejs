@@ -30,6 +30,7 @@ namespace WebAPI.Controllers
             this.service = service;
         }
         [HttpGet]
+        [MyCustomAuthorization(Action ="Test", Module ="")]
         public async Task<IActionResult> GetAll()
         {
             try

@@ -11,6 +11,7 @@ namespace WebAPI.ServiceInterfaces
         string GetHost { get; }
         string GetIpAddress { get; }
         Task Save(T oldObj, T newObj, string trans);
+        Task Save(T t, string trans, string message);
       //  Task Edit(T oldObj, T newObj);
     }
 }

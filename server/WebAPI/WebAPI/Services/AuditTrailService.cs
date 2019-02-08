@@ -46,6 +46,54 @@ namespace WebAPI.Services
                 throw new Exception(ex.Message);
             }
         }
+        public async Task Save(IEnumerable<T> oldObj, IEnumerable<T> newObj, string trans)
+        {
+            try
+            {
+                var utils = new Utility();
+                // get message
+                var message = utils.CreateMessage<T>(oldObj, newObj);
+
+                //var cloneData = utils.Clone<T>(newObj);
+
+                var auditTrail = new AuditTrail();
+                auditTrail.ClientNetAddress = GetIpAddress;
+                auditTrail.HostName = GetHost;
+                auditTrail.Trans = trans;
+                auditTrail.Message = message;
+                auditTrail.Module = GetDescription(typeof(T));
+
+                await repo.Insert(auditTrail);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+
+        public async Task Save(T t, string trans, string message)
+        {
+            try
+            {
+                var utils = new Utility();
+
+                //var cloneData = utils.Clone<T>(newObj);
+
+                var auditTrail = new AuditTrail();
+                auditTrail.ClientNetAddress = GetIpAddress;
+                auditTrail.HostName = GetHost;
+                auditTrail.Trans = trans;
+                auditTrail.Message = message;
+                auditTrail.Module = GetDescription(typeof(T));
+
+                await repo.Insert(auditTrail);
+            }
+            catch(Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+
         private string GetDescription(Type type)
         {
             var descriptions = (DescriptionAttribute[])
