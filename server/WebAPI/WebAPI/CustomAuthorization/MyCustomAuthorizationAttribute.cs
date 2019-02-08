@@ -53,7 +53,6 @@ namespace WebAPI.CustomAuthorization
         {
             if (context.HttpContext.User.Identity.IsAuthenticated)
             {
-
             }
         }
     }

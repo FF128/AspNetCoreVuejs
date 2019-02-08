@@ -50,6 +50,16 @@ namespace WebAPI.Repositories
             }
         }
 
+        public async Task<IEnumerable<GetBudgetEntryMaintDetails>> GetBudgetEntriesByStatus(string status)
+        {
+            using(var conn = connectionFactory.Connection)
+            {
+                return 
+                    await conn.QueryAsync<GetBudgetEntryMaintDetails>("sp_BudgetEntryMaintDetails_GetBudgetEntriesByStatus",
+                        new { Status = status }, commandType: CommandType.StoredProcedure);
+            }
+        }
+
         public GetBudgetEntryApprovalDetailsDto GetBudgetEntryApprovalDetailsDtoByTransNo(string transNo)
         {
             using (var conn = connectionFactory.Connection)

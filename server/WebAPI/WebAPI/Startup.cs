@@ -178,6 +178,8 @@ namespace WebAPI
             services.AddScoped<IBudgetEntryApprovalRepository, BudgetEntryApprovalRepository>();
             services.AddScoped<IReturnedBudgetEntryRepository, ReturnedBudgetEntryRepository>();
             services.AddScoped(typeof(IPaginationRepository<>), typeof(PaginationRepository<>));
+            services.AddScoped<IPRRepository, PRRepository>();
+
             #endregion
 
 
@@ -280,6 +282,7 @@ namespace WebAPI
             services.AddScoped<IFileSetupService, FileSetupService>();
             services.AddScoped<IBudgetEntryService, BudgetEntryService>();
             services.AddScoped<IPayLocationService, PayLocationService>();
+            services.AddScoped<IPRService, PRService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
