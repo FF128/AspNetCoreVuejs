@@ -10,5 +10,8 @@ namespace WebAPI.ServiceInterfaces
     public interface IPRService
     {
         Task<CustomMessage> Insert(PRFHeaderDetailsDto prfHeaderDetailsDto);
+        Task<GetPREntryApprovalDetailsDto> GetPREntryApprovalDetails(string prfNo);
+        Task<CustomMessage> AcceptEntry(string prfNo);
+        Task<CustomMessage> DeclineEntry(string prfNo);
     }
 }

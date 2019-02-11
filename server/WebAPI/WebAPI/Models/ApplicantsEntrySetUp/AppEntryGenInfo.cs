@@ -17,5 +17,6 @@ namespace WebAPI.Models.ApplicantsEntrySetUp
         public bool ShowWhy { get; set; }
         public string ShowWhyText { get; set; }
         public bool Active { get; set; }
+        public string CompanyCode { get; set; }
     }
 }

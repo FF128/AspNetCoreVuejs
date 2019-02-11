@@ -11,8 +11,8 @@ namespace WebAPI.Models.PRModel
         public string PRFNo { get; set; }
         public string CC { get; set; }
         public string EmpStatus { get; set; }
-        public DateTime DateRequested { get; set; }
-        public DateTime DateRequired { get; set; }
+        public DateTime DateRequested { get; set; } = DateTime.Now;
+        public DateTime DateRequired { get; set; } 
         public DateTime DurationFrom { get; set; }
         public DateTime DurationTo { get; set; }
         public string RequestedBy { get; set; }

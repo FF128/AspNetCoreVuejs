@@ -18,7 +18,8 @@ namespace WebAPI.Dtos.PRDto
         public string BraCode { get; set; }
         public string UnitCode { get; set; }
         public string SectionCode { get; set; }
-        public string Status { get; set; }
+        public int Quantity { get; set; }
+        public string Status { get; set; } = "WAITING";
         public long LocId { get; set; }
         public decimal AgreedSalary { get; set; }
         public string DatabaseCode { get; set; }

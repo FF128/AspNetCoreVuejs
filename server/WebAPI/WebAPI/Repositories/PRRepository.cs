@@ -18,6 +18,26 @@ namespace WebAPI.Repositories
             this.connectionFactory = connectionFactory;
         }
 
+        public async Task<PRFHeaderMaint> GetByPRFNo(string prfNo)
+        {
+            using (var conn = connectionFactory.Connection)
+            {
+                return
+                    await conn.QueryFirstOrDefaultAsync<PRFHeaderMaint>("sp_PRFHeaderMaint_ViewByPRFNo",
+                        new { PRFNo = prfNo }, commandType: CommandType.StoredProcedure);
+            }
+        }
+
+        public async Task<IEnumerable<GetPREntryDetails>> GetDetailsByPRFNo(string prfNo)
+        {
+            using (var conn = connectionFactory.Connection)
+            {
+                return
+                    await conn.QueryAsync<GetPREntryDetails>("sp_PRFDetailsMaint_ViewByPRFNo",
+                        new { PRFNo = prfNo }, commandType: CommandType.StoredProcedure);
+            }
+        }
+
         public async Task<int> Insert(PRFHeaderMaint pr)
         {
             using(var conn = connectionFactory.Connection)
@@ -62,6 +82,16 @@ namespace WebAPI.Repositories
             }
         }
 
+        public async Task UpdatePRDetailsStatus(string prfNo, string status)
+        {
+            using (var conn = connectionFactory.Connection)
+            {
+                await conn.ExecuteAsync("sp_PRFDetailsMaint_UpdateStatus",
+                    new { PRFNo = prfNo, Status = status },
+                    commandType: CommandType.StoredProcedure);
+            }
+        }
+
         public async Task UpdatePRFNo(int identity, string prfNo)
         {
             using (var conn = connectionFactory.Connection)
@@ -80,6 +110,34 @@ namespace WebAPI.Repositories
                         trans.Rollback();
                     }
                 }
+            }
+        }
+
+        public async Task UpdateStatus(string prfNo, string status)
+        {
+            using(var conn = connectionFactory.Connection)
+            {
+                await conn.ExecuteAsync("sp_PRFHeaderMaint_UpdateStatus",
+                    new { PRFNo = prfNo, Status = status },
+                    commandType: CommandType.StoredProcedure);
+            }
+        }
+
+        public async Task<IEnumerable<ViewPREntryWithStatusDto>> ViewPREntryWithStatusReturnedDto()
+        {
+            using (var conn = connectionFactory.Connection)
+            {
+                return await conn.QueryAsync<ViewPREntryWithStatusDto>("sp_PRFHeaderMaint_ViewWithStatusReturned",
+                    commandType: CommandType.StoredProcedure);
+            }
+        }
+
+        public async Task<IEnumerable<ViewPREntryWithStatusDto>> ViewPREntryWithStatusWaitingDto()
+        {
+            using (var conn = connectionFactory.Connection)
+            {
+                return await conn.QueryAsync<ViewPREntryWithStatusDto>("sp_PRFHeaderMaint_ViewWithStatusWaiting",
+                    commandType: CommandType.StoredProcedure);
             }
         }
     }

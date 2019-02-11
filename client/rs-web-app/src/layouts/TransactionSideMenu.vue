@@ -1,5 +1,5 @@
 <template>
-    <v-list class="grey lighten-4">
+    <v-list class="white">
         <v-list-group
                 prepend-icon="settings"
                 no-action>
@@ -157,8 +157,8 @@ export default {
     data() {
         return {
             prItems: [
-                { title: 'PR Entry', route: ''},
-                { title: 'PR Entry Approval', route: ''},
+                { title: 'PR Entry', route: '/pr-entry'},
+                { title: 'PR Entry Approval', route: 'pr-approval'},
                 { title: 'Returned PRF', route: ''},
                 { title: 'PR History', route: ''},
                 { title: 'Extend PRF', route: ''},

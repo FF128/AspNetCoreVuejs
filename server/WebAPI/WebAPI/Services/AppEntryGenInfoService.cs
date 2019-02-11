@@ -13,11 +13,14 @@ namespace WebAPI.Services
     {
         private readonly IAppEntryGenInfoRepository repo;
         private readonly IAuditTrailService<AppEntryGenInfo> auditTrailService;
+        private readonly ICompanyInformationRepository compInfoRepo;
         public AppEntryGenInfoService(IAppEntryGenInfoRepository repo,
-             IAuditTrailService<AppEntryGenInfo> auditTrailService)
+             IAuditTrailService<AppEntryGenInfo> auditTrailService,
+             ICompanyInformationRepository compInfoRepo)
         {
             this.repo = repo;
             this.auditTrailService = auditTrailService;
+            this.compInfoRepo = compInfoRepo;
         }
 
         public async Task<CustomMessage> Delete(int id)
@@ -38,6 +41,7 @@ namespace WebAPI.Services
         {
             if ((await repo.GetById(gen.Id)) == null)
             {
+                gen.CompanyCode = compInfoRepo.GetCompanyCode();
                 await repo.Insert(gen);
 
                 await auditTrailService.Save(new AppEntryGenInfo(), gen, "ADD");

@@ -9,5 +9,6 @@ namespace WebAPI.Dtos.PRDto
     {
         public PRFHeaderMaintDto Header { get; set; }
         public IEnumerable<PRFDetailsMaintDto> Details { get; set; }
+        public bool IsBudgeted { get; set; }
     }
 }

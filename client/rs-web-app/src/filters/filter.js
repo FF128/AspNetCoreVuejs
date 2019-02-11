@@ -4,6 +4,11 @@ import numeral from "numeral";
 import Axios from "axios";
 
 Vue.filter("dateFormat", value => moment(value).format("MM/DD/YYYY"));
+Vue.filter("dateFormatInModel", {
+  read(value) {
+    return moment(value).format("MM/DD/YYYY")
+  }
+})
 Vue.filter("inputDateFormat", { 
   
   read: function(value) {

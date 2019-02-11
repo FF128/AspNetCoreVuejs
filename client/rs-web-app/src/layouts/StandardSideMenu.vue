@@ -1,5 +1,5 @@
 <template>
-    <v-list class="grey lighten-4">
+    <v-list class="white">
         <!-- <v-list-tile @click="$router.push('/designation-duties-requirements')">
             <v-list-tile-action>
                 <v-icon>home</v-icon>

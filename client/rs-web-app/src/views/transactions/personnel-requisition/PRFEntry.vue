@@ -78,6 +78,37 @@
                     </v-form>
                 </v-expansion-panel-content>
             </v-expansion-panel>
+            <v-data-table
+                :items="selectedEntries"
+                :headers="budgetEntriesHeaders"
+                v-if="typeof selectedEntries[0] != 'undefined'">
+                    <template slot="items" slot-scope="props" >
+                        <td >{{ props.item.budgetDetailsID }}</td>
+                        <td >{{ props.item.transactionNo }}</td>
+                        <td >{{ props.item.description }}</td>
+                        <td >{{ props.item.durationFrom | dateFormat }}</td>
+                        <td >{{ props.item.durationTo | dateFormat }}</td>
+                        <td >{{ props.item.locName }}</td>
+                        <td >{{ props.item.department }}</td>
+                        <td >{{ props.item.location }}</td>
+                        <td >{{ props.item.group }}</td>
+                        <td >{{ props.item.branch }}</td>
+                        <td >{{ props.item.unit }}</td>
+                        <td >{{ props.item.section }}</td>
+                        <td >{{ props.item.designation }}</td>
+                        <td >{{ props.item.division }}</td>
+                        <td >{{ props.item.quantity }}</td>
+                        <td >{{ props.item.agreedSalary }}</td>
+                    </template>
+            </v-data-table>
+            <v-layout>
+                <v-btn
+                    @click.prevent="save"
+                    color="success"
+                    v-if="typeof selectedEntries[0] != 'undefined'">
+                    Submit
+                </v-btn>
+            </v-layout>
         </v-container>
         <look-up-dialog :dialog="employmentStatusDialog" :title="'Employee Status'" v-if="employmentStatusDialog">
             <template slot="table">
@@ -136,11 +167,43 @@
         </look-up-dialog>
         <look-up-dialog :title="'Available Budget Entries'" :dialog="budgetEntryDialog" v-if="budgetEntryDialog">
             <template slot="table">
-
+                <v-data-table
+                    :items="budgetEntries"
+                    :headers="budgetEntriesHeaders"
+                    select-all
+                    item-key="budgetDetailsID"
+                    v-model="selectedEntries">
+                    <template slot="items" slot-scope="props" >
+                        <td>
+                            <v-checkbox
+                                v-model="props.selected"
+                                primary
+                                hide-details>
+                            </v-checkbox>
+                        </td>
+                        <td >{{ props.item.budgetDetailsID }}</td>
+                        <td >{{ props.item.transactionNo }}</td>
+                        <td >{{ props.item.description }}</td>
+                        <td >{{ props.item.durationFrom | dateFormat }}</td>
+                        <td >{{ props.item.durationTo | dateFormat }}</td>
+                        <td >{{ props.item.locName }}</td>
+                        <td >{{ props.item.department }}</td>
+                        <td >{{ props.item.location }}</td>
+                        <td >{{ props.item.group }}</td>
+                        <td >{{ props.item.branch }}</td>
+                        <td >{{ props.item.unit }}</td>
+                        <td >{{ props.item.section }}</td>
+                        <td >{{ props.item.designation }}</td>
+                        <td >{{ props.item.division }}</td>
+                        <td >{{ props.item.quantity }}</td>
+                        <td >{{ props.item.agreedSalary }}</td>
+                    </template>
+                </v-data-table>
             </template>
             <template slot="card-actions">
                 <v-btn
-                    flat="flat"
+                    flat
+                    color="error"
                     @click.prevent="budgetEntryDialog = false">
                     Close
                 </v-btn>
@@ -175,7 +238,29 @@ export default {
             employmentStatusDialog: false,
             prtDialog: false,
             budgetEntryDialog: false,
-            radioGroup: 'budgeted'
+            radioGroup: 'budgeted',
+            budgetEntries: [],
+            budgetEntriesHeaders: [
+                { text: '', value: 'budgetDetailsID'},
+                { text: 'Trans No.', value: 'transactionNo'},
+                { text: 'Description', value: 'description'},
+                { text: 'Duration From', value: 'durationFrom'},
+                { text: 'Duration To', value: 'durationTo'},
+                { text: 'Payroll Location', value: 'locName'},
+                { text: 'Department', value: 'department'},
+                { text: 'Location', value: 'location'},
+                { text: 'Group', value: 'group'},
+                { text: 'Branch', value: 'branch'},
+                { text: 'Unit', value: 'unit'},
+                { text: 'Section', value: 'section'},
+                { text: 'Designation', value: 'designation'},
+                { text: 'Division', value: 'division'},
+                { text: 'Quantity', value: 'quantity'},
+                { text: 'Agreed Salary', value: 'agreedSalary'}
+            ],
+            selectedEntries: [],
+            apiEndpoint: 'api/pr',
+            apiBudgetEntry: 'api/budget-entry'
         }
     },
     computed: {
@@ -213,6 +298,29 @@ export default {
         },
         searchBudgetEntries() {
             this.budgetEntryDialog = true
+            this.getBudgetEntries();
+        },
+        getBudgetEntries() {
+            this.$axios.get(`${this.apiEndpoint}/budget-entries`)
+                .then(({ data }) => {
+                    this.budgetEntries = data;
+                })
+                .catch(({ response }) => {
+                    toast.show(response.data)
+                })
+        },
+        save() {
+            this.$axios.post(`${this.apiEndpoint}`, {
+                header: this.pr,
+                details: this.selectedEntries,
+                isBudgeted: this.radioGroup == 'budgeted' ? true : false
+            })
+            .then(({ data }) => {
+                toast.show(data);
+            })
+            .catch(({ response }) => {
+                toast.show(response.data);
+            })
         }
     }
 }

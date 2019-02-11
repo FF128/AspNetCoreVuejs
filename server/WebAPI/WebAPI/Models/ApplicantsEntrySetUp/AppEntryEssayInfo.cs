@@ -12,5 +12,6 @@ namespace WebAPI.Models.ApplicantsEntrySetUp
         public int Id { get; set; }
         public string Question { get; set; }
         public bool Active { get; set; }
+        public string CompanyCode { get; set; }
     }
 }

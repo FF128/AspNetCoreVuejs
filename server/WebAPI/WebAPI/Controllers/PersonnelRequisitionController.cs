@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using WebAPI.Dtos.PRDto;
 using WebAPI.Helpers;
+using WebAPI.Models.PRModel;
 using WebAPI.RepositoryInterfaces;
 using WebAPI.ServiceInterfaces;
 
@@ -48,6 +49,73 @@ namespace WebAPI.Controllers
 
                 return Ok(result);
             }catch(Exception ex)
+            {
+                return BadRequest(CustomMessageHandler.Error(ex.Message));
+            }
+        }
+        [HttpGet("waiting")]
+        public async Task<IActionResult> GetPREntryWithStatusWaiting()
+        {
+            try
+            {
+                return Ok(await repo.ViewPREntryWithStatusWaitingDto());
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(CustomMessageHandler.Error(ex.Message));
+            }
+        }
+        [HttpGet("returned")]
+        public async Task<IActionResult> GetPREntryWithStatusReturned()
+        {
+            try
+            {
+                return Ok(await repo.ViewPREntryWithStatusReturnedDto());
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(CustomMessageHandler.Error(ex.Message));
+            }
+        }
+        [HttpGet("{prfNo}")]
+        public async Task<IActionResult> GetBudgetEntryByTransNo(string prfNo)
+        {
+            try
+            {
+                var result = await service.GetPREntryApprovalDetails(prfNo);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(CustomMessageHandler.Error(ex.Message));
+            }
+        }
+        [HttpPost("accept")]
+        public async Task<IActionResult> AcceptPREntry(PRFHeaderMaint header)
+        {
+            try
+            {
+                var result = await service.AcceptEntry(header.PRFNo);
+
+                return Ok(result);
+
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(CustomMessageHandler.Error(ex.Message));
+            }
+        }
+        [HttpPost("decline")]
+        public async Task<IActionResult> DeclinePREntry(PRFHeaderMaint header)
+        {
+            try
+            {
+                var result = await service.DeclineEntry(header.PRFNo);
+
+                return Ok(result);
+
+            }
+            catch (Exception ex)
             {
                 return BadRequest(CustomMessageHandler.Error(ex.Message));
             }

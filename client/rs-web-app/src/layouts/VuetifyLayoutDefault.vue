@@ -2,12 +2,12 @@
   <div>
     <v-app id="inspire">
       <v-navigation-drawer
-        class="grey lighten-4"
+        class="white"
         v-model="drawer"
         fixed
         app>
         <!-- <img src="@/assets/banner.png" class="img-responsive"/> -->
-        <v-card color="grey lighten-4" height="65">
+        <v-card color="white" height="65">
           <v-card-title primary-title>
             <v-badge right>
               <h2>Recruitment System</h2>

@@ -50,12 +50,22 @@ namespace WebAPI.Repositories
             }
         }
 
-        public async Task<IEnumerable<GetBudgetEntryMaintDetails>> GetBudgetEntriesByStatus(string status)
+        public async Task<IEnumerable<GetAvailableBudgetEntriesDto>> GetBudgetEntriesByBudgetDetailsId(long[] id)
+        {
+            using (var conn = connectionFactory.Connection)
+            {
+                return
+                    await conn.QueryAsync<GetAvailableBudgetEntriesDto>("sp_BudgetEntryMaintDetails_GetBudgetEntriesByBudgetDetailsId",
+                        new { id }, commandType: CommandType.StoredProcedure);
+            }
+        }
+
+        public async Task<IEnumerable<GetAvailableBudgetEntriesDto>> GetBudgetEntriesByStatus(string status)
         {
             using(var conn = connectionFactory.Connection)
             {
                 return 
-                    await conn.QueryAsync<GetBudgetEntryMaintDetails>("sp_BudgetEntryMaintDetails_GetBudgetEntriesByStatus",
+                    await conn.QueryAsync<GetAvailableBudgetEntriesDto>("sp_BudgetEntryMaintDetails_GetBudgetEntriesByStatus",
                         new { Status = status }, commandType: CommandType.StoredProcedure);
             }
         }
