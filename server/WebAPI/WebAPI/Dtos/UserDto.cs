@@ -12,5 +12,10 @@ namespace WebAPI.Dtos
         public string LastName { get; set; }
         public string Username { get; set; }
         public string Password { get; set; }
+        public string EmailAddress { get; set; }
+        public bool AllowExpiDate { get; set; }
+        public DateTime ExpirationDate { get; set; }
+        public string EmpCode { get; set; }
+        public string CompanyCode { get; set; }
     }
 }

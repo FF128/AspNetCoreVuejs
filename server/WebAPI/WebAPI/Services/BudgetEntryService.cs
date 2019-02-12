@@ -121,17 +121,31 @@ namespace WebAPI.Services
 
         public async Task<GetBudgetEntryApprovalDetailsDto> GetBudgetEntryApprovalDetails(string transNo)
         {
-            return new GetBudgetEntryApprovalDetailsDto
+            var companyInfo = await compInfoRepo.GetByCompanyCode(compInfoRepo.GetCompanyCode());
+            var budgetEntry = await repo.GetByTransNo(transNo);
+            if (budgetEntry == null)
+                throw new Exception($"Transaction ({transNo}) doesn't exist to the database");
+
+            if (budgetEntry.Status == "OPEN")
             {
-                BudgetEntryMainHeader = await repo.GetByTransNo(transNo),
-                BudgetEntryMaintAttachments = await repo.GetBudgetEntryMaintAttachmentsByTransNo(transNo),
-                BudgetEntryMaintDetails = await repo.GetBudgetEntryMaintDetailsByTransNo(transNo)
-            };
+                throw new Exception($"Transaction ({transNo}) was already processed");
+            }
+
+            if (await compInfoRepo.CheckDBIfExists(companyInfo.HRISDB))
+            {
+                return new GetBudgetEntryApprovalDetailsDto
+                {
+                    BudgetEntryMainHeader = await repo.GetByTransNo(transNo),
+                    BudgetEntryMaintAttachments = await repo.GetBudgetEntryMaintAttachmentsByTransNo(transNo),
+                    BudgetEntryMaintDetails = await repo.GetBudgetEntryMaintDetailsByTransNo(transNo, companyInfo.HRISDB)
+                };
+            }
+            throw new Exception("HRIS Database not found");
         }
 
         public async Task<CustomMessage> AcceptEntry(string transNo)
         {
-            var detail = await beaRepo.GetByTransNo(transNo);
+            var detail = await beaRepo.GetByTransNo(transNo, await GetHRISDB());
             if (detail == null)
             {
                 return CustomMessageHandler.Error($"Unable to find any data using this transaction no. {transNo}");
@@ -147,7 +161,7 @@ namespace WebAPI.Services
                 "UPDATE", $"Update status of this transaction no. {detail.TransactionNo} to open");
 
             var bemaList = new List<BudgetEntryMaintAllocated>();
-            foreach (var bed in await beaRepo.GetAllByTransNo(transNo))
+            foreach (var bed in await beaRepo.GetAllByTransNo(transNo, await GetHRISDB()))
             {
                 for(int i = 0; i < bed.Quantity; i++)
                 {
@@ -169,7 +183,7 @@ namespace WebAPI.Services
 
         public async Task<CustomMessage> DeclineEntry(string transNo)
         {
-            if (await beaRepo.GetByTransNo(transNo) == null)
+            if (await beaRepo.GetByTransNo(transNo, await GetHRISDB()) == null)
             {
                 return CustomMessageHandler.Error($"Unable to find any data using this transaction no. {transNo}");
             }
@@ -187,7 +201,7 @@ namespace WebAPI.Services
 
         public async Task<CustomMessage> ReturnEntry(BudgetEntryMaintReturnComment comment)
         {
-            if (await beaRepo.GetByTransNo(comment.TransactionNo) == null)
+            if (await beaRepo.GetByTransNo(comment.TransactionNo, await GetHRISDB()) == null)
             {
                 return CustomMessageHandler.Error($"Unable to find any data using this transaction no. {comment.TransactionNo}");
             }
@@ -249,6 +263,42 @@ namespace WebAPI.Services
                 return CustomMessageHandler.Success("Budget entry has been successfully submitted");
             }
             return CustomMessageHandler.Error($"Data doesn't exist");
+        }
+
+        public async Task<IEnumerable<GetAvailableBudgetEntriesDto>> GetBudgetEntriesByStatus(string status)
+        {
+            var companyInfo = await compInfoRepo.GetByCompanyCode(compInfoRepo.GetCompanyCode());
+            
+            if(await compInfoRepo.CheckDBIfExists(companyInfo.HRISDB))
+            {
+                return await repo.GetBudgetEntriesByStatus(status, companyInfo.HRISDB);
+            }
+
+            throw new Exception("HRIS Database not found");
+        }
+
+        public async Task<IEnumerable<GetBudgetEntryMaintDetails>> GetBudgetEntryMaintDetailsByTransNo(string transNo)
+        {
+            var companyInfo = await compInfoRepo.GetByCompanyCode(compInfoRepo.GetCompanyCode());
+
+            if (await compInfoRepo.CheckDBIfExists(companyInfo.HRISDB))
+            {
+                return await repo.GetBudgetEntryMaintDetailsByTransNo(transNo, companyInfo.HRISDB);
+            }
+
+            throw new Exception("HRIS Database not found");
+        }
+
+        private async Task<string> GetHRISDB()
+        {
+            var companyInfo = await compInfoRepo.GetByCompanyCode(compInfoRepo.GetCompanyCode());
+
+            if (await compInfoRepo.CheckDBIfExists(companyInfo.HRISDB))
+            {
+                return companyInfo.HRISDB;
+            }
+
+            throw new Exception("HRIS Database not found");
         }
     }
 }

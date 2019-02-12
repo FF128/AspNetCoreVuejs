@@ -13,5 +13,6 @@ namespace WebAPI.ServiceInterfaces
         Task<GetPREntryApprovalDetailsDto> GetPREntryApprovalDetails(string prfNo);
         Task<CustomMessage> AcceptEntry(string prfNo);
         Task<CustomMessage> DeclineEntry(string prfNo);
+        Task<CustomMessage> InsertNotBudgeted(PRFHeaderDetailsDto dto);
     }
 }

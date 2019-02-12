@@ -10,8 +10,8 @@ namespace WebAPI.RepositoryInterfaces
     public interface IBudgetEntryApprovalRepository
     {
         Task<IEnumerable<ViewBudgetEntryWithStatusWaitingDto>> GetBudgetEntriesWithStatusWaiting();
-        Task<BudgetEntryMaintDetails> GetByTransNo(string transNo);
-        Task<IEnumerable<BudgetEntryMaintDetails>> GetAllByTransNo(string transNo);
+        Task<BudgetEntryMaintDetails> GetByTransNo(string transNo, string dbName);
+        Task<IEnumerable<BudgetEntryMaintDetails>> GetAllByTransNo(string transNo, string dbName);
 
         Task UpdateBudgetEntryDetailsStatusApproved(string transNo, string status);
         Task UpdateBudgetEntryDetailsStatusDeclined(string transNo, string status);

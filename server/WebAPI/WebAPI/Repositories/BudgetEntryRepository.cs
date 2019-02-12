@@ -60,13 +60,13 @@ namespace WebAPI.Repositories
             }
         }
 
-        public async Task<IEnumerable<GetAvailableBudgetEntriesDto>> GetBudgetEntriesByStatus(string status)
+        public async Task<IEnumerable<GetAvailableBudgetEntriesDto>> GetBudgetEntriesByStatus(string status, string dbName)
         {
             using(var conn = connectionFactory.Connection)
             {
                 return 
                     await conn.QueryAsync<GetAvailableBudgetEntriesDto>("sp_BudgetEntryMaintDetails_GetBudgetEntriesByStatus",
-                        new { Status = status }, commandType: CommandType.StoredProcedure);
+                        new { Status = status, DBName = dbName }, commandType: CommandType.StoredProcedure);
             }
         }
 
@@ -115,14 +115,14 @@ namespace WebAPI.Repositories
             }
         }
 
-        public async Task<IEnumerable<GetBudgetEntryMaintDetails>> GetBudgetEntryMaintDetailsByTransNo(string transNo)
+        public async Task<IEnumerable<GetBudgetEntryMaintDetails>> GetBudgetEntryMaintDetailsByTransNo(string transNo, string dbName)
         {
             using (var conn = connectionFactory.Connection)
             {
                 conn.Open();
                 return
                     await conn.QueryAsync<GetBudgetEntryMaintDetails>("sp_BudgetEntryMaintDetails_ViewByTransNo",
-                        new { TransNo = transNo },
+                        new { TransNo = transNo, DBName = dbName },
                         commandType: CommandType.StoredProcedure);
             }
         }

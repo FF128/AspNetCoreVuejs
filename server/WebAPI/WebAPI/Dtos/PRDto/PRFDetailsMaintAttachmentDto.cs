@@ -7,6 +7,7 @@ namespace WebAPI.Dtos.PRDto
 {
     public class PRFDetailsMaintAttachmentDto
     {
+        public int ID { get; set; }
         public string PRFNo { get; set; }
         public string FileName { get; set; }
         public string FullPath { get; set; }

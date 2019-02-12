@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using WebAPI.Dtos.PRDto;
 using WebAPI.Helpers;
 using WebAPI.Models.PRModel;
@@ -19,20 +20,23 @@ namespace WebAPI.Controllers
         private readonly IPRRepository repo;
         private readonly IBudgetEntryRepository budgetEntryRepo;
         private readonly IPRService service;
+        private readonly IBudgetEntryService budgetEntryService;
         public PersonnelRequisitionController(IBudgetEntryRepository budgetEntryRepo,
             IPRRepository repo,
-            IPRService service)
+            IPRService service,
+            IBudgetEntryService budgetEntryService)
         {
             this.budgetEntryRepo = budgetEntryRepo;
             this.repo = repo;
             this.service = service;
+            this.budgetEntryService = budgetEntryService;
         }
         [HttpGet("budget-entries")] 
         public async Task<IActionResult> GetBudgetEntries()
         {
             try
             {
-                var result = await budgetEntryRepo.GetBudgetEntriesByStatus("OPEN");
+                var result = await budgetEntryService.GetBudgetEntriesByStatus("OPEN");
                 return Ok(result);
 
             }catch(Exception ex)
@@ -49,6 +53,28 @@ namespace WebAPI.Controllers
 
                 return Ok(result);
             }catch(Exception ex)
+            {
+                return BadRequest(CustomMessageHandler.Error(ex.Message));
+            }
+        }
+        [HttpPost("not-budgeted")]
+        public async Task<IActionResult> InsertNotBudgeted([FromForm]InsertPREntryDetailsAttachmentDto dto)
+        {
+            try
+            {
+                // Deserialize Object
+                var header = JsonConvert.DeserializeObject<PRFHeaderMaintDto>(dto.Header);
+                var details = JsonConvert.DeserializeObject<IEnumerable<PRFDetailsMaintDto>>(dto.Details);
+
+                var result = await service.InsertNotBudgeted(new PRFHeaderDetailsDto
+                {
+                    Header = header,
+                    Details = details,
+                    Attachments = dto.Files
+                });
+                return Ok(result);
+            }
+            catch (Exception ex)
             {
                 return BadRequest(CustomMessageHandler.Error(ex.Message));
             }

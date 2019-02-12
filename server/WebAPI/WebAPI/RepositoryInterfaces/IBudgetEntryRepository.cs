@@ -13,13 +13,13 @@ namespace WebAPI.RepositoryInterfaces
         Task<int> Insert(BudgetEntryMainHeader budgetEntryMainHeader);
         Task InsertAllocated(IEnumerable<BudgetEntryMaintAllocated> budgetEntryMaintAllocated);
         Task<BudgetEntryMainHeader> GetByTransNo(string transNo);
-        Task<IEnumerable<GetAvailableBudgetEntriesDto>> GetBudgetEntriesByStatus(string status);
+        Task<IEnumerable<GetAvailableBudgetEntriesDto>> GetBudgetEntriesByStatus(string status, string dbName);
         Task<IEnumerable<GetAvailableBudgetEntriesDto>> GetBudgetEntriesByBudgetDetailsId(long[] id);
 
         Task<IEnumerable<BudgetEntryMainHeader>> GetAll();
         Task<IEnumerable<GetBudgetEntryMaintDetails>> GetBudgetEntryMaintDetails();
         Task InsertDetails(IEnumerable<BudgetEntryMaintDetails> budgetEntryMaintDetails);
-        Task<IEnumerable<GetBudgetEntryMaintDetails>> GetBudgetEntryMaintDetailsByTransNo(string transNo);
+        Task<IEnumerable<GetBudgetEntryMaintDetails>> GetBudgetEntryMaintDetailsByTransNo(string transNo, string dbName);
         
         Task InsertAttachments(IEnumerable<BudgetEntryMaintAttachment> budgetEntryMaintAttachments);
         Task<IEnumerable<BudgetEntryMaintAttachment>> GetBudgetEntryMaintAttachmentsByTransNo(string transNo);

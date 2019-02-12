@@ -19,13 +19,13 @@ namespace WebAPI.Repositories
             this.connectionFactory = connectionFactory;
         }
 
-        public async Task<IEnumerable<BudgetEntryMaintDetails>> GetAllByTransNo(string transNo)
+        public async Task<IEnumerable<BudgetEntryMaintDetails>> GetAllByTransNo(string transNo, string dbName)
         {
             using (var conn = connectionFactory.Connection)
             {
                 return
                     await conn.QueryAsync<BudgetEntryMaintDetails>("sp_BudgetEntryMaintDetails_ViewByTransNo",
-                        new { TransNo = transNo },
+                        new { TransNo = transNo, DBName = dbName },
                         commandType: CommandType.StoredProcedure);
             }
         }
@@ -40,13 +40,13 @@ namespace WebAPI.Repositories
             }
         }
 
-        public async Task<BudgetEntryMaintDetails> GetByTransNo(string transNo)
+        public async Task<BudgetEntryMaintDetails> GetByTransNo(string transNo, string dbName)
         {
             using (var conn = connectionFactory.Connection)
             {
                 return
                     await conn.QueryFirstOrDefaultAsync<BudgetEntryMaintDetails>("sp_BudgetEntryMaintDetails_ViewByTransNo",
-                        new { TransNo = transNo },
+                        new { TransNo = transNo, DBName = dbName },
                         commandType: CommandType.StoredProcedure);
             }
         }

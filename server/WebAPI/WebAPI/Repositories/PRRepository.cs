@@ -5,6 +5,7 @@ using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using WebAPI.Data;
+using WebAPI.Dtos.PRDto;
 using WebAPI.Models.PRModel;
 using WebAPI.RepositoryInterfaces;
 
@@ -28,13 +29,13 @@ namespace WebAPI.Repositories
             }
         }
 
-        public async Task<IEnumerable<GetPREntryDetails>> GetDetailsByPRFNo(string prfNo)
+        public async Task<IEnumerable<GetPREntryDetails>> GetDetailsByPRFNo(string prfNo, string dbName)
         {
             using (var conn = connectionFactory.Connection)
             {
                 return
                     await conn.QueryAsync<GetPREntryDetails>("sp_PRFDetailsMaint_ViewByPRFNo",
-                        new { PRFNo = prfNo }, commandType: CommandType.StoredProcedure);
+                        new { PRFNo = prfNo, DBName = dbName }, commandType: CommandType.StoredProcedure);
             }
         }
 
@@ -61,6 +62,15 @@ namespace WebAPI.Repositories
             }
         }
 
+        public async Task InsertAttachments(IEnumerable<PRFDetailsMaintAttachmentDto> attachments)
+        {
+            using(var conn = connectionFactory.Connection)
+            {
+                await conn.ExecuteAsync("sp_PRFDetailsMaintAttachment_Insert", 
+                    attachments, commandType: CommandType.StoredProcedure);
+            }
+        }
+
         public async Task InsertDetails(IEnumerable<PRFDetailsMaint> details)
         {
             using (var conn = connectionFactory.Connection)
@@ -80,6 +90,11 @@ namespace WebAPI.Repositories
                     }
                 }
             }
+        }
+
+        public Task InsertTransApproving(TransApprovingPRF transApprovingPRF)
+        {
+            throw new NotImplementedException();
         }
 
         public async Task UpdatePRDetailsStatus(string prfNo, string status)

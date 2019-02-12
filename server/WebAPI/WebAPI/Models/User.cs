@@ -16,6 +16,10 @@ namespace WebAPI.Models
         //public string Password { get; set; }
         public byte[] PasswordHash { get; set; }
         public byte[] PasswordSalt { get; set; }
+        public string EmailAddress { get; set; }
+        public bool AllowExpiDate { get; set; }
+        public DateTime ExpirationDate { get; set; }
+        public string EmpCode { get; set; }
         //public string Token { get; set; }
         public string CompanyCode { get; set; }
     }

@@ -154,7 +154,7 @@ namespace WebAPI.Controllers
         {
             try
             {
-                var result = await repo.GetBudgetEntryMaintDetailsByTransNo(transNo);
+                var result = await service.GetBudgetEntryMaintDetailsByTransNo(transNo);
                 return Ok(result);
             }
             catch (Exception ex)

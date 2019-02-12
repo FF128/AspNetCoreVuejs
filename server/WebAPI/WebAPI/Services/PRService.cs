@@ -9,6 +9,8 @@ using WebAPI.Models.PRModel;
 using WebAPI.RepositoryInterfaces;
 using WebAPI.ServiceInterfaces;
 using WebAPI.ExtensionMethods;
+using Microsoft.AspNetCore.Http;
+using System.IO;
 
 namespace WebAPI.Services
 {
@@ -28,17 +30,29 @@ namespace WebAPI.Services
         
         public async Task<GetPREntryApprovalDetailsDto> GetPREntryApprovalDetails(string prfNo)
         {
-            return new GetPREntryApprovalDetailsDto
+            var companyInfo = await compInfoRepo.GetByCompanyCode(compInfoRepo.GetCompanyCode());
+            if (compInfoRepo == null)
+                throw new Exception("Company Information doesn't exist");
+            if (await prRepo.GetByPRFNo(prfNo) == null)
+                throw new Exception($"Personnel Requisition ({prfNo}) doesn't exist");
+
+            if(await compInfoRepo.CheckDBIfExists(companyInfo.HRISDB))
             {
-                Header = mapper.Map<PRFHeaderMaintDto>(await prRepo.GetByPRFNo(prfNo)),
-                Details = await prRepo.GetDetailsByPRFNo(prfNo)
-            };
+                return new GetPREntryApprovalDetailsDto
+                {
+                    Header = mapper.Map<PRFHeaderMaintDto>(await prRepo.GetByPRFNo(prfNo)),
+                    Details = await prRepo.GetDetailsByPRFNo(prfNo, companyInfo.HRISDB),
+                    Attachments = new List<PRFDetailsMaintAttachmentDto>()
+                };
+            }
+
+            throw new Exception("HRIS Database doesn't exist");
         }
 
         public async Task<CustomMessage> Insert(PRFHeaderDetailsDto prfHeaderDetailsDto)
         {
             prfHeaderDetailsDto.Header.CompanyCode = compInfoRepo.GetCompanyCode();
-
+            prfHeaderDetailsDto.Header.Status = "WAITING";
             var identity = await prRepo.Insert(mapper.Map<PRFHeaderMaint>(prfHeaderDetailsDto.Header));
 
             if(identity == 0)
@@ -57,7 +71,7 @@ namespace WebAPI.Services
 
         public async Task<CustomMessage> AcceptEntry(string prfNo)
         {
-            var detail = await prRepo.GetDetailsByPRFNo(prfNo);
+            var detail = await prRepo.GetDetailsByPRFNo(prfNo, await GetHRISDB());
             if (detail == null)
             {
                 return CustomMessageHandler.Error($"Unable to find any data using this transaction no. {prfNo}");
@@ -74,7 +88,7 @@ namespace WebAPI.Services
 
         public async Task<CustomMessage> DeclineEntry(string prfNo)
         {
-            var detail = await prRepo.GetDetailsByPRFNo(prfNo);
+            var detail = await prRepo.GetDetailsByPRFNo(prfNo, await GetHRISDB());
             if (detail == null)
             {
                 return CustomMessageHandler.Error($"Unable to find any data using this transaction no. {prfNo}");
@@ -84,6 +98,81 @@ namespace WebAPI.Services
 
             return CustomMessageHandler.RecordUpdated();
 
+        }
+
+        public async Task<CustomMessage> InsertNotBudgeted(PRFHeaderDetailsDto dto)
+        {
+            dto.Header.CompanyCode = compInfoRepo.GetCompanyCode();
+            dto.Header.Status = "WAITING";
+            var identity = await prRepo.Insert(mapper.Map<PRFHeaderMaint>(dto.Header));
+
+            if (identity == 0)
+                return CustomMessageHandler.Error($"Error saving this record with identity {identity}");
+
+            string prfNo = GenerateTransNo(identity); // Generate PRF No.
+
+            await prRepo.UpdatePRFNo(identity, prfNo); // Update Main PRF No. after Insert
+
+            var details = mapper.Map<IEnumerable<PRFDetailsMaint>>(dto.Details);
+
+            await prRepo.InsertDetails(details.MapToPRFDetailsMaint(prfNo, dto.IsBudgeted)); // Insert to PRF Details
+
+            if (dto.Attachments != null)
+            {
+                var attachments = await WriteFile(dto.Attachments, prfNo); // return List
+
+                await prRepo.InsertAttachments(attachments); // Insert to Budget Entry Attachments
+            }
+
+            return CustomMessageHandler.Success($"Personnel Requisition Entry has been successfully submitted . Your Transaction No. is {prfNo}");
+        }
+        private async Task<IEnumerable<PRFDetailsMaintAttachmentDto>> WriteFile(IEnumerable<IFormFile> formFiles, string prfNo)
+        {
+            long size = formFiles.Sum(f => f.Length);
+            Guid id = Guid.NewGuid();
+            var attachments = new List<PRFDetailsMaintAttachmentDto>();
+            // full path to file in temp location
+            var path = Path.Combine(Directory.GetCurrentDirectory(), $"Files\\{id}");
+
+            if (Directory.Exists(path))
+            {
+                return null;
+            }
+
+            DirectoryInfo di = Directory.CreateDirectory(path);
+
+            foreach (var formFile in formFiles)
+            {
+                var filePath = Path.Combine(path, formFile.FileName);
+                if (formFile.Length > 0)
+                {
+
+                    using (var stream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await formFile.CopyToAsync(stream);
+                    }
+                }
+
+                attachments.Add(new PRFDetailsMaintAttachmentDto
+                {
+                    FileName = formFile.FileName,
+                    FullPath = filePath,
+                    PRFNo = prfNo,
+                    FolderName = id.ToString()
+                });
+            }
+            return attachments;
+        }
+        private async Task<string> GetHRISDB()
+        {
+            var companyInfo = await compInfoRepo.GetByCompanyCode(compInfoRepo.GetCompanyCode());
+
+            if (await compInfoRepo.CheckDBIfExists(companyInfo.HRISDB))
+            {
+                return companyInfo.HRISDB;
+            }
+
+            throw new Exception("HRIS Database not found");
         }
     }
 }

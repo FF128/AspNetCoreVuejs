@@ -13,10 +13,12 @@ namespace WebAPI.Services
 {
     public class AuditTrailService<T>: IAuditTrailService<T> where T: class
     {
+        
         private readonly IAuditTrailRepository repo;
         MachineIdentifier mi = new MachineIdentifier();
         public AuditTrailService(IAuditTrailRepository repo)
         {
+            
             this.repo = repo;
         }
 
