@@ -17,5 +17,7 @@ namespace WebAPI.Dtos
         public DateTime ExpirationDate { get; set; }
         public string EmpCode { get; set; }
         public string CompanyCode { get; set; }
+        public bool Active { get; set; }
+        public bool IsLocked { get; set; }
     }
 }

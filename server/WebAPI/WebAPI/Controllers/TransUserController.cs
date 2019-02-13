@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using WebAPI.Dtos;
 using WebAPI.Helpers;
 using WebAPI.RepositoryInterfaces;
 using WebAPI.ServiceInterfaces;
@@ -12,27 +13,27 @@ namespace WebAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class EmployeeController : ControllerBase
+    public class TransUserController : ControllerBase
     {
-        private readonly IEmployeeRepository repo;
-        private readonly IEmployeeService service;
-        public EmployeeController(IEmployeeRepository repo,
-           IEmployeeService service)
+        private readonly ITransUserRepository repo;
+        private readonly ITransUserService service;
+        public TransUserController(ITransUserRepository repo,
+            ITransUserService service)
         {
             this.repo = repo;
             this.service = service;
         }
-        [HttpGet]
-        public async Task<IActionResult> GetAllEmployees([FromQuery] int pageSize,
-            [FromQuery] int pageNum, [FromQuery] string query)
+        [HttpPost]
+        public async Task<IActionResult> Insert(InsertTransUserDto dto)
         {
             try
             {
-                return Ok(await service.GetAllEmployees(pageSize, pageNum, query));
+                var result = await service.Insert(dto);
+                return Ok(result);
             }catch(Exception ex)
             {
                 return BadRequest(CustomMessageHandler.Error(ex.Message));
             }
-        }   
+        }
     }
 }

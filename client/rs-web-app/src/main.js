@@ -12,7 +12,9 @@ import "./filters/filter";
 import VueJWT from "vuejs-jwt";
 import Toasted from "vue-toasted";
 import Meta from "vue-meta";
+import VeeValidate from 'vee-validate';
 
+Vue.use(VeeValidate);
 Vue.use(Toasted);
 
 Vue.use(VueJWT);

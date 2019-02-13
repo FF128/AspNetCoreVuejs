@@ -1,46 +1,52 @@
-﻿using Dapper;
+﻿using AutoMapper;
+using Dapper;
 using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
 using WebAPI.Data;
+using WebAPI.Dtos.UsersDto;
 using WebAPI.Helpers;
 using WebAPI.Models;
+using WebAPI.RepositoryInterfaces;
 using WebAPI.ServiceInterfaces;
 
 namespace WebAPI.Services
 {
     public class UserService : IUserService
     {
-
         private readonly IConnectionFactory connectionFactory;
-        public UserService(IConnectionFactory connectionFactory)
+        private readonly IUserRepository userRepo;
+        private readonly ICompanyInformationRepository compInfoRepo;
+        private readonly IMapper mapper;
+        public UserService(IConnectionFactory connectionFactory,
+            IUserRepository userRepo,
+            ICompanyInformationRepository compInfoRepo,
+            IMapper mapper)
         {
             this.connectionFactory = connectionFactory;
+            this.userRepo = userRepo;
+            this.compInfoRepo = compInfoRepo;
+            this.mapper = mapper;
         }
-        public User Authenticate(string username, string password)
+        public async Task<User> Authenticate(string username, string password)
         {
-            using(var conn = connectionFactory.Connection)
-            {
-                if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
-                    return null;
+            if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
+                throw new AppException("Username or password is null or empty");
 
-                var user = conn.QueryFirstOrDefault<User>("sp_User_GetByUsername",
-                    new { Username = username },
-                    commandType: CommandType.StoredProcedure);
+            var user = await userRepo.Authenticate(username, password);
 
-                // check if username exists
-                if (user == null)
-                    return null;
+            // check if username exists
+            if (user == null)
+                throw new AppException("User doesn't exist");
 
-                // check if password is correct
-                if (!VerifyPasswordHash(password, user.PasswordHash, user.PasswordSalt))
-                    return null;
+            // check if password is correct
+            if (!VerifyPasswordHash(password, user.PasswordHash, user.PasswordSalt))
+                throw new AppException("Password is incorrect");
 
-                // authentication successful
-                return user;
-            }
+            // authentication successful
+            return user;
         }
         private User GetUserByUsername(string username)
         {
@@ -55,8 +61,10 @@ namespace WebAPI.Services
                 return user;
             }
         }
-        public async Task<User> Create(User user, string password)
+        public async Task<CustomMessage> Create(InsertUserDto userDto, string password)
         {
+            var user = mapper.Map<User>(userDto.User);
+
             if (string.IsNullOrWhiteSpace(password))
                 throw new AppException("Password is required");
 
@@ -69,14 +77,28 @@ namespace WebAPI.Services
             user.PasswordHash = passwordHash;
             user.PasswordSalt = passwordSalt;
 
-            //_context.Users.Add(user);
-            //_context.SaveChanges();
-            using(var conn = connectionFactory.Connection)
+
+            user.CompanyCode = compInfoRepo.GetCompanyCode();
+            await userRepo.Insert(user);
+
+            foreach (var item in userDto.UserPayLocations)
             {
-                await conn.ExecuteAsync("sp_User_Create", user,commandType: CommandType.StoredProcedure);
+                item.EmpCode = user.EmpCode;
+                item.CompanyCode = user.CompanyCode;
+            }
+               
+
+            foreach (var item in userDto.UserDepartments)
+            {
+                item.EmpCode = user.EmpCode;
+                item.CompanyCode = user.CompanyCode;
             }
 
-            return user;
+
+            await userRepo.InsertUserPayLocation(userDto.UserPayLocations);
+            await userRepo.InsertUsertDepartment(userDto.UserDepartments);
+
+            return CustomMessageHandler.RecordAdded();
         }
 
         public void Delete(int id)

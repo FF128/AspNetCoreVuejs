@@ -181,6 +181,8 @@ namespace WebAPI
             services.AddScoped<IPRRepository, PRRepository>();
             services.AddScoped<IEmployeeRepository, EmployeeRepository>();
             services.AddScoped<IProtectionRepository, ProtectionRepository>();
+            services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<ITransUserRepository, TransUserRepository>();
 
             #endregion
 
@@ -286,6 +288,7 @@ namespace WebAPI
             services.AddScoped<IPayLocationService, PayLocationService>();
             services.AddScoped<IPRService, PRService>();
             services.AddScoped<IEmployeeService, EmployeeService>();
+            services.AddScoped<ITransUserService, TransUserService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

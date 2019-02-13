@@ -22,5 +22,7 @@ namespace WebAPI.Models
         public string EmpCode { get; set; }
         //public string Token { get; set; }
         public string CompanyCode { get; set; }
+        public bool Active { get; set; }
+        public bool IsLocked { get; set; }
     }
 }
