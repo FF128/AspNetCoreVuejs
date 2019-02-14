@@ -113,6 +113,33 @@
         </v-layout>
       </v-container>
     </v-form>
+    <v-container>
+      <v-data-table :items="usersData" :headers="usersHeaders">
+        <template slot="items" slot-scope="props">
+          <td>
+            <v-btn flat icon>
+              <v-icon>edit</v-icon>
+            </v-btn>
+          </td>
+          <td>{{props.item.active}}</td>
+          <td>{{props.item.isLocked}}</td>
+          <td>{{props.item.empCode}}</td>
+          <td>{{props.item.fullName}}</td>
+          <td>{{props.item.emailAddress}}</td>
+          <td>{{props.item.expirationDate | dateFormat }}</td>
+          <td>
+            <template v-for="(item, key) in props.item.payLocations">
+              <p v-if="item" v-bind:key="key">• {{ item.locName }}</p>
+            </template>
+          </td>
+          <td>
+            <template v-for="(item, key) in props.item.departments">
+              <p v-if="item" v-bind:key="key">• {{ item.departmentDesc }}</p>
+            </template>
+          </td>
+        </template>
+      </v-data-table>
+    </v-container>
     <look-up-dialog :title="'Employee Masterfile'" :dialog="empDialog" v-if="empDialog">
       <template slot="table">
         <v-text-field label="Search" v-model="query"></v-text-field>
@@ -184,6 +211,18 @@ export default {
       totalData: 0,
       query: "",
       passwordRules: [],
+      usersData: [],
+      usersHeaders: [
+        { text: "", value: "action", sortable: false },
+        { text: "Active", value: "isActive" },
+        { text: "Is Locked", value: "isLock" },
+        { text: "Emp Code", value: "empCode" },
+        { text: "Name", value: "fullName" },
+        { text: "Email", value: "emailAddress" },
+        { text: "Expiration Date", value: "expirationDate" },
+        { text: "Payroll Location", value: "payLocations" },
+        { text: "Department", value: "departments" }
+      ],
       passwordConfirmationRules: [
         v => !!v || "Confirmation E-mail is required",
         v => v == this.newuser.password || "E-mail must match"
@@ -249,22 +288,44 @@ export default {
         });
     },
     add() {
-      this.$axios.post(`${this.apiEndpoint}/register`, {
-        User: this.newUser,
-        UserDepartments: this.selectedDepartment,
-        UserPayLocations: this.selectedPayLoc
-      });
+      this.$axios
+        .post(`${this.apiEndpoint}/register`, {
+          User: this.newUser,
+          UserDepartments: this.selectedDepartment,
+          UserPayLocations: this.selectedPayLoc
+        })
+        .then(({ data }) => {
+          this.getAllUsers();
+          this.newUser = {};
+          this.selectedDepartment = [];
+          this.selectedPayLoc = [];
+          toast.show(data);
+        })
+        .catch(({ response }) => {
+          toast.show(response.data);
+        });
     },
     selectEmployee(item) {
       this.selectedEmployee = item;
       this.empDialog = false;
       this.newUser.empCode = item.empCode;
       this.newUser.employee = this.fullName;
+    },
+    getAllUsers() {
+      this.$axios
+        .get(`${this.apiEndpoint}`)
+        .then(({ data }) => {
+          this.usersData = data;
+        })
+        .catch(({ response }) => {
+          toast.show(response.data);
+        });
     }
   },
   created() {
     this.getPayLocation();
     this.getAllDepartments();
+    this.getAllUsers();
   },
   watch: {
     pagination: {

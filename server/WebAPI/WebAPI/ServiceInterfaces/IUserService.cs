@@ -11,11 +11,11 @@ namespace WebAPI.ServiceInterfaces
     public interface IUserService
     {
         Task<User> Authenticate(string username, string password);
-        IEnumerable<User> GetAll();
         Task Register(User user, string password);
         User GetById(int id);
         Task<CustomMessage> Create(InsertUserDto user, string password);
         void Update(User user, string password = null);
         void Delete(int id);
+        Task<IEnumerable<GetUsersDepPayLocDto>> GetAll();
     }
 }

@@ -11,9 +11,13 @@ namespace WebAPI.RepositoryInterfaces
     {
         string GetEmpCode();
         Task<IEnumerable<GetAllUsersDto>> GetAllUsers();
+        Task<User> GetByEmpCode(string empCode);
+        Task<IEnumerable<GetAllUsersDto>> GetAllUsersByCompanyCode(string companyCode);
         Task Insert(User user);
         Task InsertUsertDepartment(IEnumerable<UserDepartment> userDepartments);
         Task InsertUserPayLocation(IEnumerable<UserPayLocation> userPayLocations);
         Task<User> Authenticate(string username, string password);
+        Task<IEnumerable<UserDepartment>> GetUserDepartments(string empCode, string companyCode);
+        Task<IEnumerable<UserPayLocation>> GetUserPayLocations(string empCode, string companyCode);
     }
 }

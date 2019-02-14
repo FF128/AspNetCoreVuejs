@@ -17,6 +17,18 @@ namespace WebAPI.Repositories
         {
             this.connectionFactory = connectionFactory;
         }
+
+        public async Task<PayLocationDto> GetPayLocationById(long locId, string dbName)
+        {
+            using (var conn = connectionFactory.Connection)
+            {
+                return
+                    await conn.QueryFirstOrDefaultAsync<PayLocationDto>("sp_tbl_fsPayLocation_ViewFromHRISByLocId",
+                        new { LocId = locId, DBName = dbName },
+                        commandType: CommandType.StoredProcedure);
+            }
+        }
+
         public async Task<IEnumerable<PayLocationDto>> GetPayLocations(string dbName)
         {
             using(var conn = connectionFactory.Connection)

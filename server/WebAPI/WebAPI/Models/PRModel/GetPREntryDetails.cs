@@ -9,6 +9,7 @@ namespace WebAPI.Models.PRModel
     {
         public long ID { get; set; }
         public string TransactionNo { get; set; }
+        public string PRFNo { get; set; }
         public string DepCode { get; set; }
         public string Department { get; set; }
         public string DivisionCode { get; set; }

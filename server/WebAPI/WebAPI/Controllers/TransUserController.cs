@@ -30,7 +30,19 @@ namespace WebAPI.Controllers
             {
                 var result = await service.Insert(dto);
                 return Ok(result);
-            }catch(Exception ex)
+            } catch (Exception ex)
+            {
+                return BadRequest(CustomMessageHandler.Error(ex.Message));
+            }
+        }
+        [HttpGet("{trans}")]
+        public async Task<IActionResult> GetAll(string trans)
+        {
+            try
+            {
+                return Ok(await service.GetAll(trans));
+            }
+            catch (Exception ex)
             {
                 return BadRequest(CustomMessageHandler.Error(ex.Message));
             }

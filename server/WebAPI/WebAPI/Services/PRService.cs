@@ -11,6 +11,7 @@ using WebAPI.ServiceInterfaces;
 using WebAPI.ExtensionMethods;
 using Microsoft.AspNetCore.Http;
 using System.IO;
+using WebAPI.Models.BudgetEntryModel;
 
 namespace WebAPI.Services
 {
@@ -19,13 +20,20 @@ namespace WebAPI.Services
         private readonly IPRRepository prRepo;
         private readonly IMapper mapper;
         private readonly ICompanyInformationRepository compInfoRepo;
+        private readonly ITransUserRepository transUserRepo;
+        private readonly IUserRepository userRepo;
+        private const string TRANS = "PRFAPPROVAL";
         public PRService(IPRRepository prRepo,
             ICompanyInformationRepository compInfoRepo,
+            ITransUserRepository transUserRepo,
+            IUserRepository userRepo,
             IMapper mapper)
         {
             this.prRepo = prRepo;
             this.mapper = mapper;
             this.compInfoRepo = compInfoRepo;
+            this.transUserRepo = transUserRepo;
+            this.userRepo = userRepo;
         }
         
         public async Task<GetPREntryApprovalDetailsDto> GetPREntryApprovalDetails(string prfNo)
@@ -65,6 +73,31 @@ namespace WebAPI.Services
             var details = mapper.Map<IEnumerable<PRFDetailsMaint>>(prfHeaderDetailsDto.Details);
 
             await prRepo.InsertDetails(details.MapToPRFDetailsMaint(prfNo, prfHeaderDetailsDto.IsBudgeted)); // Insert to PRF Details
+
+            var prfDetails = await prRepo.GetDetailsByPRFNo(prfNo, await GetHRISDB());
+            var transApprovingList = new List<TransApprovingPRF>();
+            foreach (var item in prfDetails)
+            {
+                var transUsers = await transUserRepo.GetAllByTrans(compInfoRepo.GetCompanyCode(), TRANS);
+                foreach (var transUser in transUsers)
+                {
+
+                    transApprovingList.Add(new TransApprovingPRF
+                    {
+                        PRFDetailsID = item.ID,
+                        Approver = transUser.EmpCode,
+                        PRFNo = item.PRFNo,
+                        CompanyCode = compInfoRepo.GetCompanyCode(),
+                        CreatedBy = userRepo.GetEmpCode(),
+                        Status = "WAITING"
+                    });
+                }
+
+                if (transApprovingList.Any())
+                    await prRepo.InsertTransApproving(transApprovingList);
+
+                transApprovingList = new List<TransApprovingPRF>();
+            }
 
             return CustomMessageHandler.Success($"Personnel Requisition Entry has been successfully submitted . Your Transaction No. is {prfNo}");
         }

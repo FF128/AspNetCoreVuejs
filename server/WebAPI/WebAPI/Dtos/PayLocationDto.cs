@@ -7,7 +7,7 @@ namespace WebAPI.Dtos
 {
     public class PayLocationDto
     {
-        public string LocId { get; set; }
+        public long LocId { get; set; }
         public string LocName { get; set; }
     }
 }

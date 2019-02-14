@@ -9,5 +9,6 @@ namespace WebAPI.ServiceInterfaces
     public interface IEmployeeService
     {
         Task<IEnumerable<Employee>> GetAllEmployees(int pageSize, int pageNum, string query);
+        Task<bool> GetByEmpCode(string empCode);
     }
 }

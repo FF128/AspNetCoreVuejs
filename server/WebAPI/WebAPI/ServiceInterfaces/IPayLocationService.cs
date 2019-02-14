@@ -9,5 +9,6 @@ namespace WebAPI.ServiceInterfaces
     public interface IPayLocationService
     {
         Task<IEnumerable<PayLocationDto>> GetPayLocations();
+        Task<PayLocationDto> GetPayLocationById(long locId);
     }
 }

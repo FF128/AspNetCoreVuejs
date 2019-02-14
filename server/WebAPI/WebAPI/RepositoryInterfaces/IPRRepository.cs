@@ -12,7 +12,7 @@ namespace WebAPI.RepositoryInterfaces
         Task<int> Insert(PRFHeaderMaint pr);
         Task<PRFHeaderMaint> GetByPRFNo(string prfNo);
         Task InsertDetails(IEnumerable<PRFDetailsMaint> details);
-        Task InsertTransApproving(TransApprovingPRF transApprovingPRF);
+        Task InsertTransApproving(IEnumerable<TransApprovingPRF> transApprovingPRF);
         Task InsertAttachments(IEnumerable<PRFDetailsMaintAttachmentDto> attachments);
         Task<IEnumerable<GetPREntryDetails>> GetDetailsByPRFNo(string prfNo, string dbName);
         Task<IEnumerable<ViewPREntryWithStatusDto>> ViewPREntryWithStatusWaitingDto();

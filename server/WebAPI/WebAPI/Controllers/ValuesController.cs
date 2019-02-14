@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using WebAPI.CustomAuthorization;
 
 namespace WebAPI.Controllers
 {
@@ -14,7 +15,7 @@ namespace WebAPI.Controllers
     public class ValuesController : ControllerBase
     {
         // GET api/values
-
+        
         [HttpGet]
         public ActionResult<IEnumerable<string>> Get()
         {

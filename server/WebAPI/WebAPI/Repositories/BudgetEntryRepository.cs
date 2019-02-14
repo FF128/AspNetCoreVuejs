@@ -219,6 +219,15 @@ namespace WebAPI.Repositories
             }
         }
 
+        public async Task InsertTransApproving(IEnumerable<TransApprovingBudget> transApprovingBudget)
+        {
+            using(var conn = connectionFactory.Connection)
+            {
+                await conn.ExecuteAsync("sp_TransApprovingBudget_Insert", 
+                    transApprovingBudget, commandType: CommandType.StoredProcedure);
+            }
+        }
+
         public async Task Update(BudgetEntryMainHeader budgetEntryMainHeader)
         {
             using(var conn = connectionFactory.Connection)

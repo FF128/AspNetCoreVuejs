@@ -34,6 +34,17 @@ namespace WebAPI.Services
             return await GetDecryptedData(await repo.GetAllEmployees(pageSize, pageNum, query, companyInfo.HRISDB));
         }
 
+        public async Task<bool> GetByEmpCode(string empCode)
+        {
+            var companyInfo = await compInfoRepo.GetByCompanyCode(compInfoRepo.GetCompanyCode());
+            if (companyInfo == null)
+                throw new Exception("Company Information doesn't exist");
+            if (!await compInfoRepo.CheckDBIfExists(companyInfo.HRISDB))
+                throw new Exception("HRIS Database doesn't exist");
+
+            return await repo.CheckEmpCodeIfExists(empCode,companyInfo.HRISDB);
+        }
+
         private async Task<IEnumerable<Employee>> GetDecryptedData(IEnumerable<Employee> employees)
         {
             Aes aes = new Aes();

@@ -25,6 +25,7 @@ namespace WebAPI.RepositoryInterfaces
         Task<IEnumerable<BudgetEntryMaintAttachment>> GetBudgetEntryMaintAttachmentsByTransNo(string transNo);
         GetBudgetEntryApprovalDetailsDto GetBudgetEntryApprovalDetailsDtoByTransNo(string transNo);
         Task InsertComment(BudgetEntryMaintReturnComment comment);
+        Task InsertTransApproving(IEnumerable<TransApprovingBudget> transApprovingBudget);
         Task Update(BudgetEntryMainHeader budgetEntryMainHeader);
         Task UpdateTransNo(int id, string transNo);
         Task UpdateStatus(string transNo, string status);

@@ -44,9 +44,49 @@ namespace WebAPI.Repositories
             }
         }
 
+        public async Task<IEnumerable<GetAllUsersDto>> GetAllUsersByCompanyCode(string companyCode)
+        {
+            using (var conn = connectionFactory.Connection)
+            {
+                return
+                    await conn.QueryAsync<GetAllUsersDto>("sp_User_GetAllByCompanyCode",
+                        new { CompanyCode = companyCode },commandType: CommandType.StoredProcedure);
+            }
+        }
+
+        public async Task<User> GetByEmpCode(string empCode)
+        {
+            using(var conn = connectionFactory.Connection)
+            {
+                return
+                    await conn.QueryFirstOrDefaultAsync<User>("sp_User_GetByEmpCode",
+                        new { EmpCode = empCode }, commandType: CommandType.StoredProcedure);
+            }
+        }
+
         public string GetEmpCode()
         {
             return httpContextAccessor.HttpContext.User.FindFirst("EmpCode")?.Value;
+        }
+
+        public async Task<IEnumerable<UserDepartment>> GetUserDepartments(string empCode, string companyCode)
+        {
+            using(var conn = connectionFactory.Connection)
+            {
+                return
+                    await conn.QueryAsync<UserDepartment>("sp_UserDepartment_GetAllByEmpCode",
+                        new { EmpCode = empCode, CompanyCode = companyCode }, commandType: CommandType.StoredProcedure);
+            }
+        }
+
+        public async Task<IEnumerable<UserPayLocation>> GetUserPayLocations(string empCode, string companyCode)
+        {
+            using (var conn = connectionFactory.Connection)
+            {
+                return
+                    await conn.QueryAsync<UserPayLocation>("sp_UserPayLocation_GetAllByEmpCode",
+                        new { EmpCode = empCode, CompanyCode = companyCode }, commandType: CommandType.StoredProcedure);
+            }
         }
 
         public async Task Insert(User user)

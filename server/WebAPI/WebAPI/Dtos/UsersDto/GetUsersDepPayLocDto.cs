@@ -1,28 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
+using WebAPI.Dtos.DepartmentDto;
 
-namespace WebAPI.Models
+namespace WebAPI.Dtos.UsersDto
 {
-    [Description("User")]
-    public class User
+    public class GetUsersDepPayLocDto
     {
-        public int Id { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
+        public string FullName { get; set; }
         public string Username { get; set; }
-        //public string Password { get; set; }
-        public byte[] PasswordHash { get; set; }
-        public byte[] PasswordSalt { get; set; }
         public string EmailAddress { get; set; }
         public bool AllowExpiDate { get; set; }
-        public DateTime? ExpirationDate { get; set; } = null;
+        public DateTime ExpirationDate { get; set; }
         public string EmpCode { get; set; }
-        //public string Token { get; set; }
-        public string CompanyCode { get; set; }
         public bool Active { get; set; }
         public bool IsLocked { get; set; }
+        public IEnumerable<PayLocationDto> PayLocations { get; set; }
+        public IEnumerable<GetDeparmentDto> Departments { get; set; }
     }
 }

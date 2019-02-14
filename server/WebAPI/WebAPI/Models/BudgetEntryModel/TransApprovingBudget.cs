@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace WebAPI.Models.PRModel
+namespace WebAPI.Models.BudgetEntryModel
 {
-    public class TransApprovingPRF : BaseModel
+    public class TransApprovingBudget : BaseModel
     {
         public long ID { get; set; }
-        public string PRFNo { get; set; }
-        public long PRFDetailsID { get; set; }
+        public string TransactionNo { get; set; }
+        public long BudgetDetailsID { get; set; }
         public string Approver { get; set; }
         public string Status { get; set; }
         public bool IsDone { get; set; }

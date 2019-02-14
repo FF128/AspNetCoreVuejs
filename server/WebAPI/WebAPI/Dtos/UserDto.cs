@@ -14,7 +14,7 @@ namespace WebAPI.Dtos
         public string Password { get; set; }
         public string EmailAddress { get; set; }
         public bool AllowExpiDate { get; set; }
-        public DateTime ExpirationDate { get; set; }
+        public DateTime? ExpirationDate { get; set; } = null;
         public string EmpCode { get; set; }
         public string CompanyCode { get; set; }
         public bool Active { get; set; }

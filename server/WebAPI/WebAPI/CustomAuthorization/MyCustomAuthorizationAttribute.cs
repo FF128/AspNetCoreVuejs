@@ -8,6 +8,7 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
@@ -53,6 +54,9 @@ namespace WebAPI.CustomAuthorization
         {
             if (context.HttpContext.User.Identity.IsAuthenticated)
             {
+
+                context.Result = new UnauthorizedResult();
+
             }
         }
     }

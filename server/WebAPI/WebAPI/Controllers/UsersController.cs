@@ -47,7 +47,7 @@ namespace WebAPI.Controllers
         {
             try
             {
-                return Ok(await repo.GetAllUsers());
+                return Ok(await userService.GetAll());
             }
             catch (Exception ex)
             {
@@ -103,14 +103,11 @@ namespace WebAPI.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] InsertUserDto userDto)
         {
-            // map dto to entity
-            var user = mapper.Map<User>(userDto.User);
-
             try
             {
                 // save 
                 var result = await userService.Create(userDto, userDto.User.Password);
-                return Ok();
+                return Ok(result);
             }
             catch (AppException ex)
             {

@@ -5,7 +5,13 @@
         <h1>{{title}}</h1>
         <v-layout row wrap>
           <v-flex xs12 sm6 md6>
-            <v-select :items="transactions" v-model="transUser.trans" label="Transactions"></v-select>
+            <v-select
+              :items="transactions"
+              v-model="transUser.trans"
+              label="Transactions"
+              item-text="text"
+              item-value="value"
+            ></v-select>
             <v-text-field
               v-model="transUser.user"
               label="User"
@@ -64,7 +70,27 @@
     </v-form>
     <v-container>
       <v-data-table :items="approversData" :headers="approversHeaders">
-        <template slot="item" slot-scope="props"></template>
+        <template slot="items" slot-scope="props">
+          <td>
+            <v-btn flat icon>
+              <v-icon>edit</v-icon>
+            </v-btn>
+          </td>
+          <td>{{props.item.empCode}}</td>
+          <td>{{props.item.name}}</td>
+          <td>{{props.item.isActive}}</td>
+          <td>{{props.item.order}}</td>
+          <td>
+            <template v-for="(item, key) in props.item.payLocations">
+              <p v-if="item" v-bind:key="key">• {{ item.locName }}</p>
+            </template>
+          </td>
+          <td>
+            <template v-for="(item, key) in props.item.departments">
+              <p v-if="item" v-bind:key="key">• {{ item.departmentDesc }}</p>
+            </template>
+          </td>
+        </template>
       </v-data-table>
     </v-container>
     <look-up-dialog :dialog="userDialog" :title="'Users'" v-if="userDialog">
@@ -102,7 +128,10 @@ export default {
     return {
       title: "Assign Users for Approving",
       transUser: {},
-      transactions: ["Budget Approval", "PRF Approval"],
+      transactions: [
+        { text: "Budget Approval", value: "BUDGETAPPROVAL" },
+        { text: "PRF Approval", value: "PRFAPPROVAL" }
+      ],
       userDialog: false,
       userHeaders: [
         { text: "", value: "action" },
@@ -182,7 +211,19 @@ export default {
           TransUserDepartments: this.selectedDepartment
         })
         .then(({ data }) => {
+          this.getAll();
+          this.transUser = {};
           toast.show(data);
+        })
+        .catch(({ response }) => {
+          toast.show(response.data);
+        });
+    },
+    getAllByTrans() {
+      this.$axios
+        .get(`${this.apiEndpointTransUser}/${this.transUser.trans}`)
+        .then(({ data }) => {
+          this.approversData = data;
         })
         .catch(({ response }) => {
           toast.show(response.data);
@@ -192,6 +233,15 @@ export default {
   created() {
     this.getPayLocation();
     this.getAllDepartments();
+    this.getAllByTrans();
+  },
+  watch: {
+    transUser: {
+      handler(val) {
+        this.getAllByTrans();
+      },
+      deep: true
+    }
   }
 };
 </script>

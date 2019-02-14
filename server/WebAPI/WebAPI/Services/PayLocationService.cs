@@ -22,6 +22,22 @@ namespace WebAPI.Services
             this.fileSetupService = fileSetupService;
             this.compInfoRepo = compInfoRepo;
         }
+
+        public async Task<PayLocationDto> GetPayLocationById(long locId)
+        {
+            var companyInfo = await compInfoRepo.GetByCompanyCode(compInfoRepo.GetCompanyCode());
+            var validationResult =
+                fileSetupService.Validate(companyInfo, await compInfoRepo.CheckDBIfExists(companyInfo.PayrollDB),
+                    await compInfoRepo.CheckDBIfExists(companyInfo.TKSDB), await compInfoRepo.CheckDBIfExists(companyInfo.HRISDB));
+
+            if (!validationResult.hasError)
+            {
+                throw new Exception(validationResult.message);
+            }
+
+            return await repo.GetPayLocationById(locId,companyInfo.HRISDB);
+        }
+
         public async Task<IEnumerable<PayLocationDto>> GetPayLocations()
         {
             var companyInfo = await compInfoRepo.GetByCompanyCode(compInfoRepo.GetCompanyCode());

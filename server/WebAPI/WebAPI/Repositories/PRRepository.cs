@@ -92,9 +92,13 @@ namespace WebAPI.Repositories
             }
         }
 
-        public Task InsertTransApproving(TransApprovingPRF transApprovingPRF)
+        public async Task InsertTransApproving(IEnumerable<TransApprovingPRF> transApprovingPRF)
         {
-            throw new NotImplementedException();
+            using (var conn = connectionFactory.Connection)
+            {
+                await conn.ExecuteAsync("sp_TransApprovingPRF_Insert",
+                    transApprovingPRF, commandType: CommandType.StoredProcedure);
+            }
         }
 
         public async Task UpdatePRDetailsStatus(string prfNo, string status)

@@ -9,5 +9,7 @@ namespace WebAPI.RepositoryInterfaces
     public interface IEmployeeRepository
     {
         Task<IEnumerable<Employee>> GetAllEmployees(int pageSize, int pageNum, string query, string dbName);
+
+        Task<bool> CheckEmpCodeIfExists(string empCode, string dbName);
     }
 }

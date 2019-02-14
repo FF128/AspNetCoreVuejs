@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using WebAPI.CustomAuthorization;
 using WebAPI.Helpers;
 using WebAPI.Models;
 using WebAPI.RepositoryInterfaces;
@@ -13,6 +14,7 @@ namespace WebAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [MyCustomAuthorization]
     public class AffiliationsController : ControllerBase
     {
         private readonly IAffiliationsRepository repo;
@@ -24,6 +26,7 @@ namespace WebAPI.Controllers
             this.service = service;
         }
         [HttpGet]
+        [ActionName("Get All")]
         public async Task<IActionResult> GetAll()
         {
             try

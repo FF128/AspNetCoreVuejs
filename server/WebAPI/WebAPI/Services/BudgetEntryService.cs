@@ -20,16 +20,20 @@ namespace WebAPI.Services
         private readonly IBudgetEntryRepository repo;
         private readonly IBudgetEntryApprovalRepository beaRepo;
         private readonly ICompanyInformationRepository compInfoRepo;
+        private readonly IUserRepository userRepo;
+        private readonly ITransUserRepository transUserRepo;
         private readonly IAuditTrailService<BudgetEntryMainHeader> mainAuditTrailService;
         private readonly IAuditTrailService<IEnumerable<BudgetEntryMaintDetails>> detailsAuditTrailService;
         private readonly IAuditTrailService<IEnumerable<BudgetEntryMaintAttachment>> attachAuditTrailService;
         private readonly IAuditTrailService<IEnumerable<BudgetEntryMaintAllocated>> allocatedhAuditTrailService;
         private readonly IAuditTrailService<BudgetEntryMaintReturnComment> commentAuditTrailService;
-
+        private const string TRANS = "BUDGETAPPROVAL";
 
         public BudgetEntryService(IBudgetEntryRepository repo,
             ICompanyInformationRepository compInfoRepo,
             IBudgetEntryApprovalRepository beaRepo,
+            ITransUserRepository transUserRepo,
+            IUserRepository userRepo,
             IAuditTrailService<BudgetEntryMainHeader> mainAuditTrailService,
             IAuditTrailService<IEnumerable<BudgetEntryMaintDetails>> detailsAuditTrailService,
             IAuditTrailService<IEnumerable<BudgetEntryMaintAttachment>> attachAuditTrailService,
@@ -39,6 +43,8 @@ namespace WebAPI.Services
             this.repo = repo;
             this.compInfoRepo = compInfoRepo;
             this.beaRepo = beaRepo;
+            this.transUserRepo = transUserRepo;
+            this.userRepo = userRepo;
             this.mainAuditTrailService = mainAuditTrailService;
             this.detailsAuditTrailService = detailsAuditTrailService;
             this.attachAuditTrailService = attachAuditTrailService;
@@ -76,6 +82,45 @@ namespace WebAPI.Services
                     await repo.InsertAttachments(attachments); // Insert to Budget Entry Attachments
                     await attachAuditTrailService.Save(new List<BudgetEntryMaintAttachment>(), attachments, "ADD");
                 }
+                var transApprovingList = new List<TransApprovingBudget>();
+
+                var budgetEntryDetails = await GetBudgetEntryMaintDetailsByTransNo(transNo);
+                foreach (var item in budgetEntryDetails)
+                {
+
+                    //var transUserDepartments = await transUserRepo.GetTransUserDepartmentsByDepCode(item.DepCode, TRANS, compInfoRepo.GetCompanyCode());
+                    //foreach (var deparment in transUserDepartments)
+                    //{
+
+                    //}
+
+
+                    //var transUserPayLoc = await transUserRepo.GetTransUserPayLocByLocId((int)item.LocId, TRANS, compInfoRepo.GetCompanyCode());
+                    //foreach (var payLoc in transUserPayLoc)
+                    //{
+
+                    //}
+                    var transUsers = await transUserRepo.GetAllByTrans(compInfoRepo.GetCompanyCode(), TRANS);
+                    foreach(var transUser in transUsers)
+                    {
+
+                        transApprovingList.Add(new TransApprovingBudget
+                        {
+                            BudgetDetailsID = item.ID,
+                            Approver = transUser.EmpCode,
+                            TransactionNo = item.TransactionNo,
+                            CompanyCode = compInfoRepo.GetCompanyCode(),
+                            CreatedBy = userRepo.GetEmpCode(),
+                            Status = "WAITING"
+                        });
+                    }
+
+                    if (transApprovingList.Any())
+                        await repo.InsertTransApproving(transApprovingList);
+
+                    transApprovingList = new List<TransApprovingBudget>();
+                }
+                
                 return CustomMessageHandler.Success("Budget entry has been successfully submitted");
             }
             return CustomMessageHandler.Error($"Error saving this record with identity {identity}");
