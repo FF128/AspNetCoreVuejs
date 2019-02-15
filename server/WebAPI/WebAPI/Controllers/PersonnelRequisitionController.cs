@@ -22,17 +22,20 @@ namespace WebAPI.Controllers
         private readonly IPRService service;
         private readonly IBudgetEntryService budgetEntryService;
         private readonly IPaginationRepository<PaginationPRFMaintDetailsDto> paginationRepo;
+        private readonly IPaginationRepository<PRFHeaderMaint> prfHeaderPaginationRepo;
         public PersonnelRequisitionController(IBudgetEntryRepository budgetEntryRepo,
             IPRRepository repo,
             IPRService service,
             IBudgetEntryService budgetEntryService,
-            IPaginationRepository<PaginationPRFMaintDetailsDto> paginationRepo)
+            IPaginationRepository<PaginationPRFMaintDetailsDto> paginationRepo,
+            IPaginationRepository<PRFHeaderMaint> prfHeaderPaginationRepo)
         {
             this.budgetEntryRepo = budgetEntryRepo;
             this.repo = repo;
             this.service = service;
             this.budgetEntryService = budgetEntryService;
             this.paginationRepo = paginationRepo;
+            this.prfHeaderPaginationRepo = prfHeaderPaginationRepo;
         }
         [HttpGet("budget-entries")] 
         public async Task<IActionResult> GetBudgetEntries()
@@ -60,8 +63,22 @@ namespace WebAPI.Controllers
                 return BadRequest(CustomMessageHandler.Error(ex.Message));
             }
         }
+        [HttpGet("header/pageNum/{pageNum}/pageSize/{pageSize}/query/{query}")]
+        public async Task<IActionResult> GetPRFHeaderMaintPagination(int pageNum, int pageSize, string query)
+        {
+            try
+            {
+                var items = await paginationRepo.Pagination("sp_PRFHeaderMaint_Pagination", pageNum, pageSize, query);
+
+                return Ok(items);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(CustomMessageHandler.Error(ex.Message));
+            }
+        }
         [HttpGet("details/pageNum/{pageNum}/pageSize/{pageSize}/query/{query}")]
-        public async Task<IActionResult> GetBudgetEntryDetailsPagination(int pageNum, int pageSize, string query)
+        public async Task<IActionResult> GetPRFHeaderMaintDetailsPagination(int pageNum, int pageSize, string query)
         {
             try
             {

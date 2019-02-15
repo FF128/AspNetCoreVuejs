@@ -216,6 +216,7 @@ export default {
         rowsPerPage: 10,
         rowsPerPageItems: [10, 25, 50]
       },
+
       totalData: 0,
       radioGroup: "search",
       transactions: [],
@@ -231,6 +232,14 @@ export default {
       ],
       tableLoading: false,
       transDialog: false,
+      prfHeaderMaintItems: [],
+      prfHeaderMaintTotalData: 0,
+      paginationHeader: {
+        page: 1,
+        rowsPerPage: 10,
+        rowsPerPageItems: [10, 25, 50]
+      },
+      prfLoading: false,
       apiEndpoint: "api/pr"
     };
   },
@@ -288,10 +297,26 @@ export default {
         });
     },
     getMainHeader() {
+      //   this.$axios
+      //     .get(`${this.apiEndpoint}/main`)
+      //     .then(({ data }) => {
+      //       this.transactions = data;
+      //     })
+      //     .catch(({ response }) => {
+      //       toast.show(response.data);
+      //     });
       this.$axios
-        .get(`${this.apiEndpoint}/main`)
+        .get(
+          `${this.apiEndpoint}/header/pageNum/${
+            this.paginationHeader.page
+          }/pageSize/${this.paginationHeader.rowsPerPage}/query/${
+            this.queryHeader
+          }`
+        )
         .then(({ data }) => {
-          this.transactions = data;
+          this.prfHeaderMaintItems = data;
+          this.prfHeaderMaintTotalData = data[0].totalRecords;
+          this.prfLoading = false;
         })
         .catch(({ response }) => {
           toast.show(response.data);
