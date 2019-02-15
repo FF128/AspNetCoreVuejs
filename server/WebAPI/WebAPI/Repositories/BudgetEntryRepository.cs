@@ -259,6 +259,15 @@ namespace WebAPI.Repositories
             }
         }
 
+        public async Task UpdateTransApprovingStatus(UpdateTransApprovingStatusDto dto)
+        {
+            using(var conn = connectionFactory.Connection)
+            {
+                await conn.ExecuteAsync("sp_TransApprovingBudget_UpdateStatus", 
+                    dto, commandType: CommandType.StoredProcedure);
+            }
+        }
+
         public async Task UpdateTransNo(int id, string transNo)
         {
             using(var conn = connectionFactory.Connection)

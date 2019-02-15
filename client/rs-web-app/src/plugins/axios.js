@@ -37,11 +37,13 @@ _axios.interceptors.request.use(
 _axios.interceptors.response.use(
   function (response) {
     // Do something with response data
-    console.log(response);
     return response;
   },
   function (error) {
     // Do something with response error
+    if (error.response.status === 401) {
+      alert("Unauthorized")
+    }
     return Promise.reject(error);
   }
 );

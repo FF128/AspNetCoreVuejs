@@ -29,6 +29,7 @@ namespace WebAPI.RepositoryInterfaces
         Task Update(BudgetEntryMainHeader budgetEntryMainHeader);
         Task UpdateTransNo(int id, string transNo);
         Task UpdateStatus(string transNo, string status);
+        Task UpdateTransApprovingStatus(UpdateTransApprovingStatusDto dto);
         Task DeleteByTransNo(string transNo);
     }
 }

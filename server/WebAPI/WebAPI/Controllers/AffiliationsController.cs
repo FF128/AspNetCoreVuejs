@@ -14,7 +14,7 @@ namespace WebAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [MyCustomAuthorization]
+    //[MyCustomAuthorization]
     public class AffiliationsController : ControllerBase
     {
         private readonly IAffiliationsRepository repo;

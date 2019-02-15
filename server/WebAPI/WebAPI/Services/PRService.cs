@@ -22,7 +22,9 @@ namespace WebAPI.Services
         private readonly ICompanyInformationRepository compInfoRepo;
         private readonly ITransUserRepository transUserRepo;
         private readonly IUserRepository userRepo;
-        private const string TRANS = "PRFAPPROVAL";
+        private const string TRANS = "PRFAPPROVAL", WAITING = "WAITING", APPROVED = "APPROVED",
+            RETURNED = "RETURNED", DECLINED = "DECLINED", DONE = "DONE", CLOSE = "CLOSE", OPEN = "OPEN";
+
         public PRService(IPRRepository prRepo,
             ICompanyInformationRepository compInfoRepo,
             ITransUserRepository transUserRepo,
@@ -60,7 +62,8 @@ namespace WebAPI.Services
         public async Task<CustomMessage> Insert(PRFHeaderDetailsDto prfHeaderDetailsDto)
         {
             prfHeaderDetailsDto.Header.CompanyCode = compInfoRepo.GetCompanyCode();
-            prfHeaderDetailsDto.Header.Status = "WAITING";
+            prfHeaderDetailsDto.Header.Status = WAITING;
+            prfHeaderDetailsDto.Header.CompanyCode = userRepo.GetEmpCode();
             var identity = await prRepo.Insert(mapper.Map<PRFHeaderMaint>(prfHeaderDetailsDto.Header));
 
             if(identity == 0)
@@ -89,7 +92,7 @@ namespace WebAPI.Services
                         PRFNo = item.PRFNo,
                         CompanyCode = compInfoRepo.GetCompanyCode(),
                         CreatedBy = userRepo.GetEmpCode(),
-                        Status = "WAITING"
+                        Status = WAITING
                     });
                 }
 
@@ -110,10 +113,18 @@ namespace WebAPI.Services
                 return CustomMessageHandler.Error($"Unable to find any data using this transaction no. {prfNo}");
             }
 
-            await prRepo.UpdatePRDetailsStatus(prfNo, "DONE");
+            await prRepo.UpdatePRDetailsStatus(prfNo, DONE);
 
-            await prRepo.UpdateStatus(prfNo, "OPEN");
+            await prRepo.UpdateStatus(prfNo, OPEN);
+            var updateTransApprovingStatus = new UpdatePRFTransApprovingStatusDto
+            {
+                PRFNo = prfNo,
+                CompanyCode = compInfoRepo.GetCompanyCode(),
+                IsDone = true,
+                Status = APPROVED
+            };
 
+            await prRepo.UpdateTransApprovingStatus(updateTransApprovingStatus);
             return CustomMessageHandler.RecordUpdated();
         }
 
@@ -127,8 +138,17 @@ namespace WebAPI.Services
                 return CustomMessageHandler.Error($"Unable to find any data using this transaction no. {prfNo}");
             }
 
-            await prRepo.UpdateStatus(prfNo, "CLOSE");
+            await prRepo.UpdateStatus(prfNo, CLOSE);
 
+            var updateTransApprovingStatus = new UpdatePRFTransApprovingStatusDto
+            {
+                PRFNo = prfNo,
+                CompanyCode = compInfoRepo.GetCompanyCode(),
+                IsDone = true,
+                Status = DECLINED
+            };
+
+            await prRepo.UpdateTransApprovingStatus(updateTransApprovingStatus);
             return CustomMessageHandler.RecordUpdated();
 
         }
@@ -136,7 +156,7 @@ namespace WebAPI.Services
         public async Task<CustomMessage> InsertNotBudgeted(PRFHeaderDetailsDto dto)
         {
             dto.Header.CompanyCode = compInfoRepo.GetCompanyCode();
-            dto.Header.Status = "WAITING";
+            dto.Header.Status = WAITING;
             var identity = await prRepo.Insert(mapper.Map<PRFHeaderMaint>(dto.Header));
 
             if (identity == 0)
@@ -206,6 +226,77 @@ namespace WebAPI.Services
             }
 
             throw new Exception("HRIS Database not found");
+        }
+
+        public async Task<CustomMessage> ReturnEntry(PRFMainReturnCommentDto comment)
+        {
+            if (await prRepo.GetByPRFNo(comment.PRFNo) == null)
+            {
+                return CustomMessageHandler.Error($"Unable to find any data using this PRF no. {comment.PRFNo}");
+            }
+
+            //await repo.UpdateStatus(comment.TransactionNo, RETURNED);
+            //await mainAuditTrailService.Save(new BudgetEntryMainHeader(),
+            //  "UPDATE", $"Update status of this transaction no. {comment.TransactionNo} to returned");
+            var updateTransApprovingStatus = new UpdatePRFTransApprovingStatusDto
+            {
+                PRFNo = comment.PRFNo,
+                CompanyCode = compInfoRepo.GetCompanyCode(),
+                IsDone = true,
+                Status = RETURNED
+            };
+
+            await prRepo.UpdateTransApprovingStatus(updateTransApprovingStatus);
+
+            //Insert to Budget Entry Return Comment
+
+            comment.CommentedBy = userRepo.GetEmpCode(); // Get Current User
+            await prRepo.InsertComment(comment);
+            //await commentAuditTrailService.Save(new BudgetEntryMaintReturnComment(), comment, "ADD");
+            return CustomMessageHandler.RecordUpdated();
+        }
+
+        public async Task<CustomMessage> InsertReturnPRF(InsertReturnPRFDto dto)
+        {
+
+            //await prRepo.Insert(dto.Header);
+            dto.Header.CompanyCode = compInfoRepo.GetCompanyCode();
+            dto.Header.EditedBy = userRepo.GetEmpCode();
+            await prRepo.Update(dto.Header); // Update PR HEader 
+            
+            foreach (var item in dto.Details)
+            {
+                //var prfDetails = await prRepo.GetDetailsByPRFNo(dto.Header.PRFNo, await GetHRISDB());
+                var prfDetail = await prRepo.GetDetailById(item.ID);
+                if(prfDetail != null)
+                {
+                    await prRepo.UpdateDetails(item);
+                }
+                else
+                {
+                    item.PRFNo = dto.Header.PRFNo;
+                    await prRepo.InsertDetails(item);
+                }
+            }
+
+            await prRepo.InsertComment(new PRFMainReturnCommentDto
+            {
+                Comment = dto.Comment,
+                CommentedBy = userRepo.GetEmpCode(),
+                PRFNo = dto.Header.PRFNo
+            });
+
+            var updateTransApprovingStatus = new UpdatePRFTransApprovingStatusDto
+            {
+                PRFNo = dto.Header.PRFNo,
+                CompanyCode = compInfoRepo.GetCompanyCode(),
+                IsDone = false,
+                Status = WAITING
+            };
+
+            await prRepo.UpdateTransApprovingStatus(updateTransApprovingStatus);
+
+            return CustomMessageHandler.RecordUpdated();
         }
     }
 }

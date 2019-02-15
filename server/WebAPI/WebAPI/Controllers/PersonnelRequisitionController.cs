@@ -21,15 +21,18 @@ namespace WebAPI.Controllers
         private readonly IBudgetEntryRepository budgetEntryRepo;
         private readonly IPRService service;
         private readonly IBudgetEntryService budgetEntryService;
+        private readonly IPaginationRepository<PaginationPRFMaintDetailsDto> paginationRepo;
         public PersonnelRequisitionController(IBudgetEntryRepository budgetEntryRepo,
             IPRRepository repo,
             IPRService service,
-            IBudgetEntryService budgetEntryService)
+            IBudgetEntryService budgetEntryService,
+            IPaginationRepository<PaginationPRFMaintDetailsDto> paginationRepo)
         {
             this.budgetEntryRepo = budgetEntryRepo;
             this.repo = repo;
             this.service = service;
             this.budgetEntryService = budgetEntryService;
+            this.paginationRepo = paginationRepo;
         }
         [HttpGet("budget-entries")] 
         public async Task<IActionResult> GetBudgetEntries()
@@ -53,6 +56,20 @@ namespace WebAPI.Controllers
 
                 return Ok(result);
             }catch(Exception ex)
+            {
+                return BadRequest(CustomMessageHandler.Error(ex.Message));
+            }
+        }
+        [HttpGet("details/pageNum/{pageNum}/pageSize/{pageSize}/query/{query}")]
+        public async Task<IActionResult> GetBudgetEntryDetailsPagination(int pageNum, int pageSize, string query)
+        {
+            try
+            {
+                var items = await paginationRepo.Pagination("sp_PRFHeaderMaintDetails_Pagination", pageNum, pageSize, query);
+
+                return Ok(items);
+            }
+            catch (Exception ex)
             {
                 return BadRequest(CustomMessageHandler.Error(ex.Message));
             }
@@ -84,7 +101,7 @@ namespace WebAPI.Controllers
         {
             try
             {
-                return Ok(await repo.ViewPREntryWithStatusWaitingDto());
+                return Ok(await repo.ViewPRFEntryByStatus("WAITING"));
             }
             catch (Exception ex)
             {
@@ -96,7 +113,19 @@ namespace WebAPI.Controllers
         {
             try
             {
-                return Ok(await repo.ViewPREntryWithStatusReturnedDto());
+                return Ok(await repo.ViewPRFEntryByStatus("RETURNED"));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(CustomMessageHandler.Error(ex.Message));
+            }
+        }
+        [HttpGet("comments/{prfNo}")]
+        public async Task<IActionResult> GetPRFHeaderMaintReturnCommentsByPRFNo(string prfNo)
+        {
+            try
+            {
+                return Ok(await repo.GetPRFHeaderMaintReturnCommentsByPRFNo(prfNo));
             }
             catch (Exception ex)
             {
@@ -140,6 +169,34 @@ namespace WebAPI.Controllers
 
                 return Ok(result);
 
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(CustomMessageHandler.Error(ex.Message));
+            }
+        }
+        [HttpPost("return")]
+        public async Task<IActionResult> ReturnPREntry(PRFMainReturnCommentDto comment)
+        {
+            try
+            {
+                var result = await service.ReturnEntry(comment);
+
+                return Ok(result);
+
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(CustomMessageHandler.Error(ex.Message));
+            }
+        }
+        [HttpPost("return-prf")]
+        public async Task<IActionResult> InsertReturnPRF(InsertReturnPRFDto dto)
+        {
+            try
+            {
+                var result = await service.InsertReturnPRF(dto);
+                return Ok(result);
             }
             catch (Exception ex)
             {

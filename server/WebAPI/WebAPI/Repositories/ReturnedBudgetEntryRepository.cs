@@ -34,7 +34,8 @@ namespace WebAPI.Repositories
             using(var conn = connectionFactory.Connection)
             {
                 return
-                    await conn.QueryAsync<ViewBudgetEntryWithStatusReturnedDto>("sp_BudgetEntryMainHeader_ViewWithStatusReturned",
+                    await conn.QueryAsync<ViewBudgetEntryWithStatusReturnedDto>("sp_BudgetEntryMainHeader_ViewByStatus",
+                        new { Status = "RETURNED" },
                         commandType: CommandType.StoredProcedure);
             }
         }

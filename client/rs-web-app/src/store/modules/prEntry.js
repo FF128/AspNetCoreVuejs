@@ -1,5 +1,4 @@
-import axios from "axios";
-
+import Vue from "vue"
 const API_ENDPOINT = "api/pr";
 
 const state = {
@@ -13,7 +12,7 @@ const getters = {};
 const mutations = {
   getAllPREntryData(state) {
     state.loading = true;
-    axios
+    Vue.axios
       .get(`${API_ENDPOINT}/waiting`)
       .then(response => {
         state.prEntryData = response.data;
@@ -25,7 +24,7 @@ const mutations = {
   },
   getAllReturnedPREntryData(state) {
     state.loading = true;
-    axios
+    Vue.axios
       .get(`${API_ENDPOINT}/returned`)
       .then(response => {
         state.returnedEntryData = response.data;
@@ -38,10 +37,14 @@ const mutations = {
 };
 
 const actions = {
-  getAllPREntryData({ commit }) {
+  getAllPREntryData({
+    commit
+  }) {
     commit("getAllPREntryData");
   },
-  getAllReturnedPREntryData({ commit }) {
+  getAllReturnedPREntryData({
+    commit
+  }) {
     commit("getAllReturnedPREntryData");
   }
 };

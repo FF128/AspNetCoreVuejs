@@ -224,6 +224,7 @@ export default {
           this.attachments = data.budgetEntryMaintAttachments;
         })
         .catch(({ response }) => {
+          this.$router.back();
           toast.show(response.data);
         });
     },

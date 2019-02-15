@@ -3,18 +3,14 @@
     <v-container>
       <h1>{{title}}</h1>
       <!-- <v-layout row wrap> -->
-      <v-data-table :headers="headers" :items="budgetEntryData">
+      <v-data-table :headers="headers" :items="returnedEntryData">
         <template slot="items" slot-scope="props">
           <td>
-            <v-btn
-              flat
-              icon
-              @click.prevent="$router.push(`budget-entry-approval/${props.item.transactionNo}`)"
-            >
+            <v-btn flat icon @click.prevent="$router.push(`returned-pr-entry/${props.item.prfNo}`)">
               <v-icon>arrow_right_alt</v-icon>
             </v-btn>
           </td>
-          <td>{{props.item.transactionNo}}</td>
+          <td>{{props.item.prfNo}}</td>
           <td>{{props.item.description}}</td>
           <td>{{props.item.status}}</td>
         </template>
@@ -28,7 +24,7 @@ import { mapState, mapActions } from "vuex";
 export default {
   data() {
     return {
-      title: "Budget Entry Approval",
+      title: "Returned PRF",
       headers: [
         { text: "", value: "actions", sortable: false },
         { text: "Transaction No.", value: "actions", sortable: false },
@@ -38,15 +34,15 @@ export default {
     };
   },
   methods: {
-    ...mapActions("budgetEntryApp", ["getAllBudgetEntryData"])
+    ...mapActions("prEntry", ["getAllReturnedPREntryData"])
   },
   computed: {
-    ...mapState("budgetEntryApp", {
-      budgetEntryData: state => state.budgetEntryData
+    ...mapState("prEntry", {
+      returnedEntryData: state => state.returnedEntryData
     })
   },
   created() {
-    this.getAllBudgetEntryData();
+    this.getAllReturnedPREntryData();
   }
 };
 </script>

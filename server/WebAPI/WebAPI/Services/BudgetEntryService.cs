@@ -28,6 +28,10 @@ namespace WebAPI.Services
         private readonly IAuditTrailService<IEnumerable<BudgetEntryMaintAllocated>> allocatedhAuditTrailService;
         private readonly IAuditTrailService<BudgetEntryMaintReturnComment> commentAuditTrailService;
         private const string TRANS = "BUDGETAPPROVAL";
+        private const string APPROVED = "APPROVED";
+        private const string RETURNED = "RETURNED";
+        private const string WAITING = "WAITING";
+        private const string DECLINED = "DECLINED";
 
         public BudgetEntryService(IBudgetEntryRepository repo,
             ICompanyInformationRepository compInfoRepo,
@@ -111,7 +115,7 @@ namespace WebAPI.Services
                             TransactionNo = item.TransactionNo,
                             CompanyCode = compInfoRepo.GetCompanyCode(),
                             CreatedBy = userRepo.GetEmpCode(),
-                            Status = "WAITING"
+                            Status = WAITING
                         });
                     }
 
@@ -196,7 +200,7 @@ namespace WebAPI.Services
                 return CustomMessageHandler.Error($"Unable to find any data using this transaction no. {transNo}");
             }
 
-            await beaRepo.UpdateBudgetEntryDetailsStatusApproved(transNo, "APPROVED");
+            await beaRepo.UpdateBudgetEntryDetailsStatusApproved(transNo, APPROVED);
 
             await detailsAuditTrailService.Save(new List<BudgetEntryMaintDetails>(), 
                 "UPDATE", $"Update status of this transaction no. {detail.TransactionNo} to approved");
@@ -222,7 +226,12 @@ namespace WebAPI.Services
 
                 bemaList = new List<BudgetEntryMaintAllocated>();
             }
-
+            var updateTransApprovingStatus = new UpdateTransApprovingStatusDto
+            {
+                TransNo = transNo, CompanyCode = compInfoRepo.GetCompanyCode(),
+                IsDone = true, Status = APPROVED
+            };
+            await repo.UpdateTransApprovingStatus(updateTransApprovingStatus);
             return CustomMessageHandler.RecordUpdated();
         }
 
@@ -241,6 +250,14 @@ namespace WebAPI.Services
             await mainAuditTrailService.Save(new BudgetEntryMainHeader(),
                "UPDATE", $"Update status of this transaction no. {transNo} to open");
 
+            var updateTransApprovingStatus = new UpdateTransApprovingStatusDto
+            {
+                TransNo = transNo,
+                CompanyCode = compInfoRepo.GetCompanyCode(),
+                IsDone = false,
+                Status = DECLINED
+            };
+            await repo.UpdateTransApprovingStatus(updateTransApprovingStatus);
             return CustomMessageHandler.RecordUpdated();
         }
 
@@ -251,13 +268,21 @@ namespace WebAPI.Services
                 return CustomMessageHandler.Error($"Unable to find any data using this transaction no. {comment.TransactionNo}");
             }
 
-            await beaRepo.UpdateBudgetEntryDetailsStatusReturned(comment, "RETURNED");
+            await beaRepo.UpdateBudgetEntryDetailsStatusReturned(comment, RETURNED);
             await detailsAuditTrailService.Save(new List<BudgetEntryMaintDetails>(),
               "UPDATE", $"Update status of this transaction no. {comment.TransactionNo} to returned");
 
-            await repo.UpdateStatus(comment.TransactionNo, "RETURNED");
-            await mainAuditTrailService.Save(new BudgetEntryMainHeader(),
-              "UPDATE", $"Update status of this transaction no. {comment.TransactionNo} to returned");
+            //await repo.UpdateStatus(comment.TransactionNo, RETURNED);
+            //await mainAuditTrailService.Save(new BudgetEntryMainHeader(),
+            //  "UPDATE", $"Update status of this transaction no. {comment.TransactionNo} to returned");
+            var updateTransApprovingStatus = new UpdateTransApprovingStatusDto
+            {
+                TransNo = comment.TransactionNo,
+                CompanyCode = compInfoRepo.GetCompanyCode(),
+                IsDone = false,
+                Status = RETURNED
+            };
+            await repo.UpdateTransApprovingStatus(updateTransApprovingStatus);
 
             //Insert to Budget Entry Return Comment
             await repo.InsertComment(comment);
@@ -287,7 +312,7 @@ namespace WebAPI.Services
                 await repo.InsertDetails(details); // Insert to Budget Entry Details
                 await detailsAuditTrailService.Save(new List<BudgetEntryMaintDetails>(), details, "ADD");
 
-                await repo.UpdateStatus(dto.TransactionNo, "WAITING");
+                await repo.UpdateStatus(dto.TransactionNo, WAITING);
                 await mainAuditTrailService.Save(new BudgetEntryMainHeader(),
                     "UPDATE", $"Update status of this transaction no. {dto.TransactionNo} to waiting");  
 
@@ -305,6 +330,16 @@ namespace WebAPI.Services
 
                 //    await repo.InsertAttachments(attachments); // Insert to Budget Entry Attachments
                 //}
+
+                var updateTransApprovingStatus = new UpdateTransApprovingStatusDto
+                {
+                    TransNo = dto.TransactionNo,
+                    CompanyCode = compInfoRepo.GetCompanyCode(),
+                    IsDone = false,
+                    Status = WAITING
+                };
+                await repo.UpdateTransApprovingStatus(updateTransApprovingStatus);
+
                 return CustomMessageHandler.Success("Budget entry has been successfully submitted");
             }
             return CustomMessageHandler.Error($"Data doesn't exist");

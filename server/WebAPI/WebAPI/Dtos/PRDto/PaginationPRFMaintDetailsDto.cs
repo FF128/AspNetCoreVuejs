@@ -3,14 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace WebAPI.Models.PRModel
+namespace WebAPI.Dtos.PRDto
 {
-    public class GetPREntryDetails : BaseModel
+    public class PaginationPRFMaintDetailsDto
     {
         public long ID { get; set; }
-        public long BudgetDetailsID { get; set; }
-        public bool IsBudgeted { get; set; }
-        public string BudgetTransNo { get; set; }
         public string PRFNo { get; set; }
         public string DepCode { get; set; }
         public string Department { get; set; }
@@ -48,5 +45,6 @@ namespace WebAPI.Models.PRModel
         public string RegionCode { get; set; }
         public string Region { get; set; }
         public string EmployeeCategoryCode { get; set; }
+        public int TotalRecords { get; set; }
     }
 }

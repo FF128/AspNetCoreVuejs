@@ -29,6 +29,16 @@ namespace WebAPI.Repositories
             }
         }
 
+        public async Task<PRFDetailsMaint> GetDetailById(long id)
+        {
+            using(var conn = connectionFactory.Connection)
+            {
+                return
+                    await conn.QueryFirstOrDefaultAsync<PRFDetailsMaint>("sp_PRFDetailsMaint_ViewById",
+                        new { ID = id }, commandType: CommandType.StoredProcedure);
+            }
+        }
+
         public async Task<IEnumerable<GetPREntryDetails>> GetDetailsByPRFNo(string prfNo, string dbName)
         {
             using (var conn = connectionFactory.Connection)
@@ -36,6 +46,16 @@ namespace WebAPI.Repositories
                 return
                     await conn.QueryAsync<GetPREntryDetails>("sp_PRFDetailsMaint_ViewByPRFNo",
                         new { PRFNo = prfNo, DBName = dbName }, commandType: CommandType.StoredProcedure);
+            }
+        }
+
+        public async Task<IEnumerable<PRFMainReturnComment>> GetPRFHeaderMaintReturnCommentsByPRFNo(string prfNo)
+        {
+            using(var conn = connectionFactory.Connection)
+            {
+                return
+                    await conn.QueryAsync<PRFMainReturnComment>("sp_PRFMainReturnComment_GetByPRFNo",
+                        new { PRFNo = prfNo }, commandType: CommandType.StoredProcedure);
             }
         }
 
@@ -71,6 +91,15 @@ namespace WebAPI.Repositories
             }
         }
 
+        public async Task InsertComment(PRFMainReturnCommentDto comment)
+        {
+            using(var conn = connectionFactory.Connection)
+            {
+                await conn.ExecuteAsync("sp_PRFMainReturnComment_Insert", 
+                    comment, commandType: CommandType.StoredProcedure);
+            }
+        }
+
         public async Task InsertDetails(IEnumerable<PRFDetailsMaint> details)
         {
             using (var conn = connectionFactory.Connection)
@@ -92,12 +121,51 @@ namespace WebAPI.Repositories
             }
         }
 
+        public async Task InsertDetails(PRFDetailsMaint detail)
+        {
+            using (var conn = connectionFactory.Connection)
+            {
+                conn.Open();
+                using (var trans = conn.BeginTransaction())
+                {
+                    try
+                    {
+                        await conn.ExecuteAsync("sp_PRFDetailsMaint_Insert", detail,
+                            trans, commandType: CommandType.StoredProcedure);
+                        trans.Commit();
+                    }
+                    catch
+                    {
+                        trans.Rollback();
+                    }
+                }
+            }
+        }
+
         public async Task InsertTransApproving(IEnumerable<TransApprovingPRF> transApprovingPRF)
         {
             using (var conn = connectionFactory.Connection)
             {
                 await conn.ExecuteAsync("sp_TransApprovingPRF_Insert",
                     transApprovingPRF, commandType: CommandType.StoredProcedure);
+            }
+        }
+
+        public async Task Update(PRFHeaderMaint header)
+        {
+            using(var conn = connectionFactory.Connection)
+            {
+                await conn.ExecuteAsync("sp_PRFHeaderMaint_Update",
+                    header, commandType: CommandType.StoredProcedure);
+            }
+        }
+
+        public async Task UpdateDetails(PRFDetailsMaint detail)
+        {
+            using(var conn = connectionFactory.Connection)
+            {
+                await conn.ExecuteAsync("sp_PRFDetailsMaint_Update",
+                    detail, commandType: CommandType.StoredProcedure); 
             }
         }
 
@@ -142,6 +210,15 @@ namespace WebAPI.Repositories
             }
         }
 
+        public async Task UpdateTransApprovingStatus(UpdatePRFTransApprovingStatusDto dto)
+        {
+            using (var conn = connectionFactory.Connection)
+            {
+                await conn.ExecuteAsync("sp_TransApprovingPRF_UpdateStatus",
+                    dto, commandType: CommandType.StoredProcedure);
+            }
+        }
+
         public async Task<IEnumerable<ViewPREntryWithStatusDto>> ViewPREntryWithStatusReturnedDto()
         {
             using (var conn = connectionFactory.Connection)
@@ -157,6 +234,15 @@ namespace WebAPI.Repositories
             {
                 return await conn.QueryAsync<ViewPREntryWithStatusDto>("sp_PRFHeaderMaint_ViewWithStatusWaiting",
                     commandType: CommandType.StoredProcedure);
+            }
+        }
+
+        public async Task<IEnumerable<ViewPREntryWithStatusDto>> ViewPRFEntryByStatus(string status)
+        {
+            using(var conn = connectionFactory.Connection)
+            {
+                return await conn.QueryAsync<ViewPREntryWithStatusDto>("sp_PRFHeaderMaint_ViewByStatus",
+                    new { Status = status }, commandType: CommandType.StoredProcedure);
             }
         }
     }

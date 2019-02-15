@@ -1,4 +1,5 @@
 import axios from "axios";
+import Vue from "vue"
 
 const API_ENDPOINT = "api/affiliations";
 
@@ -12,24 +13,22 @@ const getters = {};
 const mutations = {
   getAllAffiliations(state) {
     state.loading = true;
-    axios
+    Vue.axios
       .get(API_ENDPOINT)
       .then(response => {
         state.affData = response.data;
         state.loading = false;
       })
       .catch(err => {
-        // console.log(err.response.status)
-        // if(err.response.status === 401){
-        //     alert("Unauthorized")
-        // }
         state.loading = false;
       });
   }
 };
 
 const actions = {
-  getAllAffiliations({ commit }) {
+  getAllAffiliations({
+    commit
+  }) {
     commit("getAllAffiliations");
   }
 };

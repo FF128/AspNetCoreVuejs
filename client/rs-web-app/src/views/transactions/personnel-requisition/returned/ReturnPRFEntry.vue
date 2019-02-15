@@ -1,6 +1,13 @@
 <template>
   <div>
     <v-container>
+      <v-layout>
+        <v-flex xs12 sm12 md12>
+          <v-btn icon @click.prevent="$router.back()">
+            <v-icon>keyboard_backspace</v-icon>
+          </v-btn>
+        </v-flex>
+      </v-layout>
       <h1>{{title}}</h1>
       <v-expansion-panel popout expand v-model="panel">
         <v-expansion-panel-content>
@@ -9,6 +16,9 @@
           <v-form v-model="valid">
             <v-container>
               <v-layout row wrap>
+                <v-flex xs12 sm6 md3>
+                  <v-text-field label="PRF No." v-model="pr.prfNo" readonly></v-text-field>
+                </v-flex>
                 <v-flex xs12 sm6 md3>
                   <v-text-field label="Description" v-model="pr.description"></v-text-field>
                 </v-flex>
@@ -53,6 +63,9 @@
                     @click:append="searchPRTCode"
                     readonly
                   ></v-text-field>
+                </v-flex>
+                <v-flex xs12 sm6 md3>
+                  <v-textarea label="Remarks" v-model="pr.remarks"></v-textarea>
                 </v-flex>
               </v-layout>
             </v-container>
@@ -345,6 +358,7 @@
               <v-icon color="red">delete</v-icon>
             </v-btn>
           </td>
+          <td>{{props.item.budgetTransNo}}</td>
           <td>{{ props.item.locName }}</td>
           <td>{{ props.item.department }}</td>
           <td>{{ props.item.location }}</td>
@@ -366,38 +380,32 @@
           :loading="isSaving"
         >Submit</v-btn>
       </v-layout>
-
-      <v-data-table
-        :items="selectedEntries"
-        :headers="budgetEntriesHeaders"
-        v-if="typeof selectedEntries[0] != 'undefined'"
-      >
-        <template slot="items" slot-scope="props">
-          <td>{{ props.item.budgetDetailsID }}</td>
-          <td>{{ props.item.transactionNo }}</td>
-          <td>{{ props.item.description }}</td>
-          <td>{{ props.item.durationFrom | dateFormat }}</td>
-          <td>{{ props.item.durationTo | dateFormat }}</td>
-          <td>{{ props.item.locName }}</td>
-          <td>{{ props.item.department }}</td>
-          <td>{{ props.item.location }}</td>
-          <td>{{ props.item.group }}</td>
-          <td>{{ props.item.branch }}</td>
-          <td>{{ props.item.unit }}</td>
-          <td>{{ props.item.section }}</td>
-          <td>{{ props.item.designation }}</td>
-          <td>{{ props.item.division }}</td>
-          <td>{{ props.item.quantity }}</td>
-          <td>{{ props.item.agreedSalary }}</td>
-        </template>
-      </v-data-table>
-      <v-layout>
-        <v-btn
-          @click.prevent="save"
-          color="success"
-          v-if="typeof selectedEntries[0] != 'undefined'"
-        >Submit</v-btn>
-      </v-layout>
+      <!-- REMOVE SELECTED ENTRIES -->
+      <v-layout row wrap>
+        <v-flex xs12 sm12 md12>
+          <v-form v-model="valid">
+            <v-textarea
+              name="input-7-1"
+              label="Return Comment"
+              v-model="comment"
+              :rules="requiredRules"
+            ></v-textarea>
+          </v-form>
+        </v-flex>
+        <v-flex>
+          <v-btn @click.prevent="save" color="success">Submit</v-btn>
+        </v-flex>
+      </v-layout>&nbsp;
+      <v-card>
+        <v-card-title>Return Comments</v-card-title>
+        <v-data-table :items="comments" :headers="commentsHeaders">
+          <template slot="items" slot-scope="props">
+            <td>{{props.item.comment}}</td>
+            <td>{{props.item.commentedDate | dateFormat}}</td>
+            <td>{{props.item.commentedBy}}</td>
+          </template>
+        </v-data-table>
+      </v-card>
     </v-container>
     <look-up-dialog
       :dialog="employmentStatusDialog"
@@ -742,11 +750,7 @@
             <td>
               <v-checkbox v-model="props.selected" primary hide-details></v-checkbox>
             </td>
-            <td>{{ props.item.budgetDetailsID }}</td>
             <td>{{ props.item.transactionNo }}</td>
-            <td>{{ props.item.description }}</td>
-            <td>{{ props.item.durationFrom | dateFormat }}</td>
-            <td>{{ props.item.durationTo | dateFormat }}</td>
             <td>{{ props.item.locName }}</td>
             <td>{{ props.item.department }}</td>
             <td>{{ props.item.location }}</td>
@@ -809,11 +813,7 @@ export default {
       radioGroup: "budgeted",
       budgetEntries: [],
       budgetEntriesHeaders: [
-        { text: "", value: "budgetDetailsID" },
         { text: "Trans No.", value: "transactionNo" },
-        { text: "Description", value: "description" },
-        { text: "Duration From", value: "durationFrom" },
-        { text: "Duration To", value: "durationTo" },
         { text: "Payroll Location", value: "locName" },
         { text: "Department", value: "department" },
         { text: "Location", value: "location" },
@@ -828,6 +828,7 @@ export default {
       ],
       bedHeaders: [
         { text: "", value: "actions" },
+        { text: "Transaction No.", value: "budgetTransNo" },
         {
           text: "Payroll Location",
           align: "left",
@@ -901,6 +902,13 @@ export default {
       fileName: "",
       fileUrl: "",
       file: {},
+      comments: [],
+      comment: "",
+      commentsHeaders: [
+        { text: "Comment", value: "comment" },
+        { text: "Comment Date", value: "commentedDate" },
+        { text: "Commented By", value: "commentedBy" }
+      ],
       selectedEntries: [],
       apiEndpoint: "api/pr",
       apiBudgetEntry: "api/budget-entry"
@@ -1185,10 +1193,10 @@ export default {
     },
     save() {
       this.$axios
-        .post(`${this.apiEndpoint}`, {
+        .post(`${this.apiEndpoint}/return-prf`, {
           header: this.pr,
-          details: this.selectedEntries,
-          isBudgeted: this.radioGroup == "budgeted" ? true : false
+          details: this.prEntryDetails,
+          comment: this.comment
         })
         .then(({ data }) => {
           toast.show(data);
@@ -1296,17 +1304,58 @@ export default {
         region: "",
         employeeCategoryCode: ""
       };
+    },
+    getPRFEntry() {
+      this.$axios
+        .get(`${this.apiEndpoint}/${this.$route.params.prfNo}`)
+        .then(({ data }) => {
+          //this.budgetEntryDetails = data;
+          this.pr = data.header;
+          this.prEntryDetails = data.details;
+          this.attachments = data.attachments;
+        })
+        .catch(({ response }) => {
+          toast.show(response.data);
+        });
+    },
+    getReturnedComments() {
+      this.$axios
+        .get(`${this.apiEndpoint}/comments/${this.$route.params.prfNo}`)
+        .then(({ data }) => {
+          this.comments = data;
+        })
+        .catch(({ response }) => {
+          toast.show(response.data);
+        });
     }
   },
   watch: {
     selectedEntries: {
       handler(after, before) {
+        var self = this;
         after.filter(function(p, idx) {
           after[idx].budgetTransNo = after[idx].transactionNo;
+          after[idx].isBudgeted = self.radioGroup == "budgeted" ? true : false;
+
+          var item = _.find(self.prEntryDetails, {
+            budgetDetailsID: after[idx].budgetDetailsID
+          });
+          if (typeof item == "undefined") {
+            self.prEntryDetails.push(after[idx]);
+          }
         });
       },
       deep: true
+    },
+    pr(val) {
+      val.dateRequired = moment(val.dateRequired).format("YYYY-MM-DD");
+      val.durationFrom = moment(val.durationFrom).format("YYYY-MM-DD");
+      val.durationTo = moment(val.durationTo).format("YYYY-MM-DD");
     }
+  },
+  created() {
+    this.getPRFEntry();
+    this.getReturnedComments();
   }
 };
 </script>

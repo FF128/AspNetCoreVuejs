@@ -87,28 +87,28 @@ namespace WebAPI
             });
 
             #region Configure Response Compression
-            //services.Configure<GzipCompressionProviderOptions>(options => options.Level = CompressionLevel.Optimal);
-            //services.AddResponseCompression(options =>
-            //{
-            //    options.MimeTypes = new[]
-            //    {
-            //        // Default
-            //        "text/plain",
-            //        "text/css",
-            //        "application/javascript",
-            //        "text/html",
-            //        "application/xml",
-            //        "text/xml",
-            //        "application/json",
-            //        "text/json",
-            //        // Custom
-            //        "image/svg+xml"
-            //    };
-            //    options.EnableForHttps = true;
-            //    options.Providers.Add<GzipCompressionProvider>();
-            //    options.Providers.Add<BrotliCompressionProvider>();
-          
-            //});
+            services.Configure<GzipCompressionProviderOptions>(options => options.Level = CompressionLevel.Optimal);
+            services.AddResponseCompression(options =>
+            {
+                options.MimeTypes = new[]
+                {
+                    // Default
+                    "text/plain",
+                    "text/css",
+                    "application/javascript",
+                    "text/html",
+                    "application/xml",
+                    "text/xml",
+                    "application/json",
+                    "text/json",
+                    // Custom
+                    "image/svg+xml"
+                };
+                options.EnableForHttps = true;
+                options.Providers.Add<GzipCompressionProvider>();
+                options.Providers.Add<BrotliCompressionProvider>();
+
+            });
             #endregion
 
             services.AddAutoMapper();
@@ -310,6 +310,7 @@ namespace WebAPI
             {
                 app.UseHsts();
             }
+            app.UseResponseCompression();
             app.UseStaticFiles();
             app.UseStaticFiles(new StaticFileOptions
             {

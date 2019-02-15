@@ -271,7 +271,7 @@ export default {
     returnEntry() {
       this.$axios
         .post(`${this.apiEndpoint}/return`, {
-          transactionNo: this.prMain.transactionNo,
+          PRFNo: this.prMain.prfNo,
           comment: this.comment
         })
         .then(({ data }) => {
