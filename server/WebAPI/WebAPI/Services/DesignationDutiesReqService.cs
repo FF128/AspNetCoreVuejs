@@ -17,17 +17,20 @@ namespace WebAPI.Services
         private readonly IDutiesAndResponsibilitiesRepository responsibilitiesRepo;
         private readonly IJobReqRepository jobReqRepo;
         private readonly IDesignationFileRepository designationFileRepo;
+        private readonly IUserRepository userRepo;
         private readonly IMapper mapper;
         public DesignationDutiesReqService(IDesignationDutiesRepository repo,
             IDutiesAndResponsibilitiesRepository responsibilitiesRepo,
             IJobReqRepository jobReqRepo,
             IDesignationFileRepository designationFileRepo,
+            IUserRepository userRepo,
             IMapper mapper)
         {
             this.repo = repo;
             this.responsibilitiesRepo = responsibilitiesRepo;
             this.jobReqRepo = jobReqRepo;
             this.designationFileRepo = designationFileRepo;
+            this.userRepo = userRepo;
             this.mapper = mapper;
         }
 

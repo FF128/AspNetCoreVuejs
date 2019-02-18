@@ -298,5 +298,80 @@ namespace WebAPI.Services
 
             return CustomMessageHandler.RecordUpdated();
         }
+
+        public async Task<IEnumerable<GetPREntryDetails>> GetPREntryMaintDetailsByPRFNo(string prfNo)
+        {
+            var companyInfo = await compInfoRepo.GetByCompanyCode(compInfoRepo.GetCompanyCode());
+            if (compInfoRepo == null)
+                throw new Exception("Company Information doesn't exist");
+            if (await prRepo.GetByPRFNo(prfNo) == null)
+                throw new Exception($"Personnel Requisition ({prfNo}) doesn't exist");
+
+            if (await compInfoRepo.CheckDBIfExists(companyInfo.HRISDB))
+            {
+                return await prRepo.GetDetailsByPRFNo(prfNo, companyInfo.HRISDB);
+            }
+
+            throw new Exception("HRIS Database doesn't exist");
+        }
+
+        public async Task<CustomMessage> PRFExtendApproved(int id)
+        {
+            if (await prRepo.GetPRFExtendById(id, compInfoRepo.GetCompanyCode()) == null)
+                throw new Exception("PRF Extend data doesn't exist");
+
+            await prRepo.PRFExtendApproveDeclined(id, APPROVED, userRepo.GetEmpCode());
+
+            return CustomMessageHandler.Success("Successfully Approved");
+        }
+
+        public async Task<CustomMessage> PRFExtendDeclined(int id)
+        {
+            if (await prRepo.GetPRFExtendById(id, compInfoRepo.GetCompanyCode()) == null)
+                throw new Exception("PRF Extend data doesn't exist");
+
+            await prRepo.PRFExtendApproveDeclined(id, DECLINED, userRepo.GetEmpCode());
+
+            return CustomMessageHandler.Success("Successfully Approved");
+        }
+
+        public async Task<CustomMessage> InsertPRFExtend(PRFExtend prfExtend)
+        {
+            var header = await prRepo.GetByPRFNo(prfExtend.PRFNo);
+            if (header == null)
+                throw new Exception($"Data doesn't exist using this PRF No. {prfExtend.PRFNo}");
+
+            prfExtend.OldDateTo = header.DurationTo;
+            prfExtend.OldDateFrom = header.DurationFrom;
+            prfExtend.OldDateRequired = header.DateRequired;
+            prfExtend.CreatedBy = userRepo.GetEmpCode(); // Current User
+            prfExtend.CompanyCode = compInfoRepo.GetCompanyCode(); // Current Company
+            prfExtend.Status = WAITING;
+
+            await prRepo.InsertPRFExtend(prfExtend);
+
+            return CustomMessageHandler.Success("Personnel Requisition Entry has been successfully Extend, please wait for approver to approve your request.");
+        }
+
+        public async Task<bool> GetPRFExtendByPRFNo(string prfNo)
+        {
+            var details = await prRepo.GetExtendPRFDetailsByPRFNo(prfNo, compInfoRepo.GetCompanyCode());
+
+            if (details.ExtendStatus == WAITING)
+                return false;
+            if (details.Status == DECLINED)
+                return false;
+            if (details.Status == RETURNED)
+                return false;
+            if (details.Status == APPROVED)
+                return true;
+
+            return false;
+        }
+
+        public async Task<IEnumerable<PRFExtend>> GetPRFExtendByStatus(string status)
+        {
+            return await prRepo.GetPRFExtendByStatus(status, compInfoRepo.GetCompanyCode());
+        }
     }
 }

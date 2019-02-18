@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using WebAPI.Dtos.PRDto;
 using WebAPI.Helpers;
+using WebAPI.Models.PRModel;
 
 namespace WebAPI.ServiceInterfaces
 {
@@ -16,5 +17,13 @@ namespace WebAPI.ServiceInterfaces
         Task<CustomMessage> DeclineEntry(string prfNo);
         Task<CustomMessage> InsertNotBudgeted(PRFHeaderDetailsDto dto);
         Task<CustomMessage> ReturnEntry(PRFMainReturnCommentDto comment);
+        Task<IEnumerable<GetPREntryDetails>> GetPREntryMaintDetailsByPRFNo(string prfNo);
+
+        // PRF Extend
+        Task<CustomMessage> PRFExtendApproved(int id);
+        Task<CustomMessage> PRFExtendDeclined(int id);
+        Task<CustomMessage> InsertPRFExtend(PRFExtend prfExtend);
+        Task<bool> GetPRFExtendByPRFNo(string prfNo);
+        Task<IEnumerable<PRFExtend>> GetPRFExtendByStatus(string status);
     }
 }

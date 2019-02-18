@@ -17,15 +17,18 @@ namespace WebAPI.Services
         private readonly IDepartmentRepository repo;
         private readonly IAuditTrailService<Department> auditTrailService;
         private readonly ICompanyInformationRepository compInfoRepo;
+        private readonly IUserRepository userRepo;
         private readonly IFileSetupService fileSetupService;
         public DepartmentService(IDepartmentRepository repo,
              IAuditTrailService<Department> auditTrailService,
              ICompanyInformationRepository compInfoRepo,
+             IUserRepository userRepo,
              IFileSetupService fileSetupService)
         {
             this.repo = repo;
             this.auditTrailService = auditTrailService;
             this.compInfoRepo = compInfoRepo;
+            this.userRepo = userRepo;
             this.fileSetupService = fileSetupService;
         }
 
@@ -119,6 +122,7 @@ namespace WebAPI.Services
         public async Task<CustomMessage> Insert(Department dep)
         {
             dep.CompanyCode = compInfoRepo.GetCompanyCode();
+            dep.CreatedBy = userRepo.GetEmpCode();
             if (String.IsNullOrEmpty(dep.DepartmentCode) || String.IsNullOrWhiteSpace(dep.DepartmentCode))
             {
                 return CustomMessageHandler.Error("Code: field is required");
@@ -153,7 +157,7 @@ namespace WebAPI.Services
                                 DepCode = dep.DepartmentCode,
                                 DepDesc = dep.DepartmentDesc,
                                 DBName = companyInfo.PayrollDB,
-                                CreatedBy = "" // Current User
+                                CreatedBy = dep.CreatedBy // Current User
                             });
                         }
                     }
@@ -187,7 +191,7 @@ namespace WebAPI.Services
                                 DepCode = dep.DepartmentCode,
                                 DepDesc = dep.DepartmentDesc,
                                 DBName = companyInfo.HRISDB,
-                                CreatedBy = "" // Current User
+                                CreatedBy = dep.CreatedBy // Current User
                             });
                         }
 
@@ -208,6 +212,7 @@ namespace WebAPI.Services
         public async Task<CustomMessage> Update(Department dep)
         {
             var depData = await repo.GetByCode(dep.DepartmentCode);
+            dep.EditedBy = userRepo.GetEmpCode();
             if (depData != null)
             {
                 var companyInfo = await compInfoRepo.GetByCompanyCode(compInfoRepo.GetCompanyCode());
@@ -236,7 +241,7 @@ namespace WebAPI.Services
                                 DepCode = dep.DepartmentCode,
                                 DepDesc = dep.DepartmentDesc,
                                 DBName = companyInfo.PayrollDB,
-                                EditedBy = "" // Current User
+                                EditedBy = dep.EditedBy // Current User
                             });
                         }
                     }
@@ -270,7 +275,7 @@ namespace WebAPI.Services
                                 DepCode = dep.DepartmentCode,
                                 DepDesc = dep.DepartmentDesc,
                                 DBName = companyInfo.HRISDB,
-                                EditedBy = "" // Current User
+                                EditedBy = dep.EditedBy // Current User
                             });
                         }
                     }

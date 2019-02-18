@@ -14,13 +14,16 @@ namespace WebAPI.Services
         private readonly IAppEntryEssayInfoRepository repo;
         private readonly IAuditTrailService<AppEntryEssayInfo> auditTrailService;
         private readonly ICompanyInformationRepository compInfoRepo;
+        private readonly IUserRepository userRepo;
         public AppEntryEssayInfoService(IAppEntryEssayInfoRepository repo,
              IAuditTrailService<AppEntryEssayInfo> auditTrailService,
-             ICompanyInformationRepository compInfoRepo)
+             ICompanyInformationRepository compInfoRepo,
+             IUserRepository userRepo)
         {
             this.repo = repo;
             this.auditTrailService = auditTrailService;
             this.compInfoRepo = compInfoRepo;
+            this.userRepo = userRepo;
         }
 
         public async Task<CustomMessage> Delete(int id)
@@ -42,6 +45,7 @@ namespace WebAPI.Services
             if ((await repo.GetById(essay.Id)) == null)
             {
                 essay.CompanyCode = compInfoRepo.GetCompanyCode();
+                essay.CreatedBy = userRepo.GetEmpCode();
                 await repo.Insert(essay);
 
                 await auditTrailService.Save(new AppEntryEssayInfo(), essay, "ADD");
@@ -57,6 +61,7 @@ namespace WebAPI.Services
             var essayData = await repo.GetById(essay.Id);
             if (essayData != null)
             {
+                essay.EditedBy = userRepo.GetEmpCode();
                 await repo.Update(essay);
 
                 //Audit Trail

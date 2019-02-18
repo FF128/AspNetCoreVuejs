@@ -21,18 +21,20 @@ namespace WebAPI.Services
         private readonly IAuditTrailRepository auditTrailRepo;
         private readonly ICompanyInformationRepository comInfoRepo;
         private readonly IFileSetupService fileSetupService;
-
+        private readonly IUserRepository userRepo;
         private readonly IAuditTrailService<Citizenship> auditTrailService;
         public CitizenshipService(ICitizenshipRepository repo,
             IAuditTrailRepository auditTrailRepo,
             IAuditTrailService<Citizenship> auditTrailService,
             ICompanyInformationRepository comInfoRepo,
+            IUserRepository userRepo,
             IFileSetupService fileSetupService)
         {
             this.repo = repo;
             this.auditTrailRepo = auditTrailRepo;
             this.auditTrailService = auditTrailService;
             this.comInfoRepo = comInfoRepo;
+            this.userRepo = userRepo;
             this.fileSetupService = fileSetupService;
         }
 
@@ -156,6 +158,7 @@ namespace WebAPI.Services
         {
             // Get Company Code
             cit.CompanyCode = comInfoRepo.GetCompanyCode();
+            cit.CreatedBy = userRepo.GetEmpCode();
             if (String.IsNullOrEmpty(cit.CitiCode) || String.IsNullOrWhiteSpace(cit.CitiCode))
             {
                 return CustomMessageHandler.Error("Code: field is required");
@@ -190,7 +193,7 @@ namespace WebAPI.Services
                                 CitiCode = cit.CitiCode,
                                 CitiDesc = cit.CitiDesc,
                                 DBName = companyInfo.PayrollDB,
-                                CreatedBy = "" // Current User
+                                CreatedBy = cit.CreatedBy // Current User
                             });
                         }
                         
@@ -208,7 +211,7 @@ namespace WebAPI.Services
                                 CitiCode = cit.CitiCode,
                                 CitiDesc = cit.CitiDesc,
                                 DBName = companyInfo.HRISDB,
-                                CreatedBy = "" // Current User
+                                CreatedBy = cit.CreatedBy // Current User
                             });
                         }
                         
@@ -228,6 +231,7 @@ namespace WebAPI.Services
         public async Task<CustomMessage> Update(Citizenship cit)
         {
             var citData = await repo.GetByCode(cit.CitiCode);
+            cit.EditedBy = userRepo.GetEmpCode();
             if (citData != null)
             {
                 var companyInfo = await comInfoRepo.GetByCompanyCode(comInfoRepo.GetCompanyCode());
@@ -255,7 +259,7 @@ namespace WebAPI.Services
                                 CitiCode = cit.CitiCode,
                                 CitiDesc = cit.CitiDesc,
                                 DBName = companyInfo.PayrollDB,
-                                EditedBy = "" // Current User
+                                EditedBy = cit.EditedBy // Current User
                             });
                         }
                     }
@@ -274,7 +278,7 @@ namespace WebAPI.Services
                                 CitiCode = cit.CitiCode,
                                 CitiDesc = cit.CitiDesc,
                                 DBName = companyInfo.HRISDB,
-                                EditedBy = "" // Current User
+                                EditedBy = cit.EditedBy // Current User
                             });
                         }
                     }

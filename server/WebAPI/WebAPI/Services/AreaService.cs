@@ -18,15 +18,18 @@ namespace WebAPI.Services
         private readonly IAuditTrailService<Area> auditTrailService;
         private readonly ICompanyInformationRepository compInfoRepo;
         private readonly IFileSetupService fileSetupService;
+        private readonly IUserRepository userRepo;
         public AreaService(IAreaRepository repo,
              IAuditTrailService<Area> auditTrailService,
              ICompanyInformationRepository compInfoRepo,
-             IFileSetupService fileSetupService)
+             IFileSetupService fileSetupService,
+             IUserRepository userRepo)
         {
             this.repo = repo;
             this.auditTrailService = auditTrailService;
             this.compInfoRepo = compInfoRepo;
             this.fileSetupService = fileSetupService;
+            this.userRepo = userRepo;
         }
 
         public async Task<CustomMessage> Delete(int id)
@@ -118,6 +121,7 @@ namespace WebAPI.Services
         {
             // Get Company Code
             area.CompanyCode = compInfoRepo.GetCompanyCode();
+            area.CreatedBy = userRepo.GetEmpCode();
             if (String.IsNullOrEmpty(area.AreaCode) || String.IsNullOrWhiteSpace(area.AreaCode))
             {
                 return CustomMessageHandler.Error("Code: field is required");
@@ -144,7 +148,7 @@ namespace WebAPI.Services
                         AreaDesc = area.AreaDesc,
                         AcctCode = area.AcctCode,
                         HeadCode = area.HeadCode,
-                        CreatedBy = "" // Current User
+                        CreatedBy = area.CompanyCode // Current User
                     };
                     // PAYROLL 
                     var result = await compInfoRepo.CheckTableIfExists(companyInfo.PayrollDB, TABLE_NAME);
@@ -222,7 +226,7 @@ namespace WebAPI.Services
                         AreaDesc = area.AreaDesc,
                         AcctCode = area.AcctCode,
                         HeadCode = area.HeadCode,
-                        EditedBy = "" // Current User
+                        EditedBy = userRepo.GetEmpCode() // Current User
                     };
                     // PAYROLL 
                     var result = await compInfoRepo.CheckTableIfExists(companyInfo.PayrollDB, TABLE_NAME);

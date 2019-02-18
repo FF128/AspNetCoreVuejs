@@ -17,8 +17,9 @@ namespace WebAPI.Models.PRModel
         public DateTime NewDateRequired { get; set; }
         public string Status { get; set; }
         public string CreatedBy { get; set; }
-        public DateTime CreatedDate { get; set; }
+        public DateTime CreatedDate { get; set; } = DateTime.Now;
         public string ApprovedBy { get; set; }
-        public DateTime ApprovedDate { get; set; }
+        public DateTime ApprovedDate { get; set; } = DateTime.Now;
+        public string CompanyCode { get; set; }
     }
 }

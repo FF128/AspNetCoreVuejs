@@ -142,8 +142,8 @@ export default {
         { title: "PR Entry Approval", route: "/pr-approval" },
         { title: "Returned PRF", route: "/returned-pr-entry" },
         { title: "PR History", route: "/pr-history" },
-        { title: "Extend PRF", route: "/extend-prf" },
-        { title: "Extend PRF Approval", route: "/extend-prf-approval" }
+        { title: "Extend PRF", route: "/prf-extend" },
+        { title: "Extend PRF Approval", route: "/prf-extend-approval" }
       ],
       filteringItems: [
         { title: "Applicants Filtering Entry", route: "" },

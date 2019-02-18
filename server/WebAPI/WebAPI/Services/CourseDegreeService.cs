@@ -18,17 +18,20 @@ namespace WebAPI.Services
         private readonly ICourseDegreeRepository repo;
         private readonly IAuditTrailService<CourseDegree> auditTrailService;
         private readonly ICompanyInformationRepository compInfoRepo;
+        private readonly IUserRepository userRepo;
         private readonly IFileSetupService fileSetupService;
         private readonly IMapper mapper;
         public CourseDegreeService(ICourseDegreeRepository repo,
              IAuditTrailService<CourseDegree> auditTrailService,
              ICompanyInformationRepository compInfoRepo,
+             IUserRepository userRepo,
              IFileSetupService fileSetupService,
              IMapper mapper)
         {
             this.repo = repo;
             this.auditTrailService = auditTrailService;
             this.compInfoRepo = compInfoRepo;
+            this.userRepo = userRepo;
             this.mapper = mapper;
             this.fileSetupService = fileSetupService;
         }
@@ -93,6 +96,7 @@ namespace WebAPI.Services
         {
             // Get Company Code
             cd.CompanyCode = compInfoRepo.GetCompanyCode();
+            cd.CreatedBy = userRepo.GetEmpCode();
             if (String.IsNullOrEmpty(cd.CourseDegreeCode) || String.IsNullOrWhiteSpace(cd.CourseDegreeCode))
             {
                 return CustomMessageHandler.Error("Code: field is required");
@@ -128,8 +132,6 @@ namespace WebAPI.Services
 
                     }
                 }
-
-
                 await repo.InsertFileSetup(cd);
                 await repo.Insert(cd);
                 await auditTrailService.Save(new CourseDegree(), cd, "ADD");
@@ -143,6 +145,7 @@ namespace WebAPI.Services
         public async Task<CustomMessage> Update(CourseDegree cd)
         {
             var cdData = await repo.GetByCode(cd.CourseDegreeCode);
+            cd.EditedBy = userRepo.GetEmpCode();
             if (cdData != null)
             {
                 var companyInfo = await compInfoRepo.GetByCompanyCode(compInfoRepo.GetCompanyCode());

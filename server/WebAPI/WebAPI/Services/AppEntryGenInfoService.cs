@@ -14,13 +14,16 @@ namespace WebAPI.Services
         private readonly IAppEntryGenInfoRepository repo;
         private readonly IAuditTrailService<AppEntryGenInfo> auditTrailService;
         private readonly ICompanyInformationRepository compInfoRepo;
+        private readonly IUserRepository userRepo;
         public AppEntryGenInfoService(IAppEntryGenInfoRepository repo,
              IAuditTrailService<AppEntryGenInfo> auditTrailService,
-             ICompanyInformationRepository compInfoRepo)
+             ICompanyInformationRepository compInfoRepo,
+             IUserRepository userRepo)
         {
             this.repo = repo;
             this.auditTrailService = auditTrailService;
             this.compInfoRepo = compInfoRepo;
+            this.userRepo = userRepo;
         }
 
         public async Task<CustomMessage> Delete(int id)
@@ -42,6 +45,7 @@ namespace WebAPI.Services
             if ((await repo.GetById(gen.Id)) == null)
             {
                 gen.CompanyCode = compInfoRepo.GetCompanyCode();
+                gen.CreatedBy = userRepo.GetEmpCode();
                 await repo.Insert(gen);
 
                 await auditTrailService.Save(new AppEntryGenInfo(), gen, "ADD");
@@ -57,6 +61,7 @@ namespace WebAPI.Services
             var genData = await repo.GetById(gen.Id);
             if (genData != null)
             {
+                gen.EditedBy = userRepo.GetEmpCode();
                 await repo.Update(gen);
 
                 //Audit Trail

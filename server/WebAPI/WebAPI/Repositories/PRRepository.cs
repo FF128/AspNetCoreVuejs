@@ -49,6 +49,51 @@ namespace WebAPI.Repositories
             }
         }
 
+        public async Task<IEnumerable<GetExtendPRFDetails>> GetExtendPRFDetails(string companyCode)
+        {
+            using(var conn = connectionFactory.Connection)
+            {
+                return await conn.QueryAsync<GetExtendPRFDetails>("sp_PRFExtend_ViewTransactions",
+                    new { CompanyCode = companyCode }, commandType: CommandType.StoredProcedure);
+            }
+        }
+
+        public async Task<GetExtendPRFDetails> GetExtendPRFDetailsByPRFNo(string prfNo, string companyCode)
+        {
+            using (var conn = connectionFactory.Connection)
+            {
+                return await conn.QueryFirstOrDefaultAsync<GetExtendPRFDetails>("sp_PRFExtend_ViewTransactionsByPRFNo",
+                    new { PRFNo = prfNo, CompanyCode = companyCode }, commandType: CommandType.StoredProcedure);
+            }
+        }
+
+        public async Task<IEnumerable<GetPREntryMaintDetails>> GetPREntryMaintDetailsByPRFNo(string prfNo, string dbName)
+        {
+            using(var conn = connectionFactory.Connection)
+            {
+                return
+                    await conn.QueryAsync<GetPREntryMaintDetails>("sp_PRFDetailsMaint_ViewByPRFNo");
+            }
+        }
+
+        public async  Task<PRFExtend> GetPRFExtendById(int id, string companyCode)
+        {
+            using(var conn = connectionFactory.Connection)
+            {
+                return await conn.QueryFirstOrDefaultAsync<PRFExtend>("sp_PRFExtend_ViewById",
+                    new { ID = id, CompanyCode = companyCode }, commandType: CommandType.StoredProcedure);
+            }
+        }
+
+        public async Task<IEnumerable<PRFExtend>> GetPRFExtendByStatus(string status, string companyCode)
+        {
+            using (var conn = connectionFactory.Connection)
+            {
+                return await conn.QueryAsync<PRFExtend>("sp_PRFExtend_ViewByStatus",
+                    new { Status = status, CompanyCode = companyCode }, commandType: CommandType.StoredProcedure);
+            }
+        }
+
         public async Task<IEnumerable<PRFMainReturnComment>> GetPRFHeaderMaintReturnCommentsByPRFNo(string prfNo)
         {
             using(var conn = connectionFactory.Connection)
@@ -142,12 +187,30 @@ namespace WebAPI.Repositories
             }
         }
 
+        public async Task InsertPRFExtend(PRFExtend prfExtend)
+        {
+            using (var conn = connectionFactory.Connection)
+            {
+                await conn.ExecuteAsync("sp_PRFExtend_Insert",
+                    prfExtend, commandType: CommandType.StoredProcedure);
+            }
+        }
+
         public async Task InsertTransApproving(IEnumerable<TransApprovingPRF> transApprovingPRF)
         {
             using (var conn = connectionFactory.Connection)
             {
                 await conn.ExecuteAsync("sp_TransApprovingPRF_Insert",
                     transApprovingPRF, commandType: CommandType.StoredProcedure);
+            }
+        }
+
+        public async Task PRFExtendApproveDeclined(int id, string status, string empCode)
+        {
+            using(var conn = connectionFactory.Connection)
+            {
+                await conn.ExecuteAsync("sp_PRFExtend_ApprovedDeclined",
+                    new { ID = id, Status = status, EmpCode = empCode }, commandType: CommandType.StoredProcedure);
             }
         }
 

@@ -22,13 +22,15 @@ namespace WebAPI.Controllers
         private readonly IPRService service;
         private readonly IBudgetEntryService budgetEntryService;
         private readonly IPaginationRepository<PaginationPRFMaintDetailsDto> paginationRepo;
-        private readonly IPaginationRepository<PRFHeaderMaint> prfHeaderPaginationRepo;
+        private readonly IPaginationRepository<PaginationPRFHeaderMaintDto> prfHeaderPaginationRepo;
+        private readonly IPaginationService<GetExtendPRFDetails> prfExtendService;
         public PersonnelRequisitionController(IBudgetEntryRepository budgetEntryRepo,
             IPRRepository repo,
             IPRService service,
             IBudgetEntryService budgetEntryService,
             IPaginationRepository<PaginationPRFMaintDetailsDto> paginationRepo,
-            IPaginationRepository<PRFHeaderMaint> prfHeaderPaginationRepo)
+            IPaginationRepository<PaginationPRFHeaderMaintDto> prfHeaderPaginationRepo,
+            IPaginationService<GetExtendPRFDetails> prfExtendService)
         {
             this.budgetEntryRepo = budgetEntryRepo;
             this.repo = repo;
@@ -36,6 +38,7 @@ namespace WebAPI.Controllers
             this.budgetEntryService = budgetEntryService;
             this.paginationRepo = paginationRepo;
             this.prfHeaderPaginationRepo = prfHeaderPaginationRepo;
+            this.prfExtendService = prfExtendService;
         }
         [HttpGet("budget-entries")] 
         public async Task<IActionResult> GetBudgetEntries()
@@ -68,9 +71,22 @@ namespace WebAPI.Controllers
         {
             try
             {
-                var items = await paginationRepo.Pagination("sp_PRFHeaderMaint_Pagination", pageNum, pageSize, query);
+                var items = await prfHeaderPaginationRepo.Pagination("sp_PRFHeaderMaint_Pagination", pageNum, pageSize, query);
 
                 return Ok(items);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(CustomMessageHandler.Error(ex.Message));
+            }
+        }
+        [HttpGet("details/{prfNo}")]
+        public async Task<IActionResult> GetBudgetEntryDetails(string prfNo)
+        {
+            try
+            {
+                var result = await service.GetPREntryMaintDetailsByPRFNo(prfNo);
+                return Ok(result);
             }
             catch (Exception ex)
             {
@@ -220,5 +236,90 @@ namespace WebAPI.Controllers
                 return BadRequest(CustomMessageHandler.Error(ex.Message));
             }
         }
+
+        #region PRF EXTEND
+        [HttpGet("extend/pageNum/{pageNum}/pageSize/{pageSize}/query/{query?}")]
+        public async Task<IActionResult> GetPRFExtendDetails(int pageNum, int pageSize, string query = null)
+        {
+            try
+            {
+                var items = await 
+                    prfExtendService.PaginationByCompanyCode("sp_PRFExtend_ViewTransactionsPagination", pageNum, pageSize, query);
+
+                return Ok(items);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(CustomMessageHandler.Error(ex.Message));
+            }
+        }
+        [HttpPost("extend")]
+        public async Task<IActionResult> InsertPRFExtend(PRFExtend prfExtend)
+        {
+            try
+            {
+                var result = await service.InsertPRFExtend(prfExtend);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(CustomMessageHandler.Error(ex.Message));
+            }
+        }
+        [HttpPost("extend/approved/{id}")]
+        public async Task<IActionResult> PRFExtendApproved(int id)
+        {
+            try
+            {
+                var result = await service.PRFExtendApproved(id);
+                
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(CustomMessageHandler.Error(ex.Message));
+            }
+        }
+        [HttpPost("extend/declined/{id}")]
+        public async Task<IActionResult> PRFExtendDeclined(int id)
+        {
+            try
+            {
+                var result = await service.PRFExtendDeclined(id);
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(CustomMessageHandler.Error(ex.Message));
+            }
+        }
+        [HttpGet("extend/{prfNo}")]
+        public async Task<IActionResult> GetPRFExtendDetailsByPRFNo(string prfNo)
+        {
+            try
+            {
+                var result = await service.GetPRFExtendByPRFNo(prfNo);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(CustomMessageHandler.Error(ex.Message));
+            }
+        }
+        [HttpGet("extend/waiting")]
+        public async Task<IActionResult> GetPRFExtendByStatus()
+        {
+            try
+            {
+                var result = await service.GetPRFExtendByStatus("WAITING");
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(CustomMessageHandler.Error(ex.Message));
+            }
+        }
+        #endregion
     }
 }

@@ -289,6 +289,7 @@ namespace WebAPI
             services.AddScoped<IPRService, PRService>();
             services.AddScoped<IEmployeeService, EmployeeService>();
             services.AddScoped<ITransUserService, TransUserService>();
+            services.AddScoped(typeof(IPaginationService<>), typeof(PaginationService<>));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

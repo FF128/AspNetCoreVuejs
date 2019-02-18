@@ -18,15 +18,18 @@ namespace WebAPI.Services
         private readonly IAuditTrailService<Branch> auditTrailService;
         private readonly ICompanyInformationRepository compInfoRepo;
         private readonly IFileSetupService fileSetupService;
+        private readonly IUserRepository userRepo;
         public BranchService(IBranchRepository repo,
              IAuditTrailService<Branch> auditTrailService,
              ICompanyInformationRepository compInfoRepo,
-             IFileSetupService fileSetupService)
+             IFileSetupService fileSetupService,
+             IUserRepository userRepo)
         {
             this.repo = repo;
             this.auditTrailService = auditTrailService;
             this.compInfoRepo = compInfoRepo;
             this.fileSetupService = fileSetupService;
+            this.userRepo = userRepo;
         }
 
         public async Task<CustomMessage> Delete(int id)
@@ -119,6 +122,7 @@ namespace WebAPI.Services
         public async Task<CustomMessage> Insert(Branch branch)
         {
             branch.CompanyCode = compInfoRepo.GetCompanyCode();
+            branch.CreatedBy = userRepo.GetEmpCode();
             if (String.IsNullOrEmpty(branch.BranchCode) || String.IsNullOrWhiteSpace(branch.BranchCode))
             {
                 return CustomMessageHandler.Error("Code: field is required");
@@ -154,7 +158,7 @@ namespace WebAPI.Services
                                 BraDesc = branch.BranchDesc,
                                 AccountCode = branch.AcctCode,
                                 DBName = companyInfo.PayrollDB,
-                                CreatedBy = "" // Current User
+                                CreatedBy = branch.CreatedBy // Current User
                             });
                         }
 
@@ -190,7 +194,7 @@ namespace WebAPI.Services
                                 BraCode = branch.BranchCode,
                                 BraDesc = branch.BranchDesc,
                                 DBName = companyInfo.HRISDB,
-                                CreatedBy = "" // Current User
+                                CreatedBy = branch.CreatedBy // Current User
                             });
                         }
 
@@ -202,7 +206,7 @@ namespace WebAPI.Services
                 {
                     BraCode = branch.BranchCode,
                     BraDesc = branch.BranchDesc,
-                    CreatedBy = "" // Current User
+                    CreatedBy = branch.CreatedBy // Current User
                 });
                 await repo.Insert(branch);
                 await auditTrailService.Save(new Branch(), branch, "ADD");
@@ -216,6 +220,7 @@ namespace WebAPI.Services
         public async Task<CustomMessage> Update(Branch branch)
         {
             var branchData = await repo.GetByCode(branch.BranchCode);
+            branch.EditedBy = userRepo.GetEmpCode();
             if (branchData != null)
             {
                 var companyInfo = await compInfoRepo.GetByCompanyCode(compInfoRepo.GetCompanyCode());
@@ -245,7 +250,7 @@ namespace WebAPI.Services
                                 BraDesc = branch.BranchDesc,
                                 AccountCode = branch.AcctCode,
                                 DBName = companyInfo.PayrollDB,
-                                EditedBy = "" // Current User
+                                EditedBy = branch.EditedBy // Current User
                             });
                         }
                     }
@@ -279,7 +284,7 @@ namespace WebAPI.Services
                                 BraCode = branch.BranchCode,
                                 BraDesc = branch.BranchDesc,
                                 DBName = companyInfo.HRISDB,
-                                EditedBy = "" // Current User
+                                EditedBy = branch.EditedBy // Current User
                             });
                         }
                     }

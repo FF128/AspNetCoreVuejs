@@ -14,13 +14,16 @@ namespace WebAPI.Services
         private readonly IAppEntryAttachReqRepository repo;
         private readonly IAuditTrailService<AppEntryAttachReq> auditTrailService;
         private readonly ICompanyInformationRepository compInfoRepo;
+        private readonly IUserRepository userRepo;
         public AppEntryAttachReqService(IAppEntryAttachReqRepository repo,
              IAuditTrailService<AppEntryAttachReq> auditTrailService,
-             ICompanyInformationRepository compInfoRepo)
+             ICompanyInformationRepository compInfoRepo,
+             IUserRepository userRepo)
         {
             this.repo = repo;
             this.auditTrailService = auditTrailService;
             this.compInfoRepo = compInfoRepo;
+            this.userRepo = userRepo;
         }
 
         public async Task<CustomMessage> Delete(int id)
@@ -41,6 +44,7 @@ namespace WebAPI.Services
         {
             if ((await repo.GetById(attachReq.Id)) == null)
             {
+                attachReq.CreatedBy = userRepo.GetEmpCode();
                 attachReq.CompanyCode = compInfoRepo.GetCompanyCode(); // Get Company Code of Current User
                 await repo.Insert(attachReq);
 
@@ -57,6 +61,7 @@ namespace WebAPI.Services
             var attachReqData = await repo.GetById(attachReq.Id);
             if (attachReqData != null)
             {
+                attachReq.EditedBy = userRepo.GetEmpCode();
                 await repo.Update(attachReq);
 
                 //Audit Trail

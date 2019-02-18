@@ -14,37 +14,41 @@ namespace WebAPI.Services
         private readonly IAppEntrySourceRepository repo;
         private readonly IAuditTrailService<AppEntrySource> auditTrailService;
         private readonly ICompanyInformationRepository compInfoRepo;
+        private readonly IUserRepository userRepo;
         public AppEntrySourceService(IAppEntrySourceRepository repo,
              IAuditTrailService<AppEntrySource> auditTrailService,
-             ICompanyInformationRepository compInfoRepo)
+             ICompanyInformationRepository compInfoRepo,
+             IUserRepository userRepo)
         {
             this.repo = repo;
             this.auditTrailService = auditTrailService;
             this.compInfoRepo = compInfoRepo;
+            this.userRepo = userRepo;
         }
 
         public async Task<CustomMessage> Delete(int id)
         {
-            var attachReq = await repo.GetById(id);
-            if (attachReq != null)
+            var source = await repo.GetById(id);
+            if (source != null)
             {
                 await repo.Delete(id);
 
-                await auditTrailService.Save(new AppEntrySource(), attachReq, "DELETE");
+                await auditTrailService.Save(new AppEntrySource(), source, "DELETE");
 
                 return CustomMessageHandler.RecordDeleted();
             }
             return CustomMessageHandler.Error("Data doesn't exist");
         }
 
-        public async Task<CustomMessage> Insert(AppEntrySource attachReq)
+        public async Task<CustomMessage> Insert(AppEntrySource source)
         {
-            if ((await repo.GetById(attachReq.Id)) == null)
+            if ((await repo.GetById(source.Id)) == null)
             {
-                attachReq.CompanyCode = compInfoRepo.GetCompanyCode();
-                await repo.Insert(attachReq);
+                source.CompanyCode = compInfoRepo.GetCompanyCode();
+                source.CreatedBy = userRepo.GetEmpCode();
+                await repo.Insert(source);
 
-                await auditTrailService.Save(new AppEntrySource(), attachReq, "ADD");
+                await auditTrailService.Save(new AppEntrySource(), source, "ADD");
 
                 return CustomMessageHandler.RecordAdded();
 
@@ -52,15 +56,16 @@ namespace WebAPI.Services
             return CustomMessageHandler.Error("Code is already used");
         }
 
-        public async Task<CustomMessage> Update(AppEntrySource attachReq)
+        public async Task<CustomMessage> Update(AppEntrySource source)
         {
-            var attachReqData = await repo.GetById(attachReq.Id);
-            if (attachReqData != null)
+            var sourceData = await repo.GetById(source.Id);
+            if (sourceData != null)
             {
-                await repo.Update(attachReq);
+                source.EditedBy = userRepo.GetEmpCode();
+                await repo.Update(source);
 
                 //Audit Trail
-                await auditTrailService.Save(attachReqData, attachReq, "EDIT");
+                await auditTrailService.Save(sourceData, source, "EDIT");
 
                 return CustomMessageHandler.RecordUpdated();
 

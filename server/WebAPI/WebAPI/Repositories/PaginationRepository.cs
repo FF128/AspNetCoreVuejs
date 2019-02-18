@@ -27,5 +27,17 @@ namespace WebAPI.Repositories
                         commandType: CommandType.StoredProcedure);
             }
         }
+
+        public async Task<IEnumerable<T>> Pagination(string command, int pageNumber, int pageSize, string query, string companyCode)
+        {
+            using (var conn = connectionFactory.Connection)
+            {
+
+                return
+                    await conn.QueryAsync<T>(command,
+                        new { PageNumber = pageNumber, PageSize = pageSize, Query = query, CompanyCode = companyCode },
+                        commandType: CommandType.StoredProcedure);
+            }
+        }
     }
 }

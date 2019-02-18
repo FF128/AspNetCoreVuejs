@@ -13,11 +13,17 @@ namespace WebAPI.Services
     {
         private readonly IAffiliationsRepository repo;
         private readonly IAuditTrailService<Affiliations> auditTrailService;
+        private readonly ICompanyInformationRepository compInfoRepo;
+        private readonly IUserRepository userRepo;
         public AffiliationsService(IAffiliationsRepository repo,
-             IAuditTrailService<Affiliations> auditTrailService)
+             IAuditTrailService<Affiliations> auditTrailService,
+             ICompanyInformationRepository compInfoRepo,
+             IUserRepository userRepo)
         {
             this.repo = repo;
             this.auditTrailService = auditTrailService;
+            this.compInfoRepo = compInfoRepo;
+            this.userRepo = userRepo;
         }
 
         public async Task<CustomMessage> Delete(int id)
@@ -43,6 +49,8 @@ namespace WebAPI.Services
 
             if ((await repo.GetByCode(aff.AffiliationsCode)) == null)
             {
+                aff.CompanyCode = compInfoRepo.GetCompanyCode();
+                aff.CreatedBy = userRepo.GetEmpCode();
                 await repo.Insert(aff);
 
                 await auditTrailService.Save(new Affiliations(), aff, "ADD");
@@ -58,6 +66,7 @@ namespace WebAPI.Services
             var affiliation = await repo.GetByCode(aff.AffiliationsCode);
             if (affiliation != null)
             {
+                aff.EditedBy = userRepo.GetEmpCode();
                 await repo.Update(aff);
 
                 //Audit Trail

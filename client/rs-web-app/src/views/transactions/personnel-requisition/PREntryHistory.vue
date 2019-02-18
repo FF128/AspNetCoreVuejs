@@ -34,17 +34,27 @@
               <v-text-field v-model="pr.durationFrom" label="Duration From" type="date" readonly></v-text-field>
             </v-flex>
             <v-flex xs12 sm6 md3>
-              <v-text-field v-model="pr.durationFrom" label="Duration From" type="date" readonly></v-text-field>
-            </v-flex>
-            <v-flex xs12 sm6 md3>
               <v-text-field v-model="pr.durationTo" type="date" label="Duration To" readonly></v-text-field>
             </v-flex>
             <v-flex xs12 sm6 md3>
-              <v-text-field v-model="pr.status" label="Status" readonly></v-text-field>
+              <v-text-field v-model="pr.dateRequired" type="date" label="Date Required" readonly></v-text-field>
+            </v-flex>
+            <v-flex xs12 sm6 md3>
+              <v-text-field v-model="pr.requestedBy" label="Requested By" readonly></v-text-field>
+            </v-flex>
+            <v-flex xs12 sm6 md3>
+              <v-text-field v-model="pr.empStatus" label="Employee Status" readonly></v-text-field>
+            </v-flex>
+            <v-flex xs12 sm6 md3>
+              <v-text-field v-model="pr.reason" label="Reason for Personnel Request" readonly></v-text-field>
+            </v-flex>
+            <v-flex xs12 sm6 md3>
+              <v-text-field v-model="pr.approverRemarks" label="Remarks" readonly></v-text-field>
             </v-flex>
           </v-layout>
         </v-container>
       </v-form>
+      <!-- Selected Transaction -->
       <v-data-table
         :items="items"
         :headers="bedHeaders"
@@ -94,22 +104,33 @@
         </template>
       </v-data-table>
 
-      <look-up-dialog :dialog="transDialog" :title="'Budget Details Header'" v-if="transDialog">
+      <look-up-dialog :dialog="transDialog" :title="'PR History'" v-if="transDialog">
         <template slot="table">
-          <v-data-table :headers="transHeaders" :items="transactions" class="elevation-1">
+          <v-data-table
+            :headers="transHeaders"
+            :items="prfHeaderMaintItems"
+            class="elevation-1"
+            :rows-per-page-items="paginationHeader.rowsPerPageItems"
+            :pagination.sync="paginationHeader"
+            :loading="prfLoading"
+            :total-items="prfHeaderMaintTotalData"
+          >
             <template slot="items" slot-scope="props">
               <td>
                 <v-btn icon @click.prevent="selectPR(props.item)">
                   <v-icon>mdi-magnify-plus</v-icon>
                 </v-btn>
               </td>
-              <td>{{ props.item.transactionNo }}</td>
+              <td>{{ props.item.prfNo }}</td>
               <td class="text-xs-left">{{ props.item.description }}</td>
-              <td class="text-xs-left">{{ props.item.year }}</td>
-              <td class="text-xs-left">{{ props.item.month }}</td>
+              <td class="text-xs-left">{{ props.item.dateRequested | dateFormat}}</td>
               <td class="text-xs-left">{{ props.item.durationFrom | dateFormat}}</td>
               <td class="text-xs-left">{{ props.item.durationTo | dateFormat}}</td>
-              <td class="text-xs-left">{{ props.item.status }}</td>
+              <td class="text-xs-left">{{ props.item.dateRequired | dateFormat}}</td>
+              <td class="text-xs-left">{{ props.item.requestedBy}}</td>
+              <td class="text-xs-left">{{ props.item.empStatus}}</td>
+              <td class="text-xs-left">{{ props.item.reason}}</td>
+              <td class="text-xs-left">{{ props.item.remarks }}</td>
             </template>
           </v-data-table>
         </template>
@@ -132,7 +153,7 @@ export default {
   },
   data() {
     return {
-      title: "Budget History",
+      title: "PR History",
       pr: this.initializePR(),
       allItems: [],
       items: [],
@@ -222,13 +243,16 @@ export default {
       transactions: [],
       transHeaders: [
         { text: "", value: "actions" },
-        { text: "Transaction No.", value: "transactionNo", sortable: true },
+        { text: "PR No.", value: "prfNo", sortable: true },
         { text: "Description", value: "description", sortable: true },
-        { text: "Year.", value: "year", sortable: true },
-        { text: "Month", value: "month", sortable: true },
+        { text: "Date Requested", value: "dateRequested", sortable: true },
         { text: "Duration From", value: "durationFrom", sortable: true },
         { text: "Duration To", value: "durationTo", sortable: true },
-        { text: "Status", value: "status", sortable: true }
+        { text: "Date Required", value: "dateRequired", sortable: true },
+        { text: "Requested By", value: "requestedBy", sortable: true },
+        { text: "Emp status", value: "empStatus", sortable: true },
+        { text: "Reason", value: "reason", sortable: true },
+        { text: "Remarks", value: "remarks", sortable: true }
       ],
       tableLoading: false,
       transDialog: false,
@@ -252,7 +276,8 @@ export default {
       return {
         durationFrom: moment(new Date()).format("YYYY-MM-DD"),
         durationTo: moment(new Date()).format("YYYY-MM-DD"),
-        dateRequired: moment(new Date()).format("YYYY-MM-DD")
+        dateRequired: moment(new Date()).format("YYYY-MM-DD"),
+        dateRequested: moment(new Date()).format("YYYY-MM-DD")
       };
     },
     // getAllItems() {
@@ -283,7 +308,7 @@ export default {
           toast.show(response.data);
         });
     },
-    getItemsByTransNo() {
+    getItemsByPRFNo() {
       this.tableLoading = true;
 
       this.$axios
@@ -325,13 +350,15 @@ export default {
     selectPR(item) {
       this.pr = item;
       this.transDialog = false;
-      this.getItemsByTransNo(); // Get Budget Entry Details by Transaction No.
+      this.getItemsByPRFNo(); // Get PR Details by PRF No.
     }
   },
   watch: {
     pr(val) {
       val.durationFrom = moment(val.durationFrom).format("YYYY-MM-DD");
       val.durationTo = moment(val.durationTo).format("YYYY-MM-DD");
+      val.dateRequired = moment(val.dateRequired).format("YYYY-MM-DD");
+      val.dateRequested = moment(val.dateRequested).format("YYYY-MM-DD");
     },
     radioGroup(val) {
       if (val == "search") {
@@ -352,6 +379,15 @@ export default {
           val.rowsPerPage = this.totalData;
         }
         this.getAllItemsPagination();
+      },
+      deep: true
+    },
+    paginationHeader: {
+      handler(val) {
+        if (val.rowsPerPage == -1) {
+          val.rowsPerPage = this.prfHeaderMaintTotalData;
+        }
+        this.getMainHeader();
       },
       deep: true
     }

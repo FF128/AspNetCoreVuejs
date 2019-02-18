@@ -14,13 +14,16 @@ namespace WebAPI.Services
         private readonly IAppEntryTextCertRepository repo;
         private readonly IAuditTrailService<AppEntryTextCert> auditTrailService;
         private readonly ICompanyInformationRepository compInfoRepo;
+        private readonly IUserRepository userRepo;
         public AppEntryTextCertService(IAppEntryTextCertRepository repo,
              IAuditTrailService<AppEntryTextCert> auditTrailService,
-             ICompanyInformationRepository compInfoRepo)
+             ICompanyInformationRepository compInfoRepo,
+             IUserRepository userRepo)
         {
             this.repo = repo;
             this.auditTrailService = auditTrailService;
             this.compInfoRepo = compInfoRepo;
+            this.userRepo = userRepo;
         }
 
         public async Task<CustomMessage> Insert(AppEntryTextCert text)
@@ -28,7 +31,8 @@ namespace WebAPI.Services
             var textCertificate = (await repo.GetTextCert());
             if (textCertificate == null)
             {
-                text.CompanyCode = compInfoRepo.GetCompanyCode();   
+                text.CompanyCode = compInfoRepo.GetCompanyCode();
+                text.CreatedBy = userRepo.GetEmpCode();
                 await repo.Insert(text);
 
                 await auditTrailService.Save(new AppEntryTextCert(), text, "ADD");
@@ -49,6 +53,7 @@ namespace WebAPI.Services
             var stData = await repo.GetTextCert();
             if (stData != null)
             {
+                text.EditedBy = userRepo.GetEmpCode();
                 await repo.Update(text);
 
                 //Audit Trail

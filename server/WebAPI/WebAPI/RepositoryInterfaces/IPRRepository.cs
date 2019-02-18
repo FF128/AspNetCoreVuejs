@@ -18,6 +18,7 @@ namespace WebAPI.RepositoryInterfaces
         Task InsertAttachments(IEnumerable<PRFDetailsMaintAttachmentDto> attachments);
         Task<IEnumerable<GetPREntryDetails>> GetDetailsByPRFNo(string prfNo, string dbName);
         Task<PRFDetailsMaint> GetDetailById(long id);
+        Task<IEnumerable<GetPREntryMaintDetails>> GetPREntryMaintDetailsByPRFNo(string prfNo, string dbName);
         Task<IEnumerable<ViewPREntryWithStatusDto>> ViewPRFEntryByStatus(string status);
         Task<IEnumerable<ViewPREntryWithStatusDto>> ViewPREntryWithStatusWaitingDto();
         Task<IEnumerable<ViewPREntryWithStatusDto>> ViewPREntryWithStatusReturnedDto();
@@ -29,5 +30,13 @@ namespace WebAPI.RepositoryInterfaces
         Task UpdateTransApprovingStatus(UpdatePRFTransApprovingStatusDto dto);
         Task InsertComment(PRFMainReturnCommentDto comment);
         Task<IEnumerable<PRFMainReturnComment>> GetPRFHeaderMaintReturnCommentsByPRFNo(string prfNo);
+
+        // PRF Extend 
+        Task InsertPRFExtend(PRFExtend prfExtend);
+        Task PRFExtendApproveDeclined(int id, string status, string empCode);
+        Task<IEnumerable<GetExtendPRFDetails>> GetExtendPRFDetails(string companyCode);
+        Task<PRFExtend> GetPRFExtendById(int id, string companyCode);
+        Task<GetExtendPRFDetails> GetExtendPRFDetailsByPRFNo(string prfNo, string companyCode);
+        Task<IEnumerable<PRFExtend>> GetPRFExtendByStatus(string status, string companyCode);
     }
 }
