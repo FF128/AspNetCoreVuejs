@@ -1,15 +1,15 @@
 <template>
   <div>
-    <vuetify-layout-default v-if="isLoggedIn">
+    <vuetify-layout-default>
       <transition name="fade">
         <router-view></router-view>
       </transition>
     </vuetify-layout-default>
-    <div v-else>
+    <!-- <div v-else>
       <transition name="fade">
         <router-view></router-view>
       </transition> 
-    </div>
+    </div> -->
   </div>
   
 

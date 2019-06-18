@@ -6,10 +6,7 @@
         <!-- <img src="@/assets/banner.png" class="img-responsive"> -->
         <v-card color="white" height="65">
           <v-card-title primary-title>
-            <!-- <v-badge right>
-              <h2>Recruitment System</h2>
-            </v-badge>-->
-            <img src="@/assets/banner.png" class="img-responsive">
+            <h2>TITLE</h2>
           </v-card-title>
         </v-card>
         <standard-side-menu v-if="activeRoute == 'STD'"></standard-side-menu>

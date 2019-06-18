@@ -1,16 +1,15 @@
 <template>
   <v-container>
-    <h1>Under Development...</h1>
-    <v-layout row>
+    <h1>Welcome...</h1>
+    <!-- <v-layout row>
       <pagination></pagination>
-    </v-layout>
-    
+    </v-layout>-->
   </v-container>
 </template>
 
 <script>
 import toast from "@/components/CustomToast";
-import Pagination from "@/components/Pagination"
+import Pagination from "@/components/Pagination";
 export default {
   components: {
     Pagination
