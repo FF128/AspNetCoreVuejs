@@ -9,7 +9,7 @@
   },
   "dependencies": {
     "babel-polyfill": "^6.26.0",
-    "buefy": "^0.7.1",
+    "buefy": "^0.7.2",
     "lodash": "^4.17.11",
     "moment": "^2.23.0",
     "numeral": "^2.0.6",
